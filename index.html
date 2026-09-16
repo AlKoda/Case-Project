@@ -398,6 +398,42 @@ body.ar .cs-teaser{font-size:13.5px;line-height:1.8}
 @media(prefers-reduced-motion:reduce){#academy-splash{transition:none}.splash-frame>*,.menu-dispatch,.cs-brief,.cs-card{animation:none!important}}
 body:has(#academy-splash) .overlay{z-index:1001}
 
+/* ---------- Case 1: cinematic investigation treatment ---------- */
+body[data-case="case1"]{--case-neon:#f1bd4b;--case-night:#101820;--case-red:#b43a32}
+body[data-case="case1"] .board-scroll{background:
+  radial-gradient(circle at 52% 8%,rgba(241,189,75,.14),transparent 25%),
+  linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px),
+  linear-gradient(145deg,#795534,#3b281a 72%);background-size:auto,42px 42px,42px 42px,auto}
+body[data-case="case1"] .zone-panel{border-color:rgba(255,229,177,.2);background:rgba(35,22,12,.17);box-shadow:inset 0 0 45px rgba(20,10,3,.18)}
+body[data-case="case1"] .card,body[data-case="case1"] .scene-card{filter:drop-shadow(0 14px 16px rgba(12,7,2,.26));transition:transform .22s var(--e-out),filter .22s ease,box-shadow .22s ease}
+body[data-case="case1"] .card:hover,body[data-case="case1"] .scene-card:hover{transform:translateY(-8px) rotate(var(--tilt,0deg));filter:drop-shadow(0 22px 20px rgba(12,7,2,.4));z-index:21}
+body[data-case="case1"] .card.k-evidence .thumb{background:#111b21;border:5px solid #fff;box-shadow:0 5px 13px rgba(0,0,0,.23)}
+body[data-case="case1"] .card.k-evidence .thumb img,body[data-case="case1"] .card.k-evidence .thumb svg{animation:evidence-focus .55s var(--e-out) both}
+@keyframes evidence-focus{from{filter:blur(4px) saturate(.2);transform:scale(1.08)}to{filter:none;transform:none}}
+
+.investigation-hud{display:none;position:fixed;left:18px;bottom:18px;z-index:24;width:min(390px,calc(100vw - 36px));color:#edf1ef;background:rgba(12,19,23,.94);border:1px solid #536168;border-left:4px solid var(--case-neon);box-shadow:0 16px 38px rgba(0,0,0,.42);backdrop-filter:blur(8px);animation:hud-in .5s .25s var(--e-out) backwards}
+body[data-case="case1"] .investigation-hud{display:grid;grid-template-columns:1fr auto;align-items:center}
+.ih-copy{padding:12px 15px}.ih-kicker{display:block;color:var(--case-neon);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px}.ih-objective{font:15px/1.25 Georgia,serif}.ih-progress{display:block;color:#91a0a6;font-size:10px;margin-top:5px;letter-spacing:.05em}.ih-search{align-self:stretch;border:0;border-left:1px solid #39484e;background:#17242a;color:#fff;padding:0 16px;cursor:pointer;font:700 10px var(--sans);letter-spacing:.12em;text-transform:uppercase}.ih-search:hover{background:var(--case-red)}
+@keyframes hud-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+body[data-case="case1"] .panel.dialogue-panel{max-width:820px;background:#121b20;color:#e9eeee;border:1px solid #4b5a60;overflow:hidden}
+body[data-case="case1"] .dialogue-panel .panel-head{background:linear-gradient(90deg,#172329,#10171b);border-bottom:1px solid #3b484e;padding:20px 28px}
+body[data-case="case1"] .dialogue-panel .panel-portrait{width:90px;height:108px;border:2px solid #b69f69;box-shadow:10px 10px 0 #0a1013}
+body[data-case="case1"] .dialogue-panel .panel-head h2{font:28px Georgia,serif;color:#fff}.dialogue-panel .role{color:#b69f69;text-transform:uppercase;letter-spacing:.12em;font-size:10px}
+body[data-case="case1"] .dialogue-panel .panel-body{background:radial-gradient(circle at 85% 0,rgba(182,159,105,.08),transparent 35%),#121b20}
+body[data-case="case1"] .dialogue-panel .topic-btn{background:#18252b;border:1px solid #334249;color:#dfe6e8;border-left:3px solid transparent;transition:transform .18s var(--e-out),border-color .18s,background .18s}
+body[data-case="case1"] .dialogue-panel .topic-btn:hover:not(:disabled){background:#22333a;border-color:#b69f69;border-left-color:var(--case-neon);transform:translateX(5px)}
+body[data-case="case1"] .dialogue-panel .response{position:relative;background:#eee4ce;color:#211d17;border:0;border-left:5px solid var(--case-neon);font:16px/1.7 Georgia,serif;box-shadow:0 12px 25px rgba(0,0,0,.25)}
+body[data-case="case1"] .dialogue-panel .response::before{content:"STATEMENT";display:block;color:#8b5e16;font:700 9px var(--sans);letter-spacing:.2em;margin-bottom:6px}
+
+body[data-case="case1"] .panel.scene-investigation{max-width:1120px;background:#0d1519;color:#eef2f1;border:1px solid #526168;overflow:hidden}
+.scene-investigation .panel-head{border-bottom:1px solid #3d4a50;background:#111c21}.scene-investigation .panel-head h2{font:27px Georgia,serif}.scene-investigation .panel-body{padding:0;display:grid;grid-template-columns:minmax(0,1fr) 290px}.scene-investigation .scene-wrap{border:0;min-height:100%;background:#070b0d}.scene-investigation .scene-wrap svg{height:100%;min-height:520px;object-fit:cover}.scene-investigation .scene-photo{opacity:.92;filter:saturate(.9) contrast(1.08) brightness(.72)}
+.scene-side{padding:22px;background:linear-gradient(160deg,#17242a,#0e171b);border-left:1px solid #3b494f;display:flex;flex-direction:column}.scene-side .scene-kicker{color:var(--case-neon);font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}.scene-side h3{font:22px/1.1 Georgia,serif;margin:7px 0 10px}.scene-side p{font-size:12.5px;line-height:1.55;color:#aab5b9}.scene-side .scene-out{margin-top:auto;background:#eee4ce;color:#241f18;border:0;border-left:4px solid var(--case-neon);min-height:112px}.scene-side .scene-tools{margin:12px 0 0}.scene-side .actbtn{width:100%;background:#a53430}.scene-investigation .hot .ring{stroke:var(--case-neon);filter:drop-shadow(0 0 7px #f1bd4b)}.scene-investigation .hot .burst{fill:#fff;animation:scene-beacon 1.7s infinite}.scene-investigation .hot.just .ring{animation:hot-found .55s var(--e-spring)}
+@keyframes scene-beacon{50%{opacity:.25;transform:scale(1.7);transform-origin:center}}@keyframes hot-found{50%{stroke-width:9;opacity:1}}
+@media(max-width:760px){.investigation-hud{bottom:10px;left:10px;width:calc(100vw - 20px)}.scene-investigation .panel-body{grid-template-columns:1fr}.scene-side{border-left:0;border-top:1px solid #3b494f}.scene-investigation .scene-wrap svg{min-height:310px}.ih-search{padding:0 12px}}
+@media(prefers-reduced-motion:reduce){body[data-case="case1"] .card.k-evidence .thumb img,body[data-case="case1"] .card.k-evidence .thumb svg,.investigation-hud,.scene-investigation .hot .burst{animation:none!important}}
+
 /* ---------- grounded case archive ---------- */
 .cs-head{text-align:left}.cs-head h1{font-family:Georgia,serif;font-size:30px}.cs-head p{color:#738086}
 .cs-grid{gap:14px}.cs-card{background:#121a1f;border:1px solid #29343a;box-shadow:none;color:#e6eaeb}
@@ -774,6 +810,11 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
 <div class="hint hidden" id="hint">
   <span id="hint-text"></span><button id="hint-done"></button>
 </div>
+
+<aside class="investigation-hud" id="investigation-hud" aria-live="polite">
+  <div class="ih-copy"><span class="ih-kicker" id="ih-kicker">Active objective</span><strong class="ih-objective" id="ih-objective">Search Suite 402</strong><span class="ih-progress" id="ih-progress">0 of 9 scene details examined</span></div>
+  <button class="ih-search" id="ih-search" type="button">Enter scene →</button>
+</aside>
 
 <div class="board-scroll" id="scroller" dir="ltr">
   <div class="board-canvas" id="canvas">
@@ -2199,6 +2240,7 @@ var CASE2 = {
 
 var CASES = {case1:CASE1, case2:CASE2};
 var CASE = CASE1;
+document.body.dataset.case = "case1";
 
 /* The supplied blank-name portrait sheet is intentionally assigned here rather
    than using the named reference cards for unrelated story characters. */
@@ -2215,6 +2257,7 @@ Object.keys(PORTRAIT_SPRITES).forEach(function(key){ ART[key] = spritePortrait(P
 
 function loadCase(id){
   CASE = CASES[id];
+  document.body.dataset.case = id;
   SUSPECTS = CASE.suspects; WITNESSES = CASE.witnesses; EVIDENCE = CASE.evidence;
   HOTSPOTS = CASE.hotspots; LEADS = CASE.leads; VERDICTS = CASE.verdicts;
   ACCUSE_CORRECT = CASE.correct; KEY_EXHIBITS = CASE.keyExhibits; PAR = CASE.par;
@@ -2453,6 +2496,7 @@ function buildBoard(){
   sweepNewQuestions();
   sweepLeads();
   sweepDeductions();
+  updateInvestigationHUD();
 }
 
 function renderNote(k){
@@ -2725,7 +2769,7 @@ function openCard(key){
   var e = ALL[key]; if(!e) return;
   state.openPanel = {kind:e.kind, id:key};
   if(e.kind==="evidence") renderEvidence(key); else renderPerson(e.kind, key);
-  showOverlay();
+  showOverlay(CASE === CASE1 && e.kind !== "evidence" ? "dialogue-panel" : "");
 }
 /* ---- qualities: the single vocabulary every storylet is gated on ----
    ev:<id>    an exhibit has been read
@@ -2974,16 +3018,19 @@ function pinToTimeline(key){
 /* ========== SCENE ========== */
 function openScene(){
   state.openPanel = {kind:"scene"};
+  var cinematic = CASE === CASE1;
   panel.innerHTML =
     '<button class="close-x" data-close>&times;</button>'+
     '<div class="panel-head"><div><h2>'+T(CASE.sceneTitle)+'</h2>'+
     '<div class="role">'+num(Object.keys(state.examined).length)+' / '+num(HOTSPOTS.length)+'</div></div></div>'+
     '<div class="panel-body">'+
     '<div class="scene-wrap'+(state.glow?" glow":"")+'" id="scenewrap">'+sceneSVG()+'</div>'+
+    (cinematic ? '<aside class="scene-side"><span class="scene-kicker">'+T({en:"Point & click investigation",ar:"تحقيق بالنقر والاستكشاف"})+'</span><h3>'+T({en:"Suite 402",ar:"الجناح ٤٠٢"})+'</h3><p>'+T({en:"Sweep the room. Every numbered marker can hide testimony, a contradiction, or a new evidence card.",ar:"فتّش الغرفة. قد تخفي كل علامة مرقّمة شهادة أو تناقضاً أو بطاقة دليل جديدة."})+'</p>' : '')+
+    '<div class="scene-out" id="sceneout"><span class="scene-empty">'+T(UI.scenePrompt)+'</span></div>'+
     '<div class="scene-tools"><button class="actbtn" id="glowbtn">'+T(state.glow?UI.glowOn:UI.glowOff)+'</button></div>'+
-    '<div class="scene-out" id="sceneout"><span class="scene-empty">'+T(UI.scenePrompt)+'</span></div></div>';
+    (cinematic ? '</aside>' : '')+'</div>';
   panel.querySelector("[data-close]").onclick = closePanel;
-  showOverlay("wide");
+  showOverlay(cinematic ? "wide scene-investigation" : "wide");
   wireScene();
 }
 function wireScene(){
@@ -3249,6 +3296,7 @@ function applyLang(){
   }
   buildSwatches(); buildBoard(); renderNotes();
   if(!document.getElementById("case-select").classList.contains("hidden")) renderCaseSelect();
+  updateInvestigationHUD();
   if(state.openPanel){
     var p = state.openPanel;
     if(p.kind==="evidence") renderEvidence(p.id);
@@ -3313,6 +3361,17 @@ document.getElementById("cs-later").onclick = function(){
   document.getElementById("case-select").classList.add("hidden");
 };
 document.getElementById("casesbtn").onclick = openCaseSelect;
+function updateInvestigationHUD(){
+  var hud = document.getElementById("investigation-hud");
+  if(!hud || CASE !== CASE1) return;
+  var done = Object.keys(state.examined).length;
+  var found = Object.keys(state.found).length;
+  document.getElementById("ih-kicker").textContent = T({en:"Active objective",ar:"الهدف النشط"});
+  document.getElementById("ih-objective").textContent = T(done < HOTSPOTS.length ? {en:"Search Suite 402",ar:"فتّش الجناح ٤٠٢"} : {en:"Question the witnesses",ar:"استجوب الشهود"});
+  document.getElementById("ih-progress").textContent = T({en:done+" of "+HOTSPOTS.length+" scene details examined · "+found+" evidence cards recovered",ar:"فُحصت "+done+" من "+HOTSPOTS.length+" علامات · جُمعت "+found+" بطاقات أدلة"});
+  document.getElementById("ih-search").textContent = T({en:"Enter scene →",ar:"ادخل الموقع ←"});
+}
+document.getElementById("ih-search").onclick = openScene;
 document.getElementById("startbtn").onclick = function(){
   var i=document.getElementById("intro"); if(i) i.remove();
   state.started = true; state.t0 = Date.now(); setInterval(tickClock, 1000); fitZoom();
