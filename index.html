@@ -705,6 +705,8 @@ body.ar .card .stamp{font-family:var(--arf);font-weight:700;font-size:13px}
 .clockbox .clab{font-size:11px;color:#C6B08A;white-space:nowrap}
 .clockbox .cval{font-family:var(--type);font-size:13px;color:#E4D6B6;font-variant-numeric:tabular-nums;min-width:44px;text-align:center}
 body.ar .clockbox .cval{font-family:var(--arf)}
+.save-state{font-size:10.5px;color:#C6B08A;white-space:nowrap;min-width:38px;text-align:center;transition:opacity .2s ease}
+.save-state.saving{opacity:.55}
 
 .helplist{display:flex;flex-direction:column;gap:11px;margin:0}
 .helprow{display:flex;gap:13px;font-size:14.5px;line-height:1.65;color:var(--ink)}
@@ -763,11 +765,11 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
     <p class="splash-org-ar">أكاديمية السلطان قابوس لعلوم الشرطة</p>
     <nav class="menu-actions" aria-label="Main menu">
       <button class="splash-continue" id="splashcontinue"><span>Begin investigation</span><small>New game&nbsp; →</small></button>
-      <button class="menu-button" type="button" disabled><span>Continue</span><small>No saved case</small></button>
+      <button class="menu-button" type="button" id="continuebtn" disabled><span>Continue</span><small>No saved case</small></button>
       <button class="menu-button" type="button" id="assetlogbtn"><span>Production log</span><small>Asset needs</small></button>
       <button class="menu-button" type="button" id="menulang"><span>العربية / English</span><small>Language</small></button>
     </nav>
-    <div class="menu-meta"><img src="assets/icons/academy-crest.svg" alt="" width="38" height="29"><span>Build 0.2</span><span>Two playable cases</span><span>Desktop / touch</span></div>
+    <div class="menu-meta"><img src="assets/icons/academy-crest.svg" alt="" width="38" height="29"><span>Build 0.3</span><span>Two playable cases</span><span>Autosave enabled</span></div>
     <p class="splash-foot">Concept prototype · not an official case record<span class="ar">نموذج مفاهيمي · وليس سجلّ قضية رسمياً</span></p>
   </main>
 </div>
@@ -806,7 +808,7 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
 
 <div class="toolbar">
   <span class="title" id="tb-title"></span>
-  <div class="clockbox"><span class="clab" id="clab"></span><span class="cval" id="clock">00:00</span></div>
+  <div class="clockbox"><span class="clab" id="clab"></span><span class="cval" id="clock">00:00</span><span class="save-state" id="save-state" aria-live="polite"></span></div>
   <span class="spacer"></span>
 
   <div class="group" title="Zoom">
@@ -1671,6 +1673,68 @@ var state = {
   linking:false, linkFirst:null, openPanel:null, glow:true, started:false
 };
 
+/* Keep play-test sessions resilient to refreshes and accidental tab closes. */
+var SAVE_KEY = "case-board-save-v1";
+var saveTimer = 0;
+function saveGame(){
+  if(!state.started) return;
+  var indicator = document.getElementById("save-state");
+  if(indicator){ indicator.textContent = state.lang === "ar" ? "جارٍ الحفظ" : "Saving"; indicator.classList.add("saving"); }
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      version:1, caseId:document.body.dataset.case || "case1", savedAt:Date.now(),
+      state:state, notes:NOTES, noteSeq:noteSeq
+    }));
+    if(indicator){ indicator.textContent = state.lang === "ar" ? "تم الحفظ" : "Saved"; indicator.classList.remove("saving"); }
+    refreshContinueButton();
+  } catch(err) {
+    if(indicator){ indicator.textContent = state.lang === "ar" ? "تعذر الحفظ" : "Not saved"; indicator.classList.remove("saving"); }
+  }
+}
+function queueSave(){
+  if(!state.started) return;
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveGame, 250);
+}
+function readSave(){
+  try {
+    var saved = JSON.parse(localStorage.getItem(SAVE_KEY));
+    return saved && saved.version === 1 && CASES[saved.caseId] && saved.state ? saved : null;
+  } catch(err) { return null; }
+}
+function refreshContinueButton(){
+  var btn = document.getElementById("continuebtn");
+  if(!btn) return;
+  var saved = readSave();
+  btn.disabled = !saved;
+  var small = btn.querySelector("small");
+  if(small) small.textContent = saved ? "Resume saved case" : "No saved case";
+}
+function restoreGame(){
+  var saved = readSave();
+  if(!saved) return false;
+  loadCase(saved.caseId);
+  Object.keys(state).forEach(function(key){
+    if(Object.prototype.hasOwnProperty.call(saved.state, key)) state[key] = saved.state[key];
+  });
+  NOTES = saved.notes || {};
+  noteSeq = Number(saved.noteSeq) || Object.keys(NOTES).length;
+  state.started = true; state.linking = false; state.linkFirst = null; state.openPanel = null;
+  state.t0 = state.t0 || Date.now();
+  Object.keys(LAYOUT).forEach(function(key){
+    if(!state.pos[key]) state.pos[key] = {x:LAYOUT[key].x, y:LAYOUT[key].y};
+  });
+  Object.keys(NOTES).forEach(function(key){
+    if(!state.pos[key]) state.pos[key] = {x:NOTES[key].x, y:NOTES[key].y};
+  });
+  rebuildIndex();
+  ["academy-splash","intro"].forEach(function(id){ var el=document.getElementById(id); if(el) el.remove(); });
+  document.getElementById("case-select").classList.add("hidden");
+  applyLang(); setZoom(state.zoom || 1); tickClock();
+  setTimeout(function(){ drawYarn(); }, 0);
+  return true;
+}
+
 var KEY_EXHIBITS = ["cctv","jacket","safe-print","notepad","restaurant-log"];
 
 /* ---- toasts ---- */
@@ -1678,6 +1742,7 @@ function toast(titleObj, textObj, isNew){
   var box = document.getElementById("toasts");
   var el = document.createElement("div");
   el.className = "toast" + (isNew ? " new" : "");
+  el.setAttribute("role", "status");
   el.innerHTML = '<strong>'+T(titleObj)+'</strong>'+T(textObj);
   box.appendChild(el);
   setTimeout(function(){
@@ -2466,6 +2531,8 @@ function buildBoard(){
 
   var sc = document.createElement("div");
   sc.className = "scene-card"; sc.dataset.key = "__scene";
+  sc.setAttribute("role", "button"); sc.setAttribute("tabindex", "0");
+  sc.setAttribute("aria-label", T(UI.sceneOpen)+": "+T(CASE.sceneCap));
   sc.style.left = state.pos.__scene.x+"px"; sc.style.top = state.pos.__scene.y+"px";
   var doneN = Object.keys(state.examined).length;
   sc.innerHTML = '<span class="tape"></span><span class="mini"><img src="'+CASE.sceneAsset+'" alt="" draggable="false"></span>'+
@@ -2473,6 +2540,9 @@ function buildBoard(){
     '<p>'+T(CASE.sceneCap)+'</p><span class="open-tag">'+T(UI.sceneOpen)+' &middot; '+num(doneN)+'/'+num(HOTSPOTS.length)+'</span>';
   board.appendChild(sc);
   attachDrag(sc, "__scene");
+  sc.addEventListener("keydown", function(e){
+    if(e.key === "Enter" || e.key === " "){ e.preventDefault(); openScene(); }
+  });
 
   var idx = 0;
   Object.keys(ALL).forEach(function(key){
@@ -2798,7 +2868,13 @@ function renderNotes(){
 /* ========== PANELS ========== */
 var overlay=document.getElementById("overlay"), panel=document.getElementById("panel");
 var overlay2=document.getElementById("overlay2"), panel2=document.getElementById("panel2");
-function showOverlay(cls){ state.openedAt = Date.now(); panel.className = "panel"+(cls?" "+cls:""); overlay.classList.remove("hidden"); }
+function showOverlay(cls){
+  state.openedAt = Date.now(); panel.className = "panel"+(cls?" "+cls:"");
+  panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); panel.setAttribute("tabindex", "-1");
+  var close = panel.querySelector("[data-close]");
+  if(close) close.setAttribute("aria-label", state.lang==="ar" ? "إغلاق" : "Close");
+  overlay.classList.remove("hidden"); panel.focus();
+}
 function closePanel(){ overlay.classList.add("hidden"); state.openPanel=null; }
 function closePanel2(){ overlay2.classList.add("hidden"); }
 
@@ -3300,6 +3376,10 @@ function applyLang(){
   document.getElementById("zoomfit").title        = T(UI.fit);
   document.getElementById("fullbtn").innerHTML    = IC.full;
   document.getElementById("fullbtn").title        = T(UI.full);
+  document.getElementById("zoomout").setAttribute("aria-label", state.lang==="ar" ? "تصغير" : "Zoom out");
+  document.getElementById("zoomin").setAttribute("aria-label", state.lang==="ar" ? "تكبير" : "Zoom in");
+  document.getElementById("zoomfit").setAttribute("aria-label", T(UI.fit));
+  document.getElementById("fullbtn").setAttribute("aria-label", T(UI.full));
   setBtn("linkbtn",  IC.string, T(state.linking?UI.connectOn:UI.connect));
   setBtn("notebtn",  IC.note,   T(UI.addNote));
   setBtn("undobtn",  IC.undo,   T(UI.undo));
@@ -3320,6 +3400,7 @@ function applyLang(){
   document.getElementById("mlab").textContent     = T(UI.strength);
   document.getElementById("meter").title          = T(UI.strengthTip);
   document.getElementById("nb-title").textContent = T(UI.notebookTitle);
+  document.getElementById("nb-close").setAttribute("aria-label", state.lang==="ar" ? "إغلاق دفتر الملاحظات" : "Close notebook");
   document.getElementById("hint-text").textContent= T(UI.hintLink);
   document.getElementById("hint-done").textContent= T(UI.done);
   if(document.getElementById("intro")){
@@ -3355,6 +3436,8 @@ document.getElementById("assetlogbtn").onclick = function(){
   panel.querySelector('[data-close]').onclick = closePanel;
   showOverlay();
 };
+document.getElementById("continuebtn").onclick = restoreGame;
+refreshContinueButton();
 document.getElementById("splashcontinue").onclick = function(){
   var sp = document.getElementById("academy-splash");
   sp.classList.add("leaving");
@@ -3413,7 +3496,7 @@ function updateInvestigationHUD(){
 document.getElementById("ih-search").onclick = openScene;
 document.getElementById("startbtn").onclick = function(){
   var i=document.getElementById("intro"); if(i) i.remove();
-  state.started = true; state.t0 = Date.now(); setInterval(tickClock, 1000); fitZoom();
+  state.started = true; state.t0 = Date.now(); fitZoom(); saveGame();
 };
 document.getElementById("hintbtn").onclick = function(){
   if(state.hints <= 0){ toast(UI.hint, UI.noHints, false); return; }
@@ -3495,6 +3578,13 @@ document.addEventListener("keydown", function(e){
   if(e.key==="0") fitZoom();
 });
 window.addEventListener("resize", drawYarn);
+document.addEventListener("click", queueSave);
+document.addEventListener("pointerup", queueSave);
+document.addEventListener("input", queueSave);
+document.addEventListener("visibilitychange", function(){ if(document.visibilityState === "hidden") saveGame(); });
+window.addEventListener("beforeunload", saveGame);
+setInterval(saveGame, 15000);
+setInterval(tickClock, 1000);
 
 applyLang(); setZoom(1);
 })();
