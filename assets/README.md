@@ -1,24 +1,24 @@
 # Investigation artwork
 
-This directory is the destination for game-ready exports made from the three
-supplied asset sheets. The files are grouped by their role rather than by source sheet:
+The two supplied 1536×1024 police-academy sprite sheets have been cut into
+purpose-specific SVG image containers instead of being displayed as whole contact sheets.
 
-- `characters/` — the ten complete, bordered character cards.
-- `locations/` — the six large location cards (not the small alternates along
-  the bottom of the sheet).
-- `ui/` — reusable paper panels, cards, board furniture, and controls.
-- `icons/` — compact category and status symbols.
+- `locations/` — six bordered location cards and six compact wide variants.
+- `rooms/` — clean room artwork with the source card labels removed.
+- `props/` — isolated environmental props.
+- `icons/` — compact navigation/category symbols.
+- `ui/` — reusable paper and evidence-board surfaces.
 
-See [`SOURCE-MAP.md`](SOURCE-MAP.md) for the exact source rectangles and the
-places where the exports are used.  To reproduce the exports, place the three
-original 1536×1024 sheets in `/source-assets` and run:
+The game uses the evidence room as menu atmosphere, the wide interrogation and
+office scenes behind interactive search overlays, and full scene art on case
+selection. Text and controls remain HTML so they stay accessible and bilingual.
+
+To reproduce all crops:
 
 ```sh
 python3 -m pip install -r tools/requirements-assets.txt
-python3 tools/extract_assets.py --source /source-assets --output assets
+python3 tools/extract_assets.py --source source-assets --output assets
 ```
 
-The extractor samples the supplied sheet dimensions, validates every crop,
-and uses hand-inspected rectangles that retain each item's outer border while
-excluding adjacent artwork. It deliberately does **not** divide a sheet into
-an equal grid.
+The extraction map in `tools/extract_assets.py` uses hand-inspected,
+inclusive-exclusive rectangles; it intentionally does not assume an equal grid.

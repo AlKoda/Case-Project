@@ -6,7 +6,11 @@ cartoon: restrained contrast, believable materials, natural skin texture, and a
 muted slate / sand / oxblood palette. Avoid police trademarks, readable private
 information, watermarks, exaggerated noir tropes, and graphic violence.
 
-## Priority 1 — starting flow
+## Delivered from the supplied police-academy sheets
+
+The menu, case picker, board location card, and interactive scene surfaces now use the extracted academy environments. See `SOURCE-MAP.md`.
+
+## Priority 1 — story-specific replacements
 
 | File to deliver | Use | Art direction | Crop / export |
 | --- | --- | --- | --- |
@@ -32,7 +36,7 @@ case. Export 1200×900 WebP under `assets/evidence/`; avoid legible personal dat
 
 ## Integration rule
 
-Until a supplied file exists, the interface must show an intentional blank panel
+For story-specific imagery that is not present in the supplied academy sheets, the interface must show an intentional blank panel
 with **Missing image** and the asset title rather than generating unrelated
 cartoon artwork. New assets should be reviewed at menu, card, modal, and mobile
 sizes before replacing a blank.
