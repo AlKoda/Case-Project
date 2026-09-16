@@ -104,6 +104,33 @@ body.ar .card .cstatus{font-family:var(--arf);font-size:11px}
 .card .cstatus.seen{color:var(--green)}
 body.ar .card-inner{direction:rtl;text-align:right}
 
+/* Cards use a shared visual grammar, but each kind answers a different question.
+   Portraits identify people; evidence foregrounds its signal and time; locations
+   orient the player in the case. This keeps the board economical while making
+   relationships legible at a glance. */
+.card-topline{display:flex;align-items:center;justify-content:space-between;gap:7px;
+  min-height:23px;padding:8px 11px 0;color:var(--muted);font-family:var(--type);font-size:9px;letter-spacing:.11em}
+body.ar .card-topline{font-family:var(--arf);font-weight:700;letter-spacing:0;direction:rtl}
+.kind-mark{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.kind-mark i{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 0 2px rgba(0,0,0,.07)}
+.card-rel{display:none;align-items:center;justify-content:center;min-width:20px;height:18px;padding:0 5px;
+  background:var(--ink);color:#fff;font-family:var(--sans);font-size:10px;font-weight:700;letter-spacing:0}
+.card.has-rel .card-rel{display:inline-flex}
+.card.k-suspect .kind-mark{color:var(--red)}
+.card.k-witness .kind-mark{color:#3E7FB0}
+.card.k-evidence .kind-mark{color:#9A6914}
+.card.k-evidence{width:184px;background:#F7F0DF}
+.card.k-evidence .card-inner{padding:0 12px 12px}
+.card.k-evidence .thumb{aspect-ratio:1.55;margin:0 0 9px;border-width:1px;background:#fff}
+.card.k-evidence .cname{font-family:var(--type);font-size:13px;font-weight:400;line-height:1.25}
+body.ar .card.k-evidence .cname{font-family:var(--arf);font-weight:700;font-size:13px}
+.evidence-meta{display:flex;align-items:center;justify-content:space-between;gap:7px;margin-top:6px;
+  padding-top:6px;border-top:1px dashed #D5C7A7;color:var(--muted);font-size:10px;line-height:1.2}
+.evidence-meta .etime{font-family:var(--type);color:var(--blue);font-size:11px;font-variant-numeric:tabular-nums}
+body.ar .evidence-meta .etime{font-family:var(--arf);font-weight:600}
+.evidence-meta .efile{font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.card.k-evidence .cstatus{margin-top:7px;padding-top:6px}
+
 /* scene card */
 .scene-card{position:absolute;width:280px;background:var(--paper);border:none;padding:0 0 12px;box-shadow:0 7px 16px rgba(0,0,0,.38);cursor:grab;touch-action:none;z-index:10;font-family:inherit;color:var(--ink);text-align:start}
 .scene-card.dragging{cursor:grabbing;z-index:22}
@@ -113,6 +140,9 @@ body.ar .card-inner{direction:rtl;text-align:right}
 .scene-card p{margin:9px 14px 0;font-family:var(--type);font-size:11.5px;line-height:1.5;color:var(--muted);pointer-events:none}
 body.ar .scene-card p{font-family:var(--arf);font-size:12px;direction:rtl;text-align:right}
 .scene-card .open-tag{display:block;margin:9px 14px 0;font-size:12px;font-weight:600;color:var(--red);pointer-events:none}
+.scene-card .location-kicker{display:flex;align-items:center;gap:6px;margin:12px 14px 0;color:var(--blue);font-family:var(--type);font-size:9px;letter-spacing:.12em}
+.scene-card .location-kicker::before{content:"";width:7px;height:7px;border:1.5px solid currentColor;transform:rotate(45deg)}
+body.ar .scene-card .location-kicker{font-family:var(--arf);font-size:10px;font-weight:700;letter-spacing:0;direction:rtl}
 
 /* ---------- overlay / panel ---------- */
 .overlay{position:fixed;inset:0;z-index:60;background:rgba(15,10,4,.74);display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .18s ease}
@@ -2176,6 +2206,27 @@ scroller.addEventListener("wheel", function(e){
 }, {passive:false});
 
 /* ========== BOARD ========== */
+function cardKindLabel(kind){
+  var labels = {
+    suspect:{en:"SUSPECT", ar:"مشتبه به"},
+    witness:{en:"WITNESS", ar:"شاهد"},
+    evidence:{en:"EVIDENCE", ar:"دليل"}
+  };
+  return T(labels[kind]);
+}
+function relationshipCount(key){
+  return state.conns.reduce(function(total, conn){
+    return total + (conn.a===key || conn.b===key ? 1 : 0);
+  }, 0);
+}
+function refreshRelationshipChips(){
+  Array.prototype.forEach.call(board.querySelectorAll(".card[data-key]"), function(card){
+    var count = relationshipCount(card.dataset.key);
+    card.classList.toggle("has-rel", count > 0);
+    var chip = card.querySelector(".card-rel");
+    if(chip){ chip.textContent = count; chip.setAttribute("aria-label", count+" connections"); }
+  });
+}
 function buildBoard(){
   if(dragActive){ pendingBuild = true; return; }
   Array.prototype.forEach.call(
@@ -2217,6 +2268,7 @@ function buildBoard(){
   sc.style.left = state.pos.__scene.x+"px"; sc.style.top = state.pos.__scene.y+"px";
   var doneN = Object.keys(state.examined).length;
   sc.innerHTML = '<span class="tape"></span><span class="mini">'+CASE.sceneMini+'</span>'+
+    '<span class="location-kicker">'+(state.lang==="ar" ? "الموقع" : "LOCATION")+'</span>'+
     '<p>'+T(CASE.sceneCap)+'</p><span class="open-tag">'+T(UI.sceneOpen)+' &middot; '+num(doneN)+'/'+num(HOTSPOTS.length)+'</span>';
   board.appendChild(sc);
   attachDrag(sc, "__scene");
@@ -2242,16 +2294,25 @@ function buildBoard(){
            if(state.prints[key]) txt += " \u00b7 " + T(UI.printTaken); }
     var nc = state.prompts ? newCount(key) : 0;
     var st = state.status[key];
+    var rels = relationshipCount(key);
+    var evidenceMeta = entry.kind === "evidence"
+      ? '<span class="evidence-meta"><span class="efile">'+(state.lang==="ar" ? "ملف" : "CASE FILE")+'</span>'+
+        (d.time ? '<span class="etime">'+d.time+'</span>' : '<span class="etime">&mdash;</span>')+'</span>'
+      : '';
+    el.classList.toggle("has-rel", rels > 0);
     el.innerHTML = '<span class="pin'+pinClass+'"></span>'+
       (nc ? '<span class="newtag">'+T(UI.newTag)+'</span>' : '')+
       (d.englishOnly ? '<span class="enbadge">EN</span>' : '')+
       (st ? '<span class="stamp" style="color:'+STATUS_STYLE[st]+';border-color:'+STATUS_STYLE[st]+'">'+
             T(st==="suspect"?UI.stSus:UI.stClear)+'</span>' : '')+
       (st ? '<span class="ribbon" style="background:'+STATUS_STYLE[st]+'"></span>' : '')+
+      '<span class="card-topline"><span class="kind-mark"><i></i>'+cardKindLabel(entry.kind)+'</span>'+
+      '<span class="card-rel" aria-label="'+rels+' connections">'+rels+'</span></span>'+
       '<span class="card-inner">'+
       '<span class="thumb">'+ART[key]+'</span>'+
       '<p class="cname"'+(d.englishOnly?' dir="ltr"':'')+'>'+T(d.name)+'</p>'+
       (d.role?'<p class="crole">'+T(d.role)+'</p>':'')+
+      evidenceMeta+
       '<p class="cstatus'+(seen?' seen':'')+'">'+txt+'</p></span>';
     if(!state.settled[key] && state.started){
       el.classList.add("settle");
@@ -2402,6 +2463,7 @@ function cutConn(i, silent){
   var c = state.conns[i];
   state.conns.splice(i,1);
   state.undo.push({type:"cut", conn:c, at:i});
+  refreshRelationshipChips();
   drawYarn();
   if(!silent) toast(UI.stringCut, connName(c), false);
 }
@@ -2426,6 +2488,7 @@ function addConn(a,b,silent){
   state.conns.push(nc);
   setTimeout(function(){ nc.fresh=false; }, 420);
   state.undo.push({type:"add"});
+  refreshRelationshipChips();
   drawYarn();
   if(!silent) toast(UI.stringRun, connName({a:a,b:b}), false);
   if(!silent){
