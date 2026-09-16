@@ -121,7 +121,13 @@ def check_case_data() -> None:
     if result.returncode:
         print(result.stdout.strip(), file=sys.stderr)
         fail(result.stderr.strip() or "case data check failed")
-    print(f"  case:     {result.stdout.strip().removeprefix('OK: ')}")
+    lines = [line for line in result.stdout.strip().splitlines() if line.strip()]
+    summary = next((line for line in lines if line.startswith("OK:")), "")
+    print(f"  case:     {summary.removeprefix('OK: ')}")
+    # Notes are things worth knowing that are not failures, e.g. art still to come.
+    for line in lines:
+        if line.strip().startswith("note:"):
+            print(f"            {line.strip()}")
 
 
 def main() -> None:

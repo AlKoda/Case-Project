@@ -20,7 +20,17 @@ import { MOODS } from "../src/data/manifest.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const problems = [];
+const notes = [];
+
+/** A real defect: the game will misbehave. */
 const fail = (where, message) => problems.push(`${where}: ${message}`);
+
+/**
+ * Worth saying, but not a failure. Missing art is the obvious case -- the
+ * loader draws a labelled placeholder, which is a deliberate part of the
+ * design, so a build with art still to come must not fail the check.
+ */
+const note = (where, message) => notes.push(`${where}: ${message}`);
 
 /** One of the candidate files for an asset must exist on disk. */
 function artExists(...candidates) {
@@ -80,7 +90,7 @@ for (const [id, scene] of Object.entries(SCENES)) {
   }
 
   if (scene.background && !artExists(`assets/backgrounds/${scene.background}.png`, `assets/backgrounds/${scene.background}.svg`)) {
-    fail(id, `background "${scene.background}" has no art; a placeholder will be drawn`);
+    note(id, `background "${scene.background}" has no art; a placeholder will be drawn`);
   }
 }
 
@@ -123,14 +133,14 @@ for (const scene of Object.values(SCENES)) {
 for (const id of Object.keys(EXHIBITS)) {
   if (!given.has(id)) fail("EXHIBITS", `"${id}" is never given to the player`);
   if (!artExists(`assets/evidence/${id}.png`, `assets/evidence/${id}.svg`)) {
-    fail("EXHIBITS", `"${id}" has no art; a placeholder will be drawn`);
+    note("EXHIBITS", `"${id}" has no art; a placeholder will be drawn`);
   }
 }
 
 for (const [id, person] of Object.entries(CAST)) {
   if (person.noPortrait) continue;   // deliberately has no art
   if (!artExists(`assets/characters/${id}/neutral.png`, `assets/characters/${id}/neutral.svg`)) {
-    fail("CAST", `"${id}" has no neutral art; a placeholder will be drawn`);
+    note("CAST", `"${id}" has no neutral art; a placeholder will be drawn`);
   }
 }
 
@@ -158,9 +168,12 @@ if (problems.length) {
   process.exit(1);
 }
 
+for (const item of notes) console.log(`  note: ${item}`);
+
 const lines = Object.values(SCENES).reduce((n, s) => n + s.script.filter((x) => x.text != null).length, 0);
 console.log(
   `OK: ${Object.keys(SCENES).length} scenes, ${lines} lines, ${Object.keys(CAST).length} cast, ` +
     `${Object.keys(EXHIBITS).length} exhibits, ${Object.keys(CONTRADICTIONS).length} contradictions, ` +
-    `${SUSPECTS.length} suspects, ${WITNESSES.length} witnesses`,
+    `${SUSPECTS.length} suspects, ${WITNESSES.length} witnesses` +
+    (notes.length ? `, ${notes.length} awaiting art` : ""),
 );

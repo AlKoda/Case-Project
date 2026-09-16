@@ -85,8 +85,17 @@ it with art whose frame sits elsewhere means updating the `CORK` constants).
 no art.
 
 **Exhibits** — `pocket-watch`, `stair-bulb`, `switchboard-log`, `ledger`,
-`shawl-bead`, `umbrella`. These six are still placeholder art recovered from the
-project's previous sprite sheets.
+`shawl-bead`, `umbrella`.
+
+Four carry placeholder art recovered from the project's previous sprite sheets.
+`shawl-bead` and `umbrella` deliberately have none: the closest stand-ins showed
+a red book and a desk lamp, and in a game about identifying evidence a picture
+of the wrong object is worse than no picture. Those two render as drawn
+placeholders until real art arrives, which is honest about being empty.
+
+`python3 ../tools/check_project.py` lists whatever is still awaiting art as a
+note rather than a failure, since a placeholder is a designed outcome and not a
+broken build.
 
 `python3 ../tools/check_project.py` reports anything the manifest wants and
 cannot find.
