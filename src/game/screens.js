@@ -132,27 +132,59 @@ export function hub(root, go) {
 /* --------------------------------------------------------------- accuse */
 
 export function accuse(root, go) {
+  const state = store.get();
+
+  /** How much of a person's account the player has actually taken apart. */
+  const brokenFor = (id) =>
+    state.proven
+      .map((proofId) => CONTRADICTIONS[proofId])
+      .filter((proof) => proof?.subject === id);
+
   const list = el("div", { class: "accuse__row" });
   for (const id of SUSPECTS) {
     const person = CAST[id];
+    const broken = brokenFor(id);
+    const weight = broken.reduce((sum, proof) => sum + proof.weight, 0);
+
     const shot = el("img", { alt: "", class: "accuse__shot" });
-    assets.portrait(id, "cold", person.name).then((url) => { shot.src = url; });
+    assets.bust(id, "cold", person.name).then((url) => { shot.src = url; });
+
     const card = el("button", {
-      class: "accuse__card",
+      class: `accuse__card${broken.length ? " has-proof" : ""}`,
       type: "button",
       onClick: () => {
         store.update({ accusation: id });
         go("verdict");
       },
-    }, shot, el("p", { class: "accuse__name", text: person.name }), el("p", { class: "accuse__role", text: person.role }));
+    },
+      shot,
+      el("p", { class: "accuse__name", text: t(`cast.${id}.name`, person.name) }),
+      el("p", { class: "accuse__role", text: t(`cast.${id}.role`, person.role) }),
+      el("p", {
+        class: "accuse__proof",
+        text: broken.length
+          ? `${broken.length} ${t("accuse.broken", "broken")} \u00b7 ${t("accuse.weight", "weight")} ${weight}`
+          : t("accuse.nothing", "nothing broken"),
+      }),
+    );
     card.style.setProperty("--accent", person.accent);
     list.append(card);
   }
+
+  /* One honest line about how the file reads, without naming anyone. */
+  const strongest = Math.max(0, ...SUSPECTS.map((id) => brokenFor(id).length));
+  const gauge =
+    strongest >= 3
+      ? t("accuse.ready", "Three of one person's statements are in pieces. That is a case.")
+      : strongest > 0
+        ? t("accuse.thin", "You can name somebody on this. Whether it stands up in the morning is another question.")
+        : t("accuse.none", "Nobody's account has been broken yet. This would be a guess with a signature on it.");
 
   root.append(
     el("section", { class: "screen accuse grain" },
       el("h1", { class: "accuse__title", text: t("accuse.title", "Name one.") }),
       el("p", { class: "accuse__lede", text: t("accuse.lede", "Once it is said out loud it is said. The file goes forward with your name on it.") }),
+      el("p", { class: "accuse__gauge", text: gauge }),
       list,
       el("button", {
         class: "btn",
@@ -176,7 +208,7 @@ export function verdict(root, go) {
   const weight = supporting.reduce((sum, p) => sum + p.weight, 0);
 
   const shot = el("img", { alt: "", class: "verdict__shot" });
-  assets.portrait(named, "broken", person.name).then((url) => { shot.src = url; });
+  assets.bust(named, "broken", person.name).then((url) => { shot.src = url; });
 
   root.append(
     el("section", { class: `screen verdict grain ${result.correct ? "is-right" : "is-wrong"}` },
