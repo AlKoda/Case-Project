@@ -236,7 +236,7 @@ export function mountBoard(root, go) {
         }),
       ),
     ),
-    el("div", { class: "board__stage" }, wall, tray),
+    el("div", { class: "board__stage" }, el("div", { class: "board__scroll" }, wall), tray),
   );
 
   root.append(screen);
