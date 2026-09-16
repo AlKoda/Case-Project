@@ -69,10 +69,10 @@ fallback (a missing mood drops to `neutral`, a missing bust drops to the stage
 figure), then a placeholder drawn at runtime. Nothing is ever a broken image, and
 a character needs only `neutral.png` to appear in every scene.
 
-**The art currently in those folders is placeholder art.** It was recovered from
-the previous sprite sheets by `tools/extract_placeholders.py`, which unwraps the
-PNGs that older tooling had base64-encoded inside SVG containers. To replace any
-of it, overwrite the file at the same path — that is the entire process.
+**The art currently in those folders is placeholder art**, recovered from the
+project's previous sprite sheets. To replace any of it, overwrite the file at the
+same path — that is the entire process. [`assets/README.md`](assets/README.md)
+lists every name in use.
 
 Moods a script may ask for are listed in the manifest: `neutral`, `tense`,
 `evasive`, `broken`, `cold`.
