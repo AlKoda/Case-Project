@@ -98,7 +98,7 @@ file in the right place:
 ```
 assets/backgrounds/<scene>.png          1920 x 1080
 assets/characters/<person>/<mood>.png    900 x 1400, transparent
-assets/characters/<person>/bust.png      512 x  512, head and shoulders (optional)
+assets/characters/<person>/bust-<mood>.png 512 x 512, head and shoulders
 assets/evidence/<exhibit>.png            512 x  512, transparent
 ```
 

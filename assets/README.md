@@ -9,7 +9,7 @@ to change.
 ```
 backgrounds/<scene>.png             1920 x 1080   the room behind the scene
 characters/<person>/<mood>.png       900 x 1400   transparent, full figure
-characters/<person>/bust.png         512 x  512   head and shoulders
+characters/<person>/bust-<mood>.png   512 x  512   head and shoulders
 evidence/<exhibit>.png               512 x  512   transparent, shot straight on
 ```
 
@@ -19,8 +19,9 @@ For each image the loader tries, in order:
 
 1. the `.png` at that exact name — your art
 2. the `.svg` at that exact name — if you prefer vectors
-3. a neighbouring fallback — a missing mood drops to `neutral`, a missing bust
-   drops to the full figure
+3. a neighbouring fallback — a missing mood drops to `neutral`, a missing
+   per-mood bust drops to `bust-neutral.png`, then `bust.png`, then to the full
+   figure cropped at the head
 4. a placeholder drawn on a canvas at runtime
 
 Nothing is ever a broken image, and a character needs only `neutral.png` to
@@ -46,10 +47,16 @@ by the same factor and aligned bottom-centre, which is what stops a character
 jumping around the stage when their expression changes. `--colors` (default 128)
 quantises the palette — flat art loses nothing and shrinks about 85%.
 
-`--bust` also writes the square head-and-shoulders crop. It finds the neck by
-looking for where the silhouette widens into the shoulders, which is right for
-most figures and wrong for the occasional one with wide hair; when it misses,
-`--bust-height 0.65` sets the crop explicitly as a fraction of the figure.
+`--bust` also writes a square head-and-shoulders crop **per mood**, so the
+portrait in the corner of the speech box changes expression along with the
+figure on stage. The crop box is worked out once from the neutral figure and
+applied to every mood — recomputing it each time would shift the frame by a few
+pixels whenever the expression changed, which reads as the portrait twitching.
+
+It finds the neck by looking for where the silhouette widens into the
+shoulders, which is right for most figures and wrong for the occasional one
+with wide hair; when it misses, `--bust-height 0.65` sets the crop explicitly as
+a fraction of the figure.
 
 The art currently checked in was produced with:
 

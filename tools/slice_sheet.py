@@ -174,12 +174,14 @@ def main() -> None:
     target = ROOT / args.out / args.person
     target.mkdir(parents=True, exist_ok=True)
 
+    canvases = []
     for mood, cut in zip(args.moods, cuts):
         # One scale factor for every panel, so the character keeps their size
         # and only the face changes between moods.
         sized = cut.resize((max(1, int(cut.width * scale)), max(1, int(cut.height * scale))), Image.LANCZOS)
         canvas = Image.new("RGBA", (canvas_w, canvas_h), (0, 0, 0, 0))
         canvas.paste(sized, ((canvas_w - sized.width) // 2, canvas_h - sized.height), sized)
+        canvases.append(canvas)
         if args.colors:
             # Flat, posterised art has far fewer than 128 real colours, so a
             # palette costs nothing visible and saves most of the file size.
@@ -189,20 +191,51 @@ def main() -> None:
         print(f"  wrote {out.relative_to(ROOT)}  {canvas_w}x{canvas_h}  {out.stat().st_size // 1024} KB")
 
     if args.bust:
-        write_bust(cuts[0], target, args.colors, args.bust_height)
+        write_busts(canvases, args.moods, target, args.colors, args.bust_height)
 
 
-def write_bust(figure: Image.Image, target: Path, colors: int, override: float = 0) -> None:
-    """Crop a square head-and-shoulders portrait from a full-length figure.
+def write_busts(
+    figures: list[Image.Image],
+    moods: list[str],
+    target: Path,
+    colors: int,
+    override: float = 0,
+) -> None:
+    """Write one square head-and-shoulders portrait per mood, plus a default.
 
     The speech box and the board cards both want a face, and cropping one out
     of a full-length figure by guessing a percentage lands on hair. Instead the
     crop is anchored to the real top of the artwork and sized from the figure's
     own width, which tracks how tightly the character is drawn.
+
+    The crop box is computed once, from the neutral figure, and applied to every
+    mood. Recomputing it per mood would let the frame shift by a few pixels each
+    time the expression changed, which reads as the portrait twitching.
     """
+
+    box = bust_box(figures[0], override)
+    if box is None:
+        return
+
+    for mood, figure in zip(moods, figures):
+        crop = figure.crop(box).resize((512, 512), Image.LANCZOS)
+        if colors:
+            crop = crop.quantize(colors=colors, method=Image.FASTOCTREE)
+        out = target / f"bust-{mood}.png"
+        crop.save(out, optimize=True)
+        print(f"  wrote {out.relative_to(ROOT)}  512x512  {out.stat().st_size // 1024} KB")
+
+    # A plain bust.png is what the manifest falls back to when a mood has none.
+    default = target / "bust.png"
+    default.write_bytes((target / f"bust-{moods[0]}.png").read_bytes())
+    print(f"  wrote {default.relative_to(ROOT)}  512x512  (copy of {moods[0]})")
+
+
+def bust_box(figure: Image.Image, override: float = 0) -> tuple[int, int, int, int] | None:
+    """Work out where a character's head and shoulders are."""
     box = figure.getbbox()
     if not box:
-        return
+        return None
     left, top, right, bottom = box
 
     # Row-by-row content width. A head is markedly narrower than the shoulders
@@ -238,18 +271,12 @@ def write_bust(figure: Image.Image, target: Path, colors: int, override: float =
         else (left + right) // 2
     )
 
-    crop = figure.crop((
+    return (
         max(0, centre - size // 2),
         top,
         min(figure.width, centre + size // 2),
         min(figure.height, top + size),
-    ))
-    crop = crop.resize((512, 512), Image.LANCZOS)
-    if colors:
-        crop = crop.quantize(colors=colors, method=Image.FASTOCTREE)
-    out = target / "bust.png"
-    crop.save(out, optimize=True)
-    print(f"  wrote {out.relative_to(ROOT)}  512x512  {out.stat().st_size // 1024} KB")
+    )
 
 
 if __name__ == "__main__":
