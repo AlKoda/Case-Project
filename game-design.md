@@ -53,9 +53,10 @@ Three rules keep it honest:
 * **Nothing on it is scored.** The game never checks whether a string is
   "correct". A board that grades you is a puzzle wearing a board's clothes, and
   it stops being a place to think.
-* **Nothing is destroyed.** Taking a card down returns it to the tray; clearing
-  the wall returns everything. The player should never hesitate over a
-  rearrangement.
+* **Nothing is destroyed.** Taking a card down returns it to the tray, clearing
+  the wall returns everything, and undo covers the rest. The player should never
+  hesitate over a rearrangement, and "Clear wall" should not be a button nobody
+  dares press.
 * **The timeline is the argument.** Exhibits that fix a moment carry their time
   on their face. Laid out in order they make the twenty-seven minutes between
   the watch and the pronouncement into a visible hole, which is the deduction
@@ -75,10 +76,18 @@ wages, an illegal book under a counter, eleven private minutes and a letter.
 Breaking their accounts is not wasted effort: each one removes a candidate and,
 in two cases, hands over the exhibit that breaks the killer.
 
-Witnesses are questioned but never accused. They exist to fix the shape of the
-night — when the victim left the desk, when voices were heard on the stairs,
-when the door went — so the timeline can be assembled from testimony as well as
-from objects.
+Witnesses are questioned but never accused, and they are written differently
+from the suspects. A suspect's interview is built around an account that cannot
+survive the evidence. A witness is honest, so what they hold back is detail
+rather than guilt, and presenting an exhibit opens a better answer instead of
+breaking a story. The same press mechanic carries both: a press with no
+contradiction attached simply unlocks more.
+
+Between them the four fix the shape of the night — when the victim left the
+desk, when voices were heard on the stairs, when the door went — so the timeline
+can be assembled from testimony as well as from objects. Testimony also feeds
+back: question the porter before the doctor and the accusation about the dark
+staircase is specific and quoted rather than general.
 
 The killer's three contradictions are load-bearing and build on each other:
 
@@ -122,6 +131,22 @@ game stays fully playable.
 * **The data is checked.** `tools/check_scenes.mjs` walks every script for dead
   jumps, unobtainable exhibits and unprovable contradictions, because those fail
   in front of a player rather than at load time.
+
+## Testing
+
+Two layers, because they fail differently.
+
+`tools/check_project.py` checks that the build is *coherent* — dead jumps,
+exhibits nobody can obtain, contradictions no press can prove, characters who
+speak before walking on. Those are authoring mistakes, and they are cheap to
+catch before they reach a browser.
+
+`tools/playtest.mjs` checks that it is *playable*, by driving a real browser
+from the title screen to a verdict and through the wall's own interactions. The
+bugs that actually reached the screen were all of this kind: a lost import that
+blanked a screen, a tray that collapsed to one column, cards hanging off the
+cork on a narrow display, a scene of the crime a player could strand themselves
+in. Static checks would not have found any of them.
 
 ## Accessibility
 
