@@ -1,21 +1,24 @@
 # Supplied investigation sprites
 
-The two supplied 1536×1024 sheets are integrated through the merge-safe,
-text-only [`sprites.js`](sprites.js) data-URI bundle. It contains the 21 crops
-used by the running game: twelve cast portraits, four control icons, two card
-backs, a named menu card, and two paper surfaces. Keeping the runtime bundle as
-JavaScript avoids binary-file patches that GitHub's patch importer cannot apply.
+The two supplied 1536×1024 police-academy sprite sheets have been cut into
+purpose-specific SVG image containers instead of being displayed as whole contact sheets.
 
-`tools/extract_assets.py` remains the canonical crop map. Given
-`named-characters.png` and `sprite-sheet.png`, it also exports the complete set
-of 105 PNG crops locally:
+- `locations/` — six bordered location cards and six compact wide variants.
+- `rooms/` — clean room artwork with the source card labels removed.
+- `props/` — isolated environmental props.
+- `icons/` — compact navigation/category symbols.
+- `ui/` — reusable paper and evidence-board surfaces.
 
-- 18 label-free portraits and ten named reference cards;
-- 18 complete blank-label person cards and six card backs;
-- 36 circular interface/status icons;
-- 15 anonymous silhouette tokens; and
-- a paper stack and ruled notebook panel.
+The game uses the evidence room as menu atmosphere, the wide interrogation and
+office scenes behind interactive search overlays, and full scene art on case
+selection. Text and controls remain HTML so they stay accessible and bilingual.
 
-Generated PNGs are intentionally gitignored. The extractor finishes by rebuilding
-`assets/sprites.js` from the exact subset used at runtime, so the committed file
-is deterministic and reviewable as text.
+To reproduce all crops:
+
+```sh
+python3 -m pip install -r tools/requirements-assets.txt
+python3 tools/extract_assets.py --source source-assets --output assets
+```
+
+The extraction map in `tools/extract_assets.py` uses hand-inspected,
+inclusive-exclusive rectangles; it intentionally does not assume an equal grid.

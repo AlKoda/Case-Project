@@ -142,10 +142,11 @@ body.ar .evidence-meta .etime{font-family:var(--arf);font-weight:600}
 .scene-card.dragging{cursor:grabbing;z-index:22}
 .scene-card .tape{position:absolute;top:-11px;left:50%;transform:translateX(-50%) rotate(-2deg);width:80px;height:22px;background:rgba(238,226,190,.8);border-inline:1px dashed rgba(0,0,0,.12);z-index:3}
 .scene-card .mini{display:block;width:100%;pointer-events:none}
-.scene-card .mini svg{display:block;width:100%;height:auto}
+.scene-card .mini svg,.scene-card .mini img{display:block;width:100%;height:auto;aspect-ratio:15/8;object-fit:cover}
 .scene-card p{margin:9px 14px 0;font-family:var(--type);font-size:11.5px;line-height:1.5;color:var(--muted);pointer-events:none}
 body.ar .scene-card p{font-family:var(--arf);font-size:12px;direction:rtl;text-align:right}
 .scene-card .open-tag{display:block;margin:9px 14px 0;font-size:12px;font-weight:600;color:var(--red);pointer-events:none}
+.scene-card .location-kicker img{width:24px;height:18px;object-fit:cover;filter:saturate(.8)}
 .scene-card .location-kicker{display:flex;align-items:center;gap:6px;margin:12px 14px 0;color:var(--blue);font-family:var(--type);font-size:9px;letter-spacing:.12em}
 .scene-card .location-kicker::before{content:"";width:7px;height:7px;border:1.5px solid currentColor;transform:rotate(45deg)}
 body.ar .scene-card .location-kicker{font-family:var(--arf);font-size:10px;font-weight:700;letter-spacing:0;direction:rtl}
@@ -219,7 +220,7 @@ body.ar .matchrow .res{font-family:var(--arf);font-weight:600;font-size:12.5px}
 
 /* ---------- crime scene ---------- */
 .scene-wrap{position:relative;background:#11161C;border:1px solid #D9CBAA}
-.scene-wrap svg{display:block;width:100%;height:auto}
+.scene-wrap svg{display:block;width:100%;height:auto}.scene-photo{filter:saturate(.8) contrast(1.04);opacity:.82}
 .hot{cursor:pointer}
 .hot .ring{fill:rgba(232,179,58,.14);stroke:#E8B33A;stroke-width:2.5;stroke-dasharray:5 4}
 .scene-wrap.glow .hot .ring{animation:pulse 1.8s ease-in-out infinite}
@@ -315,8 +316,7 @@ body.ar .cs-head p{font-family:var(--arf)}
 .cs-card:nth-of-type(2){animation-delay:90ms}
 .cs-card:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(0,0,0,.5)}
 .cs-thumb{width:100%;aspect-ratio:600/200;overflow:hidden;border-bottom:3px solid var(--paper2)}
-.cs-thumb svg{display:block;width:100%;height:100%}
-.cs-thumb img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 46%;filter:brightness(.76) saturate(.82)}
+.cs-thumb svg,.cs-thumb img{display:block;width:100%;height:100%;object-fit:cover}
 .cs-body{padding:16px 18px 18px;position:relative}
 body.ar .cs-body{direction:rtl;text-align:right}
 .cs-tag{
@@ -348,8 +348,9 @@ body.ar .cs-teaser{font-size:13.5px;line-height:1.8}
   linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px);background-size:100% 100%,100% 4px}
 #academy-splash.leaving{opacity:0;transform:scale(1.015);pointer-events:none}
 .menu-visual{position:relative;min-height:100vh;background:
-  linear-gradient(90deg,rgba(7,11,14,.08),#090e12 95%),
-  var(--sprite-menu-captain) center 22%/cover no-repeat,#11191e;
+  linear-gradient(90deg,rgba(7,11,14,.05),#090e12 98%),
+  linear-gradient(0deg,rgba(4,8,11,.42),rgba(4,8,11,.12)),
+  url("assets/rooms/evidence-room.svg") center/cover no-repeat,#11191e;
   border-right:1px solid rgba(182,159,105,.2);overflow:hidden}
 .menu-visual::before{content:"";position:absolute;inset:8% 10%;border:1px solid rgba(182,159,105,.18);background:
   linear-gradient(135deg,transparent 46%,rgba(182,159,105,.06) 46.2%,rgba(182,159,105,.06) 46.8%,transparent 47%),
@@ -659,7 +660,6 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
 <div id="academy-splash">
   <div class="menu-visual" aria-hidden="true">
     <span class="menu-case-mark">CASEWORK / 01</span>
-    <div class="menu-placeholder"><span>Missing image<br>Investigations archive key art</span></div>
   </div>
   <main class="splash-frame" aria-labelledby="game-title">
     <p class="menu-kicker">Interactive investigation prototype</p>
@@ -672,7 +672,7 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
       <button class="menu-button" type="button" id="assetlogbtn"><span>Production log</span><small>Asset needs</small></button>
       <button class="menu-button" type="button" id="menulang"><span>العربية / English</span><small>Language</small></button>
     </nav>
-    <div class="menu-meta"><span>Build 0.2</span><span>Two playable cases</span><span>Desktop / touch</span></div>
+    <div class="menu-meta"><img src="assets/icons/academy-crest.svg" alt="" width="38" height="29"><span>Build 0.2</span><span>Two playable cases</span><span>Desktop / touch</span></div>
     <p class="splash-foot">Concept prototype · not an official case record<span class="ar">نموذج مفاهيمي · وليس سجلّ قضية رسمياً</span></p>
   </main>
 </div>
@@ -1064,7 +1064,9 @@ function sceneSVG(){
   var s = '<svg viewBox="0 0 900 480" xmlns="http://www.w3.org/2000/svg">';
   s += '<defs><pattern id="hazardStripes" width="26" height="26" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
        '<rect width="26" height="26" fill="#E8B33A"/><rect width="13" height="26" fill="#1B1405"/></pattern></defs>';
-  s += CASE.roomArt;
+  if(CASE.sceneAsset){
+    s += '<image class="scene-photo" href="'+CASE.sceneAsset+'" x="0" y="0" width="900" height="480" preserveAspectRatio="xMidYMid slice"/>';
+  } else { s += CASE.roomArt; }
   if(CASE.tape){
     s += hazardBand(616, 26, 868, 246, 22, T({en:"CRIME SCENE \u2014 DO NOT CROSS", ar:"مسرح جريمة \u2013 ممنوع التجاوز"}));
     s += hazardBand(868, 26, 616, 246, 22, T({en:"CRIME SCENE \u2014 DO NOT CROSS", ar:"مسرح جريمة \u2013 ممنوع التجاوز"}));
@@ -2118,6 +2120,7 @@ var CASE1 = {
   suspects:SUSPECTS, witnesses:WITNESSES, evidence:EVIDENCE, hotspots:HOTSPOTS,
   leads:LEADS, verdicts:VERDICTS, correct:ACCUSE_CORRECT, keyExhibits:KEY_EXHIBITS,
   par:34, layout:LAYOUT, roomArt:CASE1_ROOMART, sceneMini:SCENE_MINI,
+  sceneAsset:"assets/locations/interrogation-room-wide.svg", selectAsset:"assets/locations/hallway.svg", sceneIcon:"assets/icons/door.svg",
   title:UI.caseTitle, brief:[UI.l1, UI.l2, UI.l3],
   sceneCap:UI.sceneCap, sceneTitle:UI.sceneTitle,
   pillars:[
@@ -2143,6 +2146,7 @@ var CASE2 = {
   suspects:SUSPECTS2, witnesses:WITNESSES2, evidence:EVIDENCE2, hotspots:HOTSPOTS2,
   leads:LEADS2, verdicts:VERDICTS2, correct:ACCUSE_CORRECT2, keyExhibits:KEY_EXHIBITS2,
   par:PAR2, layout:LAYOUT2, roomArt:CASE2_ROOMART, sceneMini:SCENE_MINI2,
+  sceneAsset:"assets/locations/office-wide.svg", selectAsset:"assets/locations/office.svg", sceneIcon:"assets/icons/archive.svg",
   title:{en:"Case 2027/0212 \u2014 Silence at Villa Al-Nawras", ar:"القضية \u0662\u0660\u0662\u0667/\u0660\u0662\u0661\u0662 \u2014 صمتٌ في فيلا النورس"},
   brief:[
     {en:"Villa Al-Nawras, the Al-Khuwair coast. 10:40pm.", ar:"فيلا النورس، ساحل الخوير. الساعة ١٠:٤٠ مساءً."},
@@ -2356,8 +2360,8 @@ function buildBoard(){
   sc.className = "scene-card"; sc.dataset.key = "__scene";
   sc.style.left = state.pos.__scene.x+"px"; sc.style.top = state.pos.__scene.y+"px";
   var doneN = Object.keys(state.examined).length;
-  sc.innerHTML = '<span class="tape"></span><span class="mini">'+CASE.sceneMini+'</span>'+
-    '<span class="location-kicker">'+(state.lang==="ar" ? "الموقع" : "LOCATION")+'</span>'+
+  sc.innerHTML = '<span class="tape"></span><span class="mini"><img src="'+CASE.sceneAsset+'" alt="" draggable="false"></span>'+
+    '<span class="location-kicker"><img src="'+CASE.sceneIcon+'" alt="">'+(state.lang==="ar" ? "الموقع" : "LOCATION")+'</span>'+
     '<p>'+T(CASE.sceneCap)+'</p><span class="open-tag">'+T(UI.sceneOpen)+' &middot; '+num(doneN)+'/'+num(HOTSPOTS.length)+'</span>';
   board.appendChild(sc);
   attachDrag(sc, "__scene");
@@ -3206,7 +3210,7 @@ function applyLang(){
   document.getElementById("hint-text").textContent= T(UI.hintLink);
   document.getElementById("hint-done").textContent= T(UI.done);
   if(document.getElementById("intro")){
-    document.getElementById("intro-art").innerHTML = CASE.sceneMini;
+    document.getElementById("intro-art").innerHTML = '<img src="'+CASE.sceneAsset+'" alt="" style="display:block;width:100%;aspect-ratio:15/8;object-fit:cover">';
     document.getElementById("i-stamp").textContent = T(UI.stamp);
     document.getElementById("i-title").textContent = T(CASE.title);
     document.getElementById("i-l1").textContent = T(CASE.brief[0]);
@@ -3233,7 +3237,7 @@ document.getElementById("langbtn").onclick = toggleLang;
 document.getElementById("introlang").onclick = toggleLang;
 document.getElementById("menulang").onclick = toggleLang;
 document.getElementById("assetlogbtn").onclick = function(){
-  panel.innerHTML = '<button class="close-x" data-close>&times;</button><div class="panel-head"><h2 style="margin:0">Production asset log</h2></div><div class="panel-body"><p class="statement">The demo deliberately uses labeled blanks where final art is still needed.</p><div class="topics"><div class="response"><strong>Menu key art</strong><br>Moody, realistic Muscat investigations archive: evidence shelves, case folders and restrained cinematic lighting. No people, logos or text.</div><div class="response"><strong>Case cover images</strong><br>One wide establishing image per case: the Muscat Grand hotel suite and Villa Al-Nawras study, photographed after the incident with no graphic violence.</div><div class="response"><strong>Characters and evidence</strong><br>Consistent documentary portraits plus isolated, neutral-lit evidence photographs. See <code>assets/ASSET_LOG.md</code> for sizes and filenames.</div></div></div>';
+  panel.innerHTML = '<button class="close-x" data-close>&times;</button><div class="panel-head"><h2 style="margin:0">Production asset log</h2></div><div class="panel-body"><p class="statement">The supplied police-academy sprite sheets are now cut into reusable rooms, location cards, props, UI surfaces, tokens, and icons.</p><div class="topics"><div class="response"><strong>Menu key art</strong><br>Moody, realistic Muscat investigations archive: evidence shelves, case folders and restrained cinematic lighting. No people, logos or text.</div><div class="response"><strong>Case cover images</strong><br>One wide establishing image per case: the Muscat Grand hotel suite and Villa Al-Nawras study, photographed after the incident with no graphic violence.</div><div class="response"><strong>Characters and evidence</strong><br>Consistent documentary portraits plus isolated, neutral-lit evidence photographs. See <code>assets/ASSET_LOG.md</code> for sizes and filenames.</div></div></div>';
   panel.querySelector('[data-close]').onclick = closePanel;
   showOverlay();
 };
@@ -3255,7 +3259,7 @@ function renderCaseSelect(){
     var c = CASES[id];
     var tagCls = c.tape ? "homicide" : "theft";
     return '<button class="cs-card" data-case="'+id+'">'+
-      '<span class="cs-thumb"><img src="'+CASE_SPRITES['card-back-'+(c.tape?'compass':'red')]+'" alt=""></span>'+
+      '<span class="cs-thumb"><img src="'+c.selectAsset+'" alt=""></span>'+
       '<span class="cs-body"><span class="cs-tag '+tagCls+'">'+T(c.select.tag)+'</span>'+
       '<p class="cs-title">'+T(c.title)+'</p>'+
       '<p class="cs-teaser">'+T(c.select.teaser)+'</p></span></button>';

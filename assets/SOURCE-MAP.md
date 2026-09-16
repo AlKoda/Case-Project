@@ -1,33 +1,18 @@
-# Supplied sheet extraction map
+# Source sheet extraction map
 
-Both source sheets are 1536×1024 PNG files. Coordinates below are
-inclusive-exclusive (`left, top, right, bottom`). `tools/extract_assets.py` is
-the canonical, executable map.
+The untracked supplied masters are expected in `source-assets/` at 1536×1024. Exact
+inclusive-exclusive crop coordinates are the `SHEETS` table in
+`tools/extract_assets.py`, which is the canonical, executable source map.
 
-## Named character sheet (`named-characters.png` / `image_1.png`)
+## `locations.svg`
 
-Ten complete cards are cut using their irregular hand-inspected edges into
-`characters/reference/`: five columns at approximately x=22, 327, 628, 929,
-1230 and two rows at y=26 and y=514. The exact ten rectangles and filenames
-are in the script's `NAMED` mapping. These cards retain their printed names and
-roles, so the game does not misidentify them as its separate playable cast.
+The six large bordered cards are exported to `assets/locations/`: academy,
+interrogation room, office, evidence room, parking lot, and hallway.
 
-## Component sheet (`sprite-sheet.png` / `image_2.png`)
+## `location-atlas.svg`
 
-| Region | Exports | Use |
-|---|---:|---|
-| x=18–1090, y=15–814 | 18 portrait crops | Playable suspect and witness art |
-| x=18–1090, y=15–814 | 18 complete person cards | Reusable blank-label card sprites |
-| x=1111–1515, y=20–477 | 36 icons | Search, evidence, people, status, time, warning, and other UI symbols |
-| x=1104–1520, y=531–829 | 15 silhouettes | Anonymous/hidden identity tokens |
-| x=22–926, y=834–999 | 6 card backs | Case picker and reusable deck art |
-| 950,835,1201,1004 | 1 paper stack | Main-menu archive dressing |
-| 1217,848,1510,1007 | 1 notebook page | Dialogue and notebook surface |
-
-All PNG outputs are local/generated artifacts; the committed `sprites.js` bundle embeds the 21 crops used by the game as text data URIs.
-
-The component sheet contains no room scenes. No card, icon, or portrait has
-been mislabeled as a room; the game's existing interactive room diagrams remain
-in place. Text and button labels remain HTML for accessibility, translation,
-and responsive layout, while the supplied paper and portrait sprites provide
-the visual surfaces.
+The top-row circles yield six location tokens; the second row yields six wide
+location thumbnails. Individually framed pieces lower on the sheet yield the
+paper panel, evidence board, security camera, archive box, evidence bag, desk
+lamp, filing cabinet, plant, academy crest, camera, archive, vehicle, and door
+icons. Decorative fragments and duplicate isometric rooms are not exported.
