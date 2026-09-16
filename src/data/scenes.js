@@ -444,7 +444,18 @@ export const SCENES = {
       { who: "harthy", mood: "cold", text: "Half-turned in its socket. That stairwell was black at half past one and it was black at two-fourteen, and Mrs Al-Lawati went down it by feel." },
       { who: "harthy", text: "You knelt in the pitch dark and saw blood plainly." },
       { who: "sharif", mood: "cold", text: "I — the torch. Al-Kindi had a torch." },
-      { who: "harthy", text: "Al-Kindi came after you called out. He says you told him what he was looking at before he could see it." },
+      {
+        when: (s) => s.flags.kindiTorch,
+        then: [
+          { who: "harthy", text: "Al-Kindi came after you called out, and he has told me what he found. You were on your knees in the pitch dark naming the injuries for him before his torch reached the body." },
+        ],
+      },
+      {
+        when: (s) => !s.flags.kindiTorch,
+        then: [
+          { who: "harthy", text: "Al-Kindi came after you called out. You had already described the scene by the time he got there." },
+        ],
+      },
       { who: "sharif", mood: "cold", text: "…" },
       { text: "The consulting manner is still there. It has simply stopped being attached to anything." },
       { goto: "ask" },
@@ -505,7 +516,221 @@ export const SCENES = {
       { end: true },
     ],
   },
+
+  /* ------------------------------------------------------------------ */
+  /* Witnesses. Shorter than the suspects, and honest -- what they hold back
+   * is detail, not guilt, so presenting an exhibit jogs a memory rather than
+   * breaking an account. */
+
+  "interview:maskari": {
+    id: "interview:maskari",
+    background: "precinct-desk",
+    backgroundName: "Behind the front desk",
+    clock: "04:40",
+    script: [
+      { enter: "maskari", at: "center", mood: "neutral" },
+      { text: "Faisal Al-Maskari is twenty-three and has been standing very straight for four hours, in case standing straight turns out to matter." },
+      { who: "maskari", mood: "neutral", text: "I'll tell you anything. I've been trying to remember it properly all night in case somebody asked and then nobody asked." },
+      { who: "harthy", text: "I'm asking." },
+
+      { label: "ask" },
+      {
+        choice: [
+          { text: "When did you last see Tariq?", goto: "last", when: (s) => !s.flags.maskariLast },
+          { text: "Which way did he go?", goto: "which", when: (s) => s.flags.maskariLast && !s.flags.maskariWhich },
+          { text: "How did he seem?", goto: "seem", when: (s) => s.flags.maskariLast },
+          { text: "Thank you, Mr Al-Maskari.", goto: "done" },
+        ],
+      },
+
+      { label: "last" },
+      { flag: "maskariLast" },
+      { who: "maskari", mood: "neutral", text: "Twenty to two. He put the keys on the desk in front of me and said he would be ten minutes." },
+      { who: "harthy", text: "You're certain of the time." },
+      { who: "maskari", mood: "neutral", text: "The clock behind the desk is the only thing in this hotel that works properly and I look at it roughly four hundred times a night. Twenty to two." },
+      { text: "1:40. Seven minutes before a watch stopped on the bottom tread." },
+      { goto: "ask" },
+
+      { label: "which" },
+      { flag: "maskariWhich" },
+      { who: "maskari", mood: "neutral", text: "The back stairs. The service stairs." },
+      { who: "harthy", text: "Is that usual?" },
+      { who: "maskari", mood: "broken", text: "No. That's the thing I've been sitting here with. The lift was working — it's on the house circuit, it stayed on. He walked past a working lift and took a dark staircase." },
+      { who: "maskari", mood: "neutral", text: "You don't do that unless you're meeting someone who doesn't want to be met in a lobby." },
+      { flag: "tariqWentToMeetSomeone" },
+      { goto: "ask" },
+
+      { label: "seem" },
+      { who: "maskari", mood: "neutral", text: "Pleased. That's the word. He'd been in a mood like a wet week since the spring and tonight he was pleased with himself." },
+      {
+        press: {
+          claim: "He'd been in a foul mood for months, and tonight he was pleased with himself.",
+          accepts: "ledger",
+          hit: "money",
+          miss: "shrug",
+          stand: "shrug",
+        },
+      },
+
+      { label: "money" },
+      { text: "You put Al-Zadjali's book on the desk, open at the settled column." },
+      { who: "maskari", mood: "broken", text: "…That's Sulaiman's. He'd kill me for saying so, but yes — Tariq came back past the desk from the counter about half one, and he had an envelope, and he tapped it on the desk as he went by." },
+      { who: "harthy", text: "Tapped it." },
+      { who: "maskari", mood: "neutral", text: "Like a man who has just won something. I thought it was a horse. I've been thinking since that it wasn't a horse." },
+      { goto: "ask" },
+
+      { label: "shrug" },
+      { who: "maskari", mood: "neutral", text: "I couldn't say what that's about, sir. I only know what I saw from behind a desk." },
+      { goto: "ask" },
+
+      { label: "done" },
+      { who: "maskari", mood: "neutral", text: "Detective — he wasn't a kind man. But he said goodnight to me every night for two years and I'd like whoever did it found." },
+      { exit: "maskari" },
+      { end: true },
+    ],
+  },
+
+  "interview:busaidi": {
+    id: "interview:busaidi",
+    background: "interview-room",
+    backgroundName: "Room 214",
+    clock: "04:55",
+    script: [
+      { enter: "busaidi", at: "center", mood: "neutral" },
+      { text: "Noor Al-Busaidi opens the door of 214 already dressed, already holding a notebook, and looks disappointed that you are not more interesting." },
+      { who: "busaidi", mood: "neutral", text: "Twenty past four. Either the hotel is on fire or somebody is dead, and nobody has smelled smoke." },
+      { who: "harthy", text: "You're taking it well." },
+      { who: "busaidi", mood: "neutral", text: "I write for a living, Detective. I've been taking things well since I was nineteen. Ask." },
+
+      { label: "ask" },
+      {
+        choice: [
+          { text: "Were you awake?", goto: "awake", when: (s) => !s.flags.busaidiAwake },
+          { text: "What did you hear?", goto: "heard", when: (s) => s.flags.busaidiAwake && !s.flags.busaidiHeard },
+          { text: "Anything after that?", goto: "after", when: (s) => s.flags.busaidiHeard },
+          { text: "That's all I need.", goto: "done" },
+        ],
+      },
+
+      { label: "awake" },
+      { flag: "busaidiAwake" },
+      { who: "busaidi", mood: "neutral", text: "Wide. That storm was doing something architectural to the shutters and 214 shares a wall with the service stairs, which is the room they give you when you book late." },
+      { goto: "ask" },
+
+      { label: "heard" },
+      { flag: "busaidiHeard" },
+      { who: "busaidi", mood: "neutral", text: "Two men on the stairs. Not shouting — worse than shouting. The quiet kind, where both of them are being reasonable at each other." },
+      { who: "harthy", text: "When?" },
+      { who: "busaidi", mood: "neutral", text: "A quarter to two, near enough. I'd given up on sleeping and started listening, which is a habit I'd rather not have." },
+      { who: "harthy", text: "Could you make out either voice?" },
+      { who: "busaidi", mood: "neutral", text: "One of them was older and was doing most of the talking. The other one laughed once. And then the older one said something I've been turning over since." },
+      { who: "busaidi", mood: "broken", text: "He said: 'there is no third time.'" },
+      { flag: "noThirdTime" },
+      { goto: "ask" },
+
+      { label: "after" },
+      { who: "harthy", text: "And after that?" },
+      { who: "busaidi", mood: "neutral", text: "Nothing on the stairs. A few minutes later, a telephone — out in the third-floor corridor, not on the stairs. Somebody talking low and fast." },
+      {
+        press: {
+          claim: "A telephone in the third-floor corridor, a few minutes after the voices stopped.",
+          accepts: "switchboard-log",
+          hit: "call",
+          miss: "vague",
+          stand: "vague",
+        },
+      },
+
+      { label: "call" },
+      { text: "You turn Badriya Al-Hinai's notebook round so she can read the line herself." },
+      { who: "busaidi", mood: "broken", text: "One fifty-two. Room three-twelve." },
+      { who: "busaidi", mood: "neutral", text: "Then that's your telephone, and I heard it four minutes after two men stopped being reasonable at each other on a dark staircase." },
+      { who: "harthy", mood: "cold", text: "You'd sign that." },
+      { who: "busaidi", mood: "neutral", text: "I'd print it, Detective, which is a considerably higher standard." },
+      { goto: "ask" },
+
+      { label: "vague" },
+      { who: "busaidi", mood: "neutral", text: "I couldn't tell you whose. A wall is a wall." },
+      { goto: "ask" },
+
+      { label: "done" },
+      { who: "busaidi", mood: "neutral", text: "When this is finished, Detective, I should like fifteen minutes and your name spelled correctly. Not tonight. But I will ask." },
+      { exit: "busaidi" },
+      { end: true },
+    ],
+  },
+
+  "interview:kindi": {
+    id: "interview:kindi",
+    background: "hotel-stairs",
+    backgroundName: "Foot of the service stairs",
+    clock: "05:25",
+    script: [
+      { enter: "kindi", at: "center", mood: "neutral" },
+      { text: "Majid Al-Kindi has been awake for twenty hours and found a body four of them ago, and it is showing in both eyes." },
+      { who: "kindi", mood: "neutral", text: "I've told the day manager, I've told the doctor, and I've told a man from the hotel's insurance who arrived before you did. I'll tell you as well." },
+      { who: "harthy", text: "Tell me slower than you told them." },
+
+      { label: "ask" },
+      {
+        choice: [
+          { text: "What brought you down here?", goto: "down", when: (s) => !s.flags.kindiDown },
+          { text: "What did you find?", goto: "found", when: (s) => s.flags.kindiDown && !s.flags.kindiFound },
+          { text: "About the light on these stairs.", goto: "light", when: (s) => s.flags.kindiFound },
+          { text: "Get some sleep, Mr Al-Kindi.", goto: "done" },
+        ],
+      },
+
+      { label: "down" },
+      { flag: "kindiDown" },
+      { who: "kindi", mood: "neutral", text: "A door. About ten past two, a door went somewhere below me, hard — not a wind door, a hand door." },
+      { who: "kindi", mood: "neutral", text: "I was in the linen room on two. I took the torch off the hook and came down, and the doctor was calling out before I got to the bottom." },
+      { goto: "ask" },
+
+      { label: "found" },
+      { flag: "kindiFound" },
+      { who: "kindi", mood: "broken", text: "The doctor. On his knees beside Mr Al-Rawahi, in the dark, with no torch of his own." },
+      { who: "harthy", text: "In the dark." },
+      { who: "kindi", mood: "broken", text: "Black as the inside of a pocket. And he was telling me what I was looking at before my torch was on it. 'His neck, Majid. The blood, Majid.'" },
+      { who: "kindi", mood: "neutral", text: "I remember thinking he had very good eyes for a man of sixty-one. I have been trying not to think about it since." },
+      { flag: "kindiTorch" },
+      { goto: "ask" },
+
+      { label: "light" },
+      { who: "harthy", text: "That stairwell light. How long has it been out?" },
+      { who: "kindi", mood: "neutral", text: "It hasn't. I change it myself. I changed it a fortnight ago and it has burned every night since, blackout or no blackout — the stair fixtures are on the house circuit, same as the lift." },
+      {
+        press: {
+          claim: "The stairwell light has worked every night for a fortnight.",
+          accepts: "stair-bulb",
+          hit: "turned",
+          miss: "puzzled",
+          stand: "puzzled",
+        },
+      },
+
+      { label: "turned" },
+      { text: "You hold out the bulb. He turns it over twice, the way a man does with something from his own trade." },
+      { who: "kindi", mood: "broken", text: "This isn't blown. Look at it — the filament's whole, the threads are clean. Somebody's given it a half-turn in the socket." },
+      { who: "harthy", text: "Could it work loose on its own?" },
+      { who: "kindi", mood: "neutral", text: "In a wire cage, on a wall, on a staircase nobody runs on? No, sir. Somebody stood on a chair to do that." },
+      { who: "kindi", mood: "broken", text: "…There's a chair in the corridor that isn't where I left it." },
+      { flag: "bulbWasTurned" },
+      { goto: "ask" },
+
+      { label: "puzzled" },
+      { who: "kindi", mood: "neutral", text: "I don't know what that has to do with my lights, sir." },
+      { goto: "ask" },
+
+      { label: "done" },
+      { who: "kindi", mood: "neutral", text: "Detective. If it turns out the dark on these stairs was my fault, I'd want to be told to my face." },
+      { who: "harthy", text: "It wasn't your fault. Somebody made it that way on purpose." },
+      { exit: "kindi" },
+      { end: true },
+    ],
+  },
 };
+
 
 /** Interviews offered on the board, in the order they are most useful. */
 export const INTERVIEWS = [
@@ -513,4 +738,7 @@ export const INTERVIEWS = [
   { id: "interview:zadjali", person: "zadjali", teaser: "Runs a book off the night counter and lied about it before you asked." },
   { id: "interview:hinai", person: "hinai", teaser: "Wrote down every call in the building, unasked, all night." },
   { id: "interview:sharif", person: "sharif", teaser: "Signed the form. Wrote the time. Used to be a doctor." },
+  { id: "interview:maskari", person: "maskari", teaser: "Took the keys off him at twenty to two and watched which way he went." },
+  { id: "interview:busaidi", person: "busaidi", teaser: "Room 214 shares a wall with the service stairs, and she was awake." },
+  { id: "interview:kindi", person: "kindi", teaser: "Carried the only torch. Changes the stairwell bulb himself." },
 ];
