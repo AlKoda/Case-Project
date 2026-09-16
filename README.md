@@ -3,6 +3,9 @@
 A self-contained HTML/CSS/JavaScript investigation game. The site is entirely
 static and does not require Jekyll or another build system.
 
+The intended player loop, story structure, accessibility goals, and technical
+constraints are documented in [`game-design.md`](game-design.md).
+
 ## Run locally
 
 Serve the repository root with any static HTTP server, for example:
