@@ -349,6 +349,37 @@ const scenarios = {
     check("but proves no contradiction against them", (await d.save()).proven.length === 0);
   },
 
+  /** The log holds everything said, and the keyboard drives the stage. */
+  async log(page, base) {
+    const d = driver(page, base);
+    await d.resume();
+    await d.question("Badriya Al-Hinai");
+    await d.until(".vn__choices.is-open");
+
+    const before = await page.locator(".vn__backlog-line").count();
+    check("lines are recorded as they are spoken", before > 0, `${before} lines`);
+
+    await page.locator(".vn__chip", { hasText: "Log" }).click();
+    await d.sleep(350);
+    check("the log opens", await page.locator(".vn__backlog.is-open").isVisible());
+    const named = await page.locator(".vn__backlog-line b").first().textContent();
+    check("the log attributes lines to a speaker", Boolean(named), named);
+
+    await page.keyboard.press("Escape");
+    await d.sleep(300);
+    check("escape closes it", (await page.locator(".vn__backlog.is-open").count()) === 0);
+
+    // Space should advance dialogue exactly like a click.
+    await d.choose("through your night");
+    await d.sleep(600);
+    const seen = await page.locator(".vn__backlog-line").count();
+    await page.keyboard.press("Space");
+    await d.sleep(500);
+    await page.keyboard.press("Space");
+    await d.sleep(600);
+    check("space advances the scene", (await page.locator(".vn__backlog-line").count()) > seen);
+  },
+
   /** The wall stays usable when the screen does not. */
   async responsive(page, base, browser) {
     const d = driver(page, base);

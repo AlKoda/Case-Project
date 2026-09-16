@@ -37,6 +37,12 @@ export async function playScene(stage, scene, context) {
   }
   stage.setClock(scene.clock ?? "");
 
+  // Warm every face this scene can wear before the first line. A mood swap
+  // resolves through the cache once, but the first time it happens it is a
+  // fetch in the middle of a sentence, which lands as a stutter exactly when
+  // the player is meant to be reading somebody's expression change.
+  warmScene(script, cast);
+
   let index = 0;
   let guard = 0;
 
@@ -62,6 +68,28 @@ export async function playScene(stage, scene, context) {
   }
 
   return store.get();
+}
+
+/** Fetch the art a scene will ask for, without blocking its first line. */
+function warmScene(script, cast) {
+  const people = new Set();
+  const moods = new Set(["neutral"]);
+  for (const node of script) {
+    if (node.enter) people.add(node.enter);
+    if (node.who && !cast[node.who]?.noPortrait) people.add(node.who);
+    if (node.mood) moods.add(node.mood);
+  }
+
+  const jobs = [];
+  for (const person of people) {
+    const name = cast[person]?.name ?? person;
+    for (const mood of moods) {
+      jobs.push(assets.portrait(person, mood, name));
+      jobs.push(assets.bust(person, mood, name));
+    }
+  }
+  // Deliberately not awaited: the first line should not wait on the last face.
+  assets.preload(jobs);
 }
 
 async function run(node, ctx) {
