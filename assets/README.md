@@ -1,24 +1,26 @@
-# Investigation artwork
+# Case UI sprite exports
 
-This directory is the destination for game-ready exports made from the three
-supplied asset sheets. The files are grouped by their role rather than by source sheet:
+The two supplied 1536×1024 atlases have been divided into **76 named SVG
+assets**. They are grouped by purpose rather than by their position on a sheet:
 
-- `characters/` — the ten complete, bordered character cards.
-- `locations/` — the six large location cards (not the small alternates along
-  the bottom of the sheet).
-- `ui/` — reusable paper panels, cards, board furniture, and controls.
-- `icons/` — compact category and status symbols.
+- `ui/` contains panels, card frames, paper, tabs, notifications, books, and
+  buttons.
+- `icons/` contains category, action, status, map-pin, and miscellaneous icon
+  strips.
+- `characters/`, `evidence/`, and `locations/` remain reserved for future art
+  that actually depicts the playable cases; generic UI silhouettes are not
+  mislabeled as story characters or locations.
 
-See [`SOURCE-MAP.md`](SOURCE-MAP.md) for the exact source rectangles and the
-places where the exports are used.  To reproduce the exports, place the three
-original 1536×1024 sheets in `/source-assets` and run:
+Keep the supplied source atlases locally as `source-assets/ui-part1.png` and
+`source-assets/ui-part2.png`. Rebuild all crops with:
 
 ```sh
 python3 -m pip install -r tools/requirements-assets.txt
-python3 tools/extract_assets.py --source /source-assets --output assets
+python3 tools/extract_assets.py
 ```
 
-The extractor samples the supplied sheet dimensions, validates every crop,
-and uses hand-inspected rectangles that retain each item's outer border while
-excluding adjacent artwork. It deliberately does **not** divide a sheet into
-an equal grid.
+The extractor verifies both source dimensions and uses individually measured
+rectangles. It emits text-based SVG files containing the lossless crop, rather
+than binary files that cannot be represented by the pull-request patch service.
+It does not assume a uniform grid. See [`SOURCE-MAP.md`](SOURCE-MAP.md) for the
+complete crop manifest.

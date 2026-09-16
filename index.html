@@ -616,6 +616,35 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
 @media (max-width:760px){.toolbar{padding:6px 9px;gap:5px}.toolbar .title{display:none}.tb{padding:7px 9px;font-size:11.5px}.meter .mlab{display:none}.toasts{max-width:240px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;transition-duration:.001s!important}}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* ---------- supplied sprite atlas integration ---------- */
+.menu-visual::before{inset:9% 8% 8%;border:0;background:url("assets/ui/case-file.svg") center/contain no-repeat;filter:saturate(.72) contrast(1.08);opacity:.72}
+.menu-placeholder{display:none}
+.card{background-color:transparent;background-image:url("assets/ui/card-paper.svg");background-size:100% 100%;background-repeat:no-repeat}
+.card.k-suspect{background-image:url("assets/ui/card-red.svg")}
+.card.k-witness{background-image:url("assets/ui/card-blue.svg")}
+.card.k-evidence{background-image:url("assets/ui/card-paper.svg")}
+.card .card-topline,.card .card-inner{position:relative;z-index:1}
+.card .card-inner{margin:0 8px 12px;background:rgba(247,240,223,.91);padding:9px!important}
+.card.k-evidence .card-inner{margin-top:4px}
+.scene-card{background-color:transparent;background-image:url("assets/ui/case-file.svg");background-size:100% 100%}
+.panel,.intro-card{background-color:var(--paper);background-image:url("assets/ui/paper-lined.svg");background-size:100% auto;background-repeat:repeat-y}
+.panel-head,.panel-body,.intro-inner{position:relative;background:rgba(243,235,216,.9)}
+.notebook{background:var(--paper) url("assets/ui/book-green.svg") left center/auto 100% no-repeat}
+.notebook-head,.nbtabs,.notebook-list{background:rgba(243,235,216,.91)}
+.snote{background-image:url("assets/ui/paper-note.svg")!important;background-size:100% 100%!important}
+.tb.asset-icon>svg,.tb.asset-icon>.tb-svg{display:none}
+.tb.asset-icon::before{content:"";width:24px;height:24px;flex:none;background:center/contain no-repeat}
+#linkbtn::before{background-image:url("assets/icons/action-analyze.svg")}
+#notebookbtn::before{background-image:url("assets/icons/category-documents.svg")}
+#hintbtn::before{background-image:url("assets/icons/category-theories.svg")}
+#accusebtn::before{background-image:url("assets/icons/status-contradicts.svg")}
+#casesbtn::before{background-image:url("assets/icons/category-people.svg")}
+#helpbtn::before{background-image:url("assets/icons/status-unknown.svg")}
+.zone-label svg{display:none}.zone-label::before{content:"";width:24px;height:24px;background:url("assets/icons/category-objects.svg") center/contain no-repeat;display:inline-block;vertical-align:middle;margin-right:6px}
+.toast{background-color:var(--paper);background-image:url("assets/ui/paper-clipped.svg");background-size:100% 100%}
+.toast.new::before{content:"";float:left;width:26px;height:26px;margin:2px 9px 2px 0;background:url("assets/icons/status-confirmed.svg") center/contain no-repeat}
+@media(max-width:760px){.menu-visual::before{inset:4%;opacity:.5}.card .card-inner{margin-inline:6px}}
 </style>
 </head>
 <body>
@@ -682,7 +711,7 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
   <div class="tgroup">
     <div class="group" id="swatches" style="border:none;background:transparent;padding:0"></div>
     <span class="tsep"></span>
-    <button class="tb" id="linkbtn"></button>
+    <button class="tb asset-icon" id="linkbtn"></button>
     <button class="tb" id="notebtn"></button>
     <button class="tb" id="undobtn"></button>
     <button class="tb" id="tidybtn"></button>
@@ -695,16 +724,16 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
   </div>
 
   <div class="tgroup">
-    <button class="tb" id="notebookbtn"><span id="tb-note"></span><span class="badge" id="notebadge">0</span></button>
-    <button class="tb" id="hintbtn"></button>
-    <button class="tb accuse" id="accusebtn"></button>
+    <button class="tb asset-icon" id="notebookbtn"><span id="tb-note"></span><span class="badge" id="notebadge">0</span></button>
+    <button class="tb asset-icon" id="hintbtn"></button>
+    <button class="tb accuse asset-icon" id="accusebtn"></button>
   </div>
 
   <div class="tgroup">
-    <button class="tb" id="casesbtn"></button>
+    <button class="tb asset-icon" id="casesbtn"></button>
     <button class="tb" id="promptsbtn"></button>
     <button class="tb" id="resetbtn"></button>
-    <button class="tb" id="helpbtn"></button>
+    <button class="tb asset-icon" id="helpbtn"></button>
     <button class="tb" id="langbtn"></button>
   </div>
 </div>
