@@ -23,3 +23,10 @@ the source to **GitHub Actions**. Pushes to `main` will then deploy the game at
 The `.nojekyll` marker explicitly disables Jekyll processing. The game is the
 root `index.html` document and its code and images are embedded in that file,
 so it works without path rewriting when hosted at `/Case-Project/`.
+
+## Prototype art direction
+
+The starting flow now uses a restrained investigative-drama presentation. Missing
+production artwork remains visibly labeled rather than being hidden behind a
+cartoon stand-in. See [`assets/ASSET_LOG.md`](assets/ASSET_LOG.md) for the requested
+files, crops, and art direction.
