@@ -1,9 +1,23 @@
 #!/usr/bin/env python3
-"""Dependency-free smoke checks for the static game bundle."""
+"""Dependency-free smoke checks for the static game bundle.
+
+Run before sharing a play-test build:
+
+    python3 tools/check_project.py
+
+It checks four things, in the order they tend to break:
+
+  1. the document: no duplicate ids, every local href/src resolves
+  2. the stylesheets: every url(...) resolves
+  3. the modules: every .js under src/ parses as an ES module
+  4. the case data: handed to tools/check_scenes.mjs, which walks the scripts
+     for dead jumps, unreachable exhibits and unprovable contradictions
+"""
 
 from __future__ import annotations
 
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -12,6 +26,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 HTML = ROOT / "index.html"
+SRC = ROOT / "src"
 
 
 class DocumentCheck(HTMLParser):
@@ -35,7 +50,7 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
-def main() -> None:
+def check_document() -> list[str]:
     source = HTML.read_text(encoding="utf-8")
     parser = DocumentCheck()
     parser.feed(source)
@@ -44,32 +59,78 @@ def main() -> None:
     if duplicates:
         fail(f"duplicate HTML ids: {', '.join(duplicates)}")
 
-    stylesheets = [ROOT / ref for ref in parser.references if ref.endswith(".css")]
-    css_source = "\n".join(path.read_text(encoding="utf-8") for path in stylesheets if path.is_file())
-    css_references = re.findall(r'url\(["\']?((?:\.\./)?assets/[^)"\']+)', css_source)
-    css_references = [reference.removeprefix("../") for reference in css_references]
-    missing = sorted(
-        reference
-        for reference in set(parser.references + css_references)
-        if "'" not in reference and '"' not in reference and not (ROOT / reference).is_file()
-    )
+    missing = sorted(ref for ref in set(parser.references) if not (ROOT / ref).is_file())
     if missing:
-        fail(f"missing local assets: {', '.join(missing)}")
+        fail(f"index.html references missing files: {', '.join(missing)}")
 
-    scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", source, re.DOTALL)
-    external_scripts = [ROOT / ref for ref in parser.references if ref.endswith(".js")]
-    inline = "\n".join(script for script in scripts if script.strip())
-    javascript = inline + "\n" + "\n".join(
-        path.read_text(encoding="utf-8") for path in external_scripts if path.is_file()
-    )
-    with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as script_file:
-        script_file.write(javascript)
-        script_file.flush()
-        result = subprocess.run(["node", "--check", script_file.name], check=False)
+    print(f"  document: {len(parser.ids)} unique ids, {len(set(parser.references))} local references")
+    return parser.references
+
+
+def check_stylesheets(references: list[str]) -> None:
+    sheets = [ROOT / ref for ref in references if ref.endswith(".css")]
+    urls: set[str] = set()
+    for sheet in sheets:
+        text = sheet.read_text(encoding="utf-8")
+        # Inline SVG data URIs carry their own url(#filter) references; drop
+        # them before scanning so those are not mistaken for files.
+        text = re.sub(r'url\(\s*["\']?data:[^)]*\)', "", text)
+        for match in re.findall(r'url\(\s*["\']?([^)"\']+)', text):
+            if match.startswith(("data:", "http://", "https://", "#", "%23")):
+                continue
+            # CSS urls are relative to the stylesheet, not the document root.
+            urls.add(str((sheet.parent / match).resolve().relative_to(ROOT)))
+
+    missing = sorted(url for url in urls if not (ROOT / url).is_file())
+    if missing:
+        fail(f"stylesheets reference missing files: {', '.join(missing)}")
+    print(f"  styles:   {len(sheets)} stylesheets, {len(urls)} asset references")
+
+
+def check_modules() -> None:
+    if not shutil.which("node"):
+        print("  modules:  skipped (node is not installed)")
+        return
+
+    modules = sorted(SRC.rglob("*.js"))
+    if not modules:
+        fail("no JavaScript modules found under src/")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        for module in modules:
+            # node only treats a file as an ES module by extension or by a
+            # package.json; copying to .mjs avoids adding either to the repo.
+            probe = Path(tmp) / f"{module.stem}.mjs"
+            probe.write_text(module.read_text(encoding="utf-8"), encoding="utf-8")
+            result = subprocess.run(
+                ["node", "--check", str(probe)], capture_output=True, text=True, check=False
+            )
+            if result.returncode:
+                fail(f"{module.relative_to(ROOT)} did not parse:\n{result.stderr.strip()}")
+    print(f"  modules:  {len(modules)} ES modules parse")
+
+
+def check_case_data() -> None:
+    checker = ROOT / "tools" / "check_scenes.mjs"
+    if not shutil.which("node"):
+        print("  case:     skipped (node is not installed)")
+        return
+    if not checker.is_file():
+        fail("tools/check_scenes.mjs is missing")
+    result = subprocess.run(["node", str(checker)], capture_output=True, text=True, check=False)
     if result.returncode:
-        fail("JavaScript did not pass node --check")
+        print(result.stdout.strip(), file=sys.stderr)
+        fail(result.stderr.strip() or "case data check failed")
+    print(f"  case:     {result.stdout.strip().removeprefix('OK: ')}")
 
-    print(f"OK: {len(parser.ids)} unique ids, {len(set(parser.references + css_references))} local references, JavaScript syntax")
+
+def main() -> None:
+    print("Checking the Bellweather build")
+    references = check_document()
+    check_stylesheets(references)
+    check_modules()
+    check_case_data()
+    print("OK")
 
 
 if __name__ == "__main__":

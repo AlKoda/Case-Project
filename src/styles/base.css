@@ -1,0 +1,154 @@
+/* Base layer: reset, page frame, shared controls.
+ *
+ * Layout uses logical properties throughout (inline-start rather than left), so
+ * a right-to-left locale flips correctly the moment `dir` changes, with no
+ * second stylesheet. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ink-000);
+  color: var(--text-100);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+q {
+  font-style: italic;
+  color: var(--text-100);
+}
+
+.app {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  transition: opacity var(--beat) var(--ease-out);
+}
+
+.app.is-leaving {
+  opacity: 0;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Scrolling screens (everything except the stage) get their scroll back. */
+.screen:not(.screen--scene) {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Film grain. Any element with .grain gets it; it never intercepts clicks. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain-url);
+  background-size: 160px 160px;
+  opacity: 0.38;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 60;
+}
+
+/* ------------------------------------------------------------- controls */
+
+.btn {
+  --btn-edge: var(--ink-500);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  padding: 0.72em 1.5em;
+  background: linear-gradient(180deg, var(--ink-300), var(--ink-200));
+  border: 1px solid var(--btn-edge);
+  border-radius: var(--radius-sm);
+  color: var(--text-100);
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    border-color var(--beat-fast) var(--ease-out),
+    transform var(--beat-fast) var(--ease-out),
+    background var(--beat-fast) var(--ease-out);
+}
+
+.btn:hover,
+.btn:focus-visible {
+  --btn-edge: var(--lamp-300);
+  background: linear-gradient(180deg, var(--ink-400), var(--ink-300));
+  transform: translateY(-1px);
+}
+
+.btn--major {
+  --btn-edge: var(--lamp-300);
+  background: linear-gradient(180deg, var(--lamp-200), var(--lamp-300));
+  color: var(--ink-000);
+  font-weight: 700;
+  box-shadow: var(--shadow-lamp);
+}
+
+.btn--major:hover,
+.btn--major:focus-visible {
+  background: linear-gradient(180deg, var(--lamp-100), var(--lamp-200));
+}
+
+:where(button, [tabindex]):focus-visible {
+  outline: 2px solid var(--lamp-200);
+  outline-offset: 2px;
+}
+
+.noscript {
+  padding: 2rem;
+  color: var(--text-200);
+  font-family: var(--font-type);
+}
+
+/* Section headings share one treatment across every screen. */
+.panel__title {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lamp-200);
+  border-bottom: 1px solid var(--ink-400);
+  padding-bottom: 0.5rem;
+}
+
+.panel__empty {
+  margin: 0;
+  color: var(--text-400);
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+}

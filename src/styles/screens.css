@@ -1,0 +1,465 @@
+/* Screens: title, case board, accusation, verdict.
+ *
+ * The board is the one place the player reads rather than watches, so it trades
+ * the stage's darkness for something closer to paper under a desk lamp. */
+
+/* --------------------------------------------------------------- title */
+
+.title {
+  display: grid;
+  place-items: center;
+  background: var(--ink-000);
+}
+
+.title__art {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.55) saturate(0.4) contrast(1.25);
+  transform: scale(1.06);
+  animation: drift 30s ease-in-out infinite alternate;
+}
+
+@keyframes drift {
+  from { transform: scale(1.06) translate(0, 0); }
+  to { transform: scale(1.12) translate(-1.5%, -1%); }
+}
+
+.title__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(95% 75% at 50% 45%, transparent 26%, rgba(0, 0, 0, 0.88) 100%);
+}
+
+.title__plate {
+  position: relative;
+  z-index: 2;
+  max-width: min(720px, 90vw);
+  padding: clamp(1.6rem, 4vw, 3rem);
+  text-align: center;
+}
+
+.title__file {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--blood-100);
+}
+
+.title__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-4);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--lamp-100);
+  text-shadow: 0 0 50px rgba(232, 176, 75, 0.35), 0 8px 30px rgba(0, 0, 0, 0.9);
+}
+
+.title__strap {
+  margin: 1.1rem auto 2rem;
+  max-width: 46ch;
+  color: var(--text-200);
+  font-size: var(--step-1);
+  font-style: italic;
+}
+
+.title__actions {
+  display: flex;
+  gap: 0.9rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.title__note {
+  margin: 2rem 0 0;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  color: var(--text-400);
+}
+
+/* ---------------------------------------------------------------- board */
+
+.board {
+  padding: clamp(1.2rem, 3vw, 2.6rem);
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(232, 176, 75, 0.07), transparent 60%),
+    var(--ink-100);
+}
+
+.board__head {
+  display: grid;
+  gap: 0.8rem;
+  max-width: 1400px;
+  margin: 0 auto 2rem;
+  padding-block-end: 1.4rem;
+  border-block-end: 1px solid var(--ink-400);
+}
+
+.board__file {
+  margin: 0;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--blood-100);
+}
+
+.board__title {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--lamp-100);
+}
+
+.board__synopsis {
+  margin: 0;
+  max-width: 78ch;
+  color: var(--text-200);
+}
+
+.board__cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 1.6rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.panel {
+  padding: 1.3rem;
+  background: linear-gradient(180deg, var(--ink-200), var(--ink-100));
+  border: 1px solid var(--ink-400);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+
+.panel .btn { margin-block-start: 1rem; }
+
+/* People to question. */
+.person {
+  --accent: var(--lamp-200);
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 0.9rem;
+  inline-size: 100%;
+  margin-block-end: 0.8rem;
+  padding: 0.8rem;
+  background: linear-gradient(180deg, var(--ink-300), var(--ink-200));
+  border: 1px solid var(--ink-400);
+  border-inline-start: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  text-align: start;
+  cursor: pointer;
+  transition: transform var(--beat-fast) var(--ease-out), border-color var(--beat-fast);
+}
+
+.person:hover,
+.person:focus-visible { transform: translateX(4px); border-color: var(--accent); }
+
+.person__shot {
+  inline-size: 62px;
+  block-size: 62px;
+  object-fit: cover;
+  object-position: 50% 10%;
+  border-radius: var(--radius-sm);
+  filter: grayscale(0.5) contrast(1.1) brightness(0.85);
+}
+
+.person.is-done .person__shot { filter: grayscale(1) brightness(0.55); }
+
+.person__body { min-width: 0; }
+
+.person__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-100);
+}
+
+.person__role,
+.person__teaser {
+  margin: 0.15rem 0 0;
+  font-size: var(--step--1);
+  color: var(--text-400);
+}
+
+.person__teaser { color: var(--text-300); font-style: italic; }
+
+.person__state {
+  grid-column: 1 / -1;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Exhibits read as paper in a dark room. */
+.exhibits { display: grid; gap: 0.8rem; }
+
+.exhibit {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.9rem;
+  padding: 0.8rem;
+  background: linear-gradient(180deg, var(--paper-100), var(--paper-200));
+  color: var(--paper-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+}
+
+.exhibit__shot {
+  inline-size: 56px;
+  block-size: 56px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+}
+
+.exhibit__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-0);
+  letter-spacing: 0.04em;
+}
+
+.exhibit__summary {
+  margin: 0.1rem 0 0.4rem;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  color: var(--blood-300);
+}
+
+.exhibit__note {
+  margin: 0;
+  font-size: var(--step--1);
+  line-height: 1.5;
+  color: #4a4438;
+}
+
+/* A broken account. */
+.proof {
+  margin-block-end: 0.9rem;
+  padding: 0.85rem 1rem;
+  background: rgba(163, 55, 47, 0.1);
+  border-inline-start: 3px solid var(--blood-200);
+  border-radius: var(--radius-sm);
+}
+
+.proof__who {
+  margin: 0 0 0.25rem;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--blood-100);
+}
+
+.proof__claim { display: block; margin-block-end: 0.4rem; color: var(--text-300); }
+
+.proof__verdict { margin: 0; font-size: var(--step--1); color: var(--text-200); }
+
+.board__finish {
+  margin-block-start: 1.4rem;
+  padding-block-start: 1.2rem;
+  border-block-start: 1px solid var(--ink-400);
+}
+
+.board__gauge {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  color: var(--text-300);
+}
+
+/* --------------------------------------------------------------- flash */
+
+.flash {
+  position: absolute;
+  inset-block-start: 4.2rem;
+  inset-inline-start: 50%;
+  display: flex;
+  gap: 0.6rem;
+  align-items: baseline;
+  max-width: min(520px, 86vw);
+  padding: 0.7rem 1.2rem;
+  background: rgba(5, 6, 10, 0.95);
+  border: 1px solid var(--lamp-300);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-panel);
+  font-size: var(--step--1);
+  color: var(--text-100);
+  transform: translate(-50%, -14px);
+  opacity: 0;
+  transition: opacity var(--beat) var(--ease-out), transform var(--beat) var(--ease-out);
+  z-index: 55;
+}
+
+.flash.is-on { opacity: 1; transform: translate(-50%, 0); }
+.flash b { font-family: var(--font-type); letter-spacing: 0.14em; text-transform: uppercase; color: var(--lamp-200); }
+
+/* -------------------------------------------------------------- accuse */
+
+.accuse {
+  display: grid;
+  place-content: center;
+  gap: 1.2rem;
+  padding: clamp(1.4rem, 4vw, 3rem);
+  text-align: center;
+  background: radial-gradient(90% 70% at 50% 30%, rgba(163, 55, 47, 0.14), var(--ink-000) 70%);
+}
+
+.accuse__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--blood-100);
+}
+
+.accuse__lede { margin: 0 auto; max-width: 52ch; color: var(--text-300); }
+
+.accuse__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 190px));
+  gap: 1rem;
+  justify-content: center;
+  margin-block: 1.4rem;
+}
+
+.accuse__card {
+  --accent: var(--lamp-200);
+  padding: 0.9rem;
+  background: linear-gradient(180deg, var(--ink-300), var(--ink-100));
+  border: 1px solid var(--ink-400);
+  border-block-end: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform var(--beat-fast) var(--ease-snap), border-color var(--beat-fast);
+}
+
+.accuse__card:hover,
+.accuse__card:focus-visible { transform: translateY(-6px); border-color: var(--blood-200); }
+
+.accuse__shot {
+  inline-size: 100%;
+  block-size: 150px;
+  object-fit: cover;
+  object-position: 50% 8%;
+  border-radius: var(--radius-sm);
+  filter: grayscale(0.8) contrast(1.2) brightness(0.8);
+}
+
+.accuse__name {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.accuse__role { margin: 0.2rem 0 0; font-size: var(--step--1); color: var(--text-400); }
+
+/* ------------------------------------------------------------- verdict */
+
+.verdict {
+  padding: clamp(1.4rem, 4vw, 3rem);
+  background: var(--ink-100);
+}
+
+.verdict__stamp {
+  max-width: 1100px;
+  margin: 0 auto 1.4rem;
+  font-family: var(--font-type);
+  font-size: var(--step-1);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.verdict.is-right .verdict__stamp { color: var(--lamp-200); }
+.verdict.is-wrong .verdict__stamp { color: var(--blood-100); }
+
+.verdict__head {
+  display: grid;
+  grid-template-columns: minmax(0, 190px) 1fr;
+  gap: 1.6rem;
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+  align-items: start;
+}
+
+.verdict__shot {
+  inline-size: 100%;
+  border-radius: var(--radius-sm);
+  filter: grayscale(0.9) contrast(1.2) brightness(0.75);
+  box-shadow: var(--shadow-card);
+}
+
+.verdict__name {
+  margin: 0 0 0.8rem;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--lamp-100);
+}
+
+.verdict__body { margin: 0; max-width: 72ch; color: var(--text-200); }
+
+.verdict__ledger {
+  max-width: 1100px;
+  margin: 0 auto 2rem;
+  padding: 1.3rem;
+  background: linear-gradient(180deg, var(--ink-200), var(--ink-100));
+  border: 1px solid var(--ink-400);
+  border-radius: var(--radius-md);
+}
+
+.verdict__ledger h2 {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--lamp-200);
+}
+
+.verdict__proof {
+  margin: 0 0 0.8rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--blood-200);
+  font-size: var(--step--1);
+  color: var(--text-200);
+}
+
+.verdict__weight {
+  margin: 1rem 0 0;
+  font-family: var(--font-type);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-300);
+}
+
+.verdict__actions {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+@media (max-width: 720px) {
+  .verdict__head { grid-template-columns: 1fr; }
+  .verdict__shot { max-width: 200px; }
+}

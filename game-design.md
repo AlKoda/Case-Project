@@ -1,121 +1,104 @@
-# Case Board — Game Design Document
+# The Bellweather — design notes
 
-## Purpose and scope
+## What it is
 
-**Case Board** is a short, browser-based investigative narrative game intended as a
-demonstration of how AI-assisted development can help take a concept through design,
-implementation, review, and iteration. It is deliberately fictional and should not be
-treated as police training, investigative guidance, or a representation of real cases.
+A single-sitting interview mystery, played as a visual novel. One hotel, one
+night, four people who were somewhere else. The player questions each of them,
+collects physical evidence, and breaks the one account that cannot survive
+contact with it.
 
-The playable scope is two self-contained cases, each designed for a short demonstration:
+It is a demonstration piece: the point is to show a concept carried through
+design, writing, implementation and iteration. The case is fiction and is not a
+representation of real investigative procedure.
 
-1. **The Necklace at the Muscat Grand** — a hotel theft investigation.
-2. **Silence at Villa Al-Nawras** — a fictional homicide investigation.
+## The player's night
 
-The player is not asked to make reflexive choices or engage in combat. Progress comes
-from examining information, testing accounts against evidence, and forming a justified
-accusation.
+1. **The stairs.** Search the scene. Four exhibits are there for anyone who
+   looks; none of them mean anything yet.
+2. **The statements.** Question four people in any order. Each gives an account.
+   Each account contains at least one thing that is not true.
+3. **The press.** When a claim is wrong, put an exhibit on the table. A hit
+   breaks the account and opens what the subject was protecting. A miss costs a
+   beat, and the subject enjoys it.
+4. **The name.** Accuse somebody. The verdict explains itself either way.
 
-## Core player experience
+There is no fail state and no timer. A wrong accusation is a scene, not a game
+over, and the file can be reopened.
 
-The player works on a cork-board case file. They open character and evidence cards,
-inspect a scene, question people, make notes, and draw coloured strings between related
-cards. The interface makes the player’s reasoning visible without requiring them to
-solve a rigid drag-and-drop puzzle.
+## Why interviews
 
-### Gameplay loop
+Every scene is one person, one chair and one room. That is a deliberate
+constraint and it pays for itself three ways:
 
-1. **Orient:** read the briefing and choose a case.
-2. **Search:** inspect numbered points in the scene to reveal physical evidence.
-3. **Question:** interview suspects and witnesses; new questions unlock when relevant
-   information is found.
-4. **Test:** compare available fingerprints against evidence and use testimony to
-   challenge inconsistencies.
-5. **Organize:** pin evidence, notes, and connections on the board and optionally place
-   cards along the timeline.
-6. **Conclude:** accuse a suspect and receive a transparent explanation and score.
+* **Art.** Four portraits and one background carry the whole middle of the game.
+  A project that has to look finished before it is finished should spend its art
+  budget where the player is looking.
+* **Writing.** The mystery is carried entirely by what people say and refuse to
+  say, so the prose is doing the work the mechanics would otherwise have to.
+* **Feel.** The pop-out figure and the speech box that frames the speaker in its
+  corner put the player across a table from somebody. That framing is the game.
 
-## Systems
+## The contradiction web
 
-### Evidence and clue system
+Six exhibits, six contradictions, four suspects, one killer.
 
-Evidence is represented by individual cards with a title, compact illustration, and
-description. Scene hotspots reveal selected evidence cards. Some cards are available at
-the start, while others are unlocked only after a scene search. Key exhibits support the
-final explanation but the interface permits exploratory reading.
+The design rule is that **everybody lies, and only one of them killed anybody.**
+Three of the four are protecting something that is merely embarrassing — an
+argument about wages, an illegal book behind a bar, eleven private minutes and a
+letter. Breaking their accounts is not wasted effort: each one removes a
+candidate and, in two cases, hands over the exhibit that breaks the killer.
 
-### Suspects and interviews
+The killer's three contradictions are load-bearing and build on each other:
 
-Each case has three suspects and three witnesses. Interview topics include ordinary
-questions, clue-bearing questions, contradictions, and clearance information. A topic
-can require a previously discovered exhibit, a scene observation, or another answer.
-This ensures deductions arise from information the player has actually encountered.
+| Claim | Broken by | What it means |
+| --- | --- | --- |
+| Death occurred at 2:14 | the stopped pocket watch | twenty-seven minutes are missing |
+| He saw the blood plainly | the unscrewed stairwell bulb | he described a scene he could not see |
+| He slept until the commotion | the switchboard log | he was awake and telephoning |
 
-### Deduction and case strength
+The player can accuse at any time. The verdict scores what they could actually
+prove, so naming the right person on a hunch is possible and visibly thinner
+than naming them on evidence.
 
-Case strength is a progress indicator based on a small set of case-specific pillars:
-evidence, interview answers, and comparisons that support a defensible conclusion. It
-is not a claim of real-world evidentiary sufficiency; it exists to give players clear
-feedback in a fictional game.
+## Art direction
 
-Players can connect any two board cards with coloured string, make free-form notes, and
-use the timeline area to arrange the evening’s events. These actions support sensemaking
-rather than mechanically gate the story.
+Hard-boiled: near-black rooms, a single warm key light standing in for a desk
+lamp, cold teal filling the shadows it cannot reach. Red appears only for
+contradiction and accusation, so it keeps its force.
 
-### Scene search and comparison
+Source art arrives in every colour temperature there is, so the stage grades it
+towards near-monochrome before compositing — that is what makes a red-lit
+corridor and a grey office read as the same night. Over the top: slatted blind
+shadow, a vignette, and film grain from a self-contained SVG filter. No image
+files, no requests, no web fonts.
 
-The scene is a 2D illustrated room with numbered, clickable hotspots. Inspecting a
-hotspot records the observation and may reveal evidence. Some character cards offer a
-fingerprint record; players can run a comparison against compatible print evidence.
+Motion is deliberate and slightly heavy. Figures scale up into the light rather
+than sliding; text arrives at a measured typewriter pace. All of it is
+decorative — `prefers-reduced-motion` reduces every duration to zero and the
+game stays fully playable.
 
-### Accusation and resolution
+## Constraints held throughout
 
-The accusation flow asks for a suspect and selected supporting exhibits. The verdict
-explains why the selected person is or is not supported by the fictional case record,
-then breaks the score down by evidence, scene coverage, contradictions, clearances, and
-hints used. Incorrect accusations are educational feedback, not a fail state that locks
-the player out of the case.
+* **No build step, no dependencies, no network.** ES modules served as files.
+* **Nothing is ever a broken image.** Art resolution falls back through `.png`,
+  `.svg`, a neighbouring mood, and finally a placeholder drawn at runtime.
+* **No English string reaches the DOM directly.** Everything passes through
+  `t(key, english)`, so a translation is a file rather than a rewrite, and
+  right-to-left layout is a document attribute rather than a second stylesheet.
+* **Scripts are data.** A new interview is a list of plain objects. The engine
+  knows nothing about the case and the case knows nothing about the DOM.
+* **The data is checked.** `tools/check_scenes.mjs` walks every script for dead
+  jumps, unobtainable exhibits and unprovable contradictions, because those fail
+  in front of a player rather than at load time.
 
-## Story structure
+## Accessibility
 
-Each case is a compact three-act investigation:
+Keyboard throughout: space and enter advance, choices are real buttons in tab
+order, escape closes the log. Dialogue is announced through a polite live
+region. Colour is never the only signal — a broken account is labelled as well
+as tinted. Type scales with the viewport and the layout holds at phone width.
 
-1. **Initial ambiguity:** several people have plausible access, motive, or suspicious
-   details.
-2. **Narrowing:** scene evidence and interviews disprove alibis or distinguish a lead
-   from a red herring.
-3. **Convergence:** physical evidence, opportunity, and motive point to one fictional
-   suspect; the verdict explains the connection.
+## What is deliberately not here
 
-Future cases should keep this shape, use fictional people and places, avoid graphic
-content, and provide at least two meaningful ways to clear innocent suspects.
-
-## Visual and audio direction
-
-The visual language is original: muted paper, cork, ink, navy, oxblood, green, and brass
-colours; strong silhouettes; inline SVG portraits and evidence illustrations; sparse
-motion; and a tactile case-file presentation. It may evoke a minimalist,
-information-first occult-noir mood, but it must not copy artwork, characters, layouts,
-or assets from other games.
-
-No audio is currently included. If added, it should be subtle, optional, and include a
-visible mute control. Avoid sudden sounds, graphic effects, or realistic emergency audio.
-
-## UI and accessibility
-
-The game supports English and Arabic, including right-to-left rendering. Core controls
-include zoom, fit-to-board, full-screen mode, stringing, notes, hints, case selection,
-and reset. Keyboard users can use `Escape` to close open panels and `+`, `-`, or `0` to
-adjust or fit the board view.
-
-Future improvements should prioritize visible focus states, complete keyboard operation
-for card interactions, reduced-motion support, descriptive accessible names for icon
-buttons, and testing with narrow mobile viewports.
-
-## Technical direction
-
-The project is a dependency-free static web application: one HTML file containing the
-markup, CSS, SVG art, game data, and JavaScript. This keeps it easy to run in a browser,
-easy to share as a demonstration, and simple for Codex to inspect and improve. New work
-should preserve that portability unless a clear benefit justifies introducing a build
-tool or framework.
+No combat, no timers, no reflex checks, no inventory puzzle. The player's only
+verb is attention.

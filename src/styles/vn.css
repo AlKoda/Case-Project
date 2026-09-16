@@ -1,0 +1,494 @@
+/* The visual-novel stage.
+ *
+ * Reading order of the layers, back to front:
+ *   bg        the room, pushed down and desaturated so figures read against it
+ *   blinds    hard slatted shadow, the cheapest honest noir signal there is
+ *   vignette  darkens the corners so the eye goes to the middle
+ *   cast      the people; the speaker is lit, everyone else drops to shadow
+ *   hud       tape indicator and clock
+ *   box       the speech box, with the speaker framed in its leading corner
+ */
+
+.vn {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--ink-000);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* ------------------------------------------------------------ the room */
+
+.vn__bg {
+  position: absolute;
+  inset: -2%;
+  background-size: cover;
+  background-position: center 40%;
+  /* Graded towards near-monochrome. Placeholder art arrives in every colour
+   * temperature there is; this is what makes a red-lit corridor and a grey
+   * office read as the same night. */
+  filter: brightness(0.86) contrast(1.22) saturate(0.24) sepia(0.3) hue-rotate(-8deg);
+  transform: scale(1.04);
+  transition: background-image var(--beat-slow) var(--ease-out);
+}
+
+/* Light through a slatted blind, thrown across the back wall. */
+.vn__blinds {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    172deg,
+    rgba(0, 0, 0, 0.62) 0px,
+    rgba(0, 0, 0, 0.62) 22px,
+    rgba(232, 176, 75, 0.05) 22px,
+    rgba(232, 176, 75, 0.05) 46px
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+/* Duotone wash laid over the room: cold fill, warm key. */
+.vn__grade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(165deg, rgba(34, 66, 74, 0.55), rgba(0, 0, 0, 0) 58%),
+    radial-gradient(70% 55% at 72% 18%, rgba(232, 176, 75, 0.22), transparent 70%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
+.vn__vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(125% 95% at 50% 38%, transparent 34%, rgba(0, 0, 0, 0.62) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 26%);
+  pointer-events: none;
+}
+
+/* ------------------------------------------------------------- the cast */
+
+.vn__cast {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4vw;
+  /* Figures stand behind the speech box and are cut off by it, which is what
+   * puts them in the room rather than floating over it. */
+  padding-block-end: 7vh;
+  pointer-events: none;
+}
+
+.vn__actor {
+  margin: 0;
+  opacity: 0;
+  transform: translateY(28px) scale(0.92);
+  transition:
+    opacity var(--beat) var(--ease-out),
+    transform var(--beat-slow) var(--ease-snap),
+    filter var(--beat) var(--ease-out);
+  filter: brightness(0.34) saturate(0.25) blur(0.4px);
+}
+
+/* The pop-out. */
+.vn__actor.is-on {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Whoever holds the floor comes up into the light. */
+.vn__actor.is-speaking {
+  filter: brightness(1.04) saturate(0.95) contrast(1.06)
+    drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75));
+  transform: translateY(-8px) scale(1.03);
+  z-index: 2;
+}
+
+.vn__actor img {
+  height: min(66vh, 720px);
+  width: auto;
+  object-fit: contain;
+  /* Fade the lower edge so a figure sinks into the speech box instead of
+   * ending on a hard line. Harmless for cut-out art, and it rescues
+   * placeholder art that still has its background attached. */
+  -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent 97%);
+  mask-image: linear-gradient(180deg, #000 72%, transparent 97%);
+}
+
+.vn__actor--left { align-self: flex-end; margin-inline-end: auto; margin-inline-start: 8vw; }
+.vn__actor--right { align-self: flex-end; margin-inline-start: auto; margin-inline-end: 8vw; }
+
+/* ---------------------------------------------------------------- HUD */
+
+.vn__hud {
+  position: absolute;
+  inset-block-start: 1.1rem;
+  inset-inline: 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.18em;
+  color: var(--text-300);
+  z-index: 20;
+}
+
+.vn__rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--blood-100);
+}
+
+.vn__rec i {
+  width: 0.58em;
+  height: 0.58em;
+  border-radius: 50%;
+  background: var(--blood-200);
+  animation: rec 2.4s ease-in-out infinite;
+}
+
+@keyframes rec {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.vn__clock {
+  margin-inline-end: auto;
+  color: var(--lamp-200);
+}
+
+.vn__chip {
+  padding: 0.3em 0.9em;
+  background: rgba(11, 13, 19, 0.7);
+  border: 1px solid var(--ink-500);
+  border-radius: var(--radius-sm);
+  color: var(--text-200);
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vn__chip:hover { border-color: var(--lamp-300); color: var(--lamp-100); }
+
+/* --------------------------------------------------------- speech box */
+
+.vn__box {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  /* Full width, so the room never shows in the bottom corners; the content
+   * inside stays at a readable measure. */
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1.4rem;
+  padding-block: 1.35rem 1.9rem;
+  padding-inline: max(calc((100% - 1120px) / 2), clamp(1.1rem, 3vw, 2.4rem));
+  background:
+    linear-gradient(180deg, rgba(5, 6, 10, 0.9), rgba(5, 6, 10, 0.97)),
+    linear-gradient(180deg, var(--ink-300), var(--ink-100));
+  border-block-start: 1px solid var(--ink-500);
+  box-shadow: var(--shadow-panel);
+  z-index: 30;
+}
+
+/* A hairline of lamplight along the top edge of the box. */
+.vn__box::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -1px;
+  inset-inline: clamp(1rem, 6vw, 5rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lamp-300), transparent);
+}
+
+/* The speaker, framed in the corner of the box.
+ * Raised above the top edge so the portrait breaks the frame -- the person is
+ * leaning into the conversation rather than sitting inside a panel. */
+.vn__bust {
+  --accent: var(--lamp-200);
+  position: relative;
+  inline-size: clamp(76px, 10vw, 116px);
+  block-size: clamp(76px, 10vw, 116px);
+  margin-block-start: clamp(-54px, -4vw, -34px);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(180deg, var(--ink-400), var(--ink-100));
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+
+.vn__bust::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 45%, rgba(5, 6, 10, 0.75));
+  pointer-events: none;
+}
+
+.vn__bust-img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  /* Crop to the head. Tuned for the documented 900x1400 figure, and forgiving
+   * enough for the square placeholder portraits. */
+  object-position: 50% 18%;
+  filter: contrast(1.1) saturate(0.8);
+}
+
+/* Narration has no speaker, so the frame gets out of the way. */
+.vn__box.is-narration .vn__bust { opacity: 0; visibility: hidden; }
+.vn__box.is-narration .vn__plate { display: none; }
+.vn__box.is-narration .vn__text { font-style: italic; color: var(--text-200); }
+
+.vn__body { min-width: 0; }
+
+.vn__plate {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-block-end: 0.5rem;
+}
+
+.vn__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--lamp-100);
+}
+
+.vn__role {
+  margin: 0;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  color: var(--text-400);
+}
+
+.vn__text {
+  margin: 0;
+  min-height: 4.6em;
+  max-width: 62ch;
+  font-size: var(--step-1);
+  line-height: 1.62;
+  color: var(--text-100);
+}
+
+/* The little marker that says the game is waiting for you. */
+.vn__advance {
+  position: absolute;
+  inset-block-end: 0.7rem;
+  inset-inline-end: 1.1rem;
+  inline-size: 0.8rem;
+  block-size: 0.8rem;
+  border-inline-end: 2px solid var(--lamp-200);
+  border-block-end: 2px solid var(--lamp-200);
+  transform: rotate(45deg);
+  opacity: 0;
+  transition: opacity var(--beat) var(--ease-out);
+}
+
+.vn__advance.is-ready {
+  opacity: 1;
+  animation: nudge 1.4s ease-in-out infinite;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: rotate(45deg) translate(0, 0); }
+  50% { transform: rotate(45deg) translate(3px, 3px); }
+}
+
+/* ------------------------------------------------------------ choices */
+
+.vn__choices {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 27vh;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding-inline: 1rem;
+  z-index: 40;
+}
+
+.vn__choices.is-open { display: flex; }
+
+/* While a choice is open the stage steps back, so options never have to
+ * compete with someone's face for contrast. */
+.vn:has(.vn__choices.is-open) .vn__cast {
+  filter: brightness(0.42) saturate(0.4);
+  transition: filter var(--beat) var(--ease-out);
+}
+
+.vn:has(.vn__choices.is-open) .vn__box { opacity: 0.55; }
+
+.vn__choice {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  inline-size: min(760px, 100%);
+  padding: 0.85em 1.3em;
+  background: linear-gradient(90deg, rgba(11, 13, 19, 0.96), rgba(27, 32, 42, 0.92));
+  border: 1px solid var(--ink-500);
+  border-inline-start: 3px solid var(--lamp-300);
+  border-radius: var(--radius-sm);
+  text-align: start;
+  cursor: pointer;
+  transition: transform var(--beat-fast) var(--ease-out), border-color var(--beat-fast);
+}
+
+.vn__choice:hover,
+.vn__choice:focus-visible {
+  transform: translateX(6px);
+  border-color: var(--lamp-200);
+  border-inline-start-color: var(--lamp-100);
+}
+
+.vn__choice-index {
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  color: var(--lamp-300);
+}
+
+.vn__choice-text { font-size: var(--step-0); }
+
+/* -------------------------------------------------- the evidence tray */
+
+.vn__tray {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 2rem 1rem;
+  background: rgba(5, 6, 10, 0.93);
+  overflow-y: auto;
+  /* Above the "filed" banner: during a press, nothing should sit over the claim. */
+  z-index: 58;
+}
+
+.vn__tray.is-open { display: flex; }
+
+.vn__tray-claim {
+  max-width: 60ch;
+  margin: 0;
+  text-align: center;
+  font-size: var(--step-1);
+  color: var(--text-100);
+}
+
+.vn__tray-label {
+  display: block;
+  margin-block-end: 0.35rem;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--blood-100);
+}
+
+.vn__tray-grid {
+  display: grid;
+  /* auto-fit needs a definite width to count columns against; inside a
+   * shrink-wrapping flex column it would otherwise collapse to one. */
+  inline-size: min(940px, 92vw);
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 0.9rem;
+  justify-content: center;
+}
+
+.vn__exhibit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem;
+  background: linear-gradient(180deg, var(--paper-100), var(--paper-200));
+  border: 1px solid var(--paper-300);
+  border-radius: var(--radius-sm);
+  color: var(--paper-ink);
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  text-align: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: transform var(--beat-fast) var(--ease-snap);
+}
+
+.vn__exhibit:hover,
+.vn__exhibit:focus-visible { transform: translateY(-5px) rotate(-1deg); }
+
+.vn__exhibit img {
+  inline-size: 100%;
+  block-size: 76px;
+  object-fit: contain;
+}
+
+.vn__back {
+  padding: 0.6em 1.4em;
+  background: none;
+  border: 1px solid var(--ink-500);
+  border-radius: var(--radius-sm);
+  color: var(--text-300);
+  font-family: var(--font-type);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vn__back:hover { color: var(--text-100); border-color: var(--text-400); }
+
+/* ----------------------------------------------------------- backlog */
+
+.vn__backlog {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: min(460px, 92vw);
+  padding: 4.5rem 1.6rem 2rem;
+  background: rgba(5, 6, 10, 0.96);
+  border-inline-start: 1px solid var(--ink-400);
+  overflow-y: auto;
+  transform: translateX(102%);
+  transition: transform var(--beat) var(--ease-out);
+  z-index: 45;
+}
+
+/* The panel slides in from whichever side is the trailing one. */
+[dir="rtl"] .vn__backlog { transform: translateX(-102%); }
+.vn__backlog.is-open { transform: translateX(0); }
+
+.vn__backlog-line {
+  margin: 0 0 0.9rem;
+  padding-block-end: 0.9rem;
+  border-block-end: 1px solid var(--ink-300);
+  font-size: var(--step--1);
+  color: var(--text-200);
+}
+
+.vn__backlog-line b { color: var(--lamp-200); }
+
+/* ------------------------------------------------------------ narrow */
+
+@media (max-width: 720px) {
+  .vn__cast { padding-block-end: 16vh; }
+  .vn__actor img { height: min(48vh, 420px); }
+  .vn__box { grid-template-columns: 1fr; gap: 0.8rem; }
+  .vn__bust { margin-block-start: -46px; }
+  .vn__text { font-size: var(--step-0); min-height: 5.4em; }
+  .vn__choices { inset-block-end: 34vh; }
+}
