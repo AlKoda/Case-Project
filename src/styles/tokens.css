@@ -1,0 +1,95 @@
+/* Noir design tokens.
+ *
+ * One source of truth for colour, type, depth and timing. Screens and the
+ * visual-novel stage consume these; none of them hard-code a hex value.
+ *
+ * The palette is a hard-boiled one: near-black rooms, a single warm key light
+ * standing in for the desk lamp, and a cold teal that fills the shadows it
+ * cannot reach. Red is reserved for contradiction and accusation, so it keeps
+ * its force by appearing rarely.
+ */
+
+:root {
+  /* Rooms and surfaces, darkest first. */
+  --ink-000: #05060a;
+  --ink-100: #0b0d13;
+  --ink-200: #12151d;
+  --ink-300: #1b202a;
+  --ink-400: #262d3a;
+  --ink-500: #39424f;
+
+  /* The desk lamp. */
+  --lamp-100: #f4d9a0;
+  --lamp-200: #e8b04b;
+  --lamp-300: #c98b2c;
+  --lamp-glow: rgba(232, 176, 75, 0.22);
+
+  /* Cold fill light. */
+  --teal-100: #7fa8ae;
+  --teal-200: #3d6b74;
+  --teal-300: #22424a;
+
+  /* Contradiction, pressure, accusation. Used sparingly on purpose. */
+  --blood-100: #d9635a;
+  --blood-200: #a3372f;
+  --blood-300: #6d211b;
+
+  /* Paper: evidence cards, case files, the manila of a cold case. */
+  --paper-100: #ece3d0;
+  --paper-200: #d9cdb4;
+  --paper-300: #b3a488;
+  --paper-ink: #22201c;
+
+  /* Text on dark. */
+  --text-100: #f2efe8;
+  --text-200: #cdc8bd;
+  --text-300: #9a958b;
+  --text-400: #6b675f;
+
+  /* Type. System stacks only: this project ships no web fonts and no network
+   * requests, so every family here must exist on a bare machine. */
+  --font-display: "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+  --font-body: Georgia, "Times New Roman", Times, serif;
+  --font-type: "Courier New", Courier, ui-monospace, monospace;
+
+  --step--1: clamp(0.72rem, 0.68rem + 0.2vw, 0.82rem);
+  --step-0: clamp(0.94rem, 0.88rem + 0.3vw, 1.06rem);
+  --step-1: clamp(1.1rem, 1rem + 0.5vw, 1.3rem);
+  --step-2: clamp(1.4rem, 1.2rem + 1vw, 1.9rem);
+  --step-3: clamp(1.9rem, 1.5rem + 2vw, 3rem);
+  --step-4: clamp(2.6rem, 1.8rem + 3.6vw, 4.6rem);
+
+  /* Depth. Noir light is hard, so shadows are tight and dark rather than soft. */
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-panel: 0 18px 60px rgba(0, 0, 0, 0.7);
+  --shadow-lamp: 0 0 60px var(--lamp-glow);
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Timing. Interview beats want deliberate, slightly heavy motion. */
+  --beat-fast: 140ms;
+  --beat: 260ms;
+  --beat-slow: 520ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-snap: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --stage-max: 1600px;
+}
+
+/* Film grain, as a self-contained SVG turbulence filter. No image file, no
+ * request. Applied by .grain::after so any surface can opt in. */
+:root {
+  --grain-url: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+}
+
+/* Respect the platform. Every animation in this project is decorative; the
+ * game must stay fully playable without any of them. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --beat-fast: 0ms;
+    --beat: 0ms;
+    --beat-slow: 0ms;
+  }
+}

@@ -1,151 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Case Board — The Necklace at the Muscat Grand</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="src/styles.css">
-
-</head>
-<body>
-
-<div id="academy-splash">
-  <div class="menu-visual" aria-hidden="true">
-    <span class="menu-case-mark">CASEWORK / 01</span>
-    <div class="menu-dispatch">
-      <img src="assets/icons/academy-crest.svg" alt="">
-      <p class="dispatch-bubble"><strong>Archive dispatch</strong>Two case files are ready for review. Begin when you are prepared to examine the record.</p>
-    </div>
-  </div>
-  <main class="splash-frame" aria-labelledby="game-title">
-    <p class="menu-kicker">Interactive investigation prototype</p>
-    <h1 class="splash-title" id="game-title">The Case <span>Files</span></h1>
-    <p class="splash-org-en">Sultan Qaboos Academy for Police Sciences</p>
-    <p class="splash-org-ar">أكاديمية السلطان قابوس لعلوم الشرطة</p>
-    <nav class="menu-actions" aria-label="Main menu">
-      <button class="splash-continue" id="splashcontinue"><span>Begin investigation</span><small>New game&nbsp; →</small></button>
-      <button class="menu-button" type="button" id="continuebtn" disabled><span>Continue</span><small>No saved case</small></button>
-      <button class="menu-button" type="button" id="assetlogbtn"><span>Production log</span><small>Asset needs</small></button>
-      <button class="menu-button" type="button" id="menulang"><span>العربية / English</span><small>Language</small></button>
-    </nav>
-    <div class="menu-meta"><img src="assets/icons/academy-crest.svg" alt="" width="38" height="29"><span>Build 0.3</span><span>Two playable cases</span><span>Autosave enabled</span></div>
-    <p class="splash-foot">Concept prototype · not an official case record<span class="ar">نموذج مفاهيمي · وليس سجلّ قضية رسمياً</span></p>
-  </main>
-</div>
-
-<div id="case-select" class="hidden">
-  <div class="cs-wrap">
-    <div class="cs-head">
-      <h1 id="cs-h1"></h1>
-      <p id="cs-p1"></p>
-    </div>
-    <div class="cs-brief">
-      <img src="assets/icons/academy-crest.svg" alt="">
-      <p class="cs-bubble"><strong id="cs-brief-label"></strong><span id="cs-brief-text"></span></p>
-    </div>
-    <div class="cs-grid" id="cs-grid"></div>
-    <div class="cs-foot"><button id="cs-later"></button></div>
-  </div>
-</div>
-
-<div class="intro-overlay" id="intro">
-  <div class="intro-card">
-    <div id="intro-art"></div>
-    <div class="intro-inner">
-      <span class="intro-stamp" id="i-stamp"></span>
-      <h1 id="i-title"></h1>
-      <p class="intro-line" id="i-l1"></p>
-      <p class="intro-line" id="i-l2"></p>
-      <p class="intro-line" id="i-l3"></p>
-      <div class="introbtns">
-        <button class="startbtn" id="startbtn"></button>
-        <button class="langbtn" id="introlang"></button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="toolbar">
-  <span class="title" id="tb-title"></span>
-  <div class="clockbox"><span class="clab" id="clab"></span><span class="cval" id="clock">00:00</span><span class="save-state" id="save-state" aria-live="polite"></span></div>
-  <span class="spacer"></span>
-
-  <div class="group" title="Zoom">
-    <button id="zoomout"></button><span class="zlevel" id="zlevel">100%</span>
-    <button id="zoomin"></button><button class="zfit" id="zoomfit"></button><button id="fullbtn"></button>
-  </div>
-
-  <div class="tgroup">
-    <div class="group" id="swatches" style="border:none;background:transparent;padding:0"></div>
-    <span class="tsep"></span>
-    <button class="tb asset-icon" id="linkbtn"></button>
-    <button class="tb" id="notebtn"></button>
-    <button class="tb" id="undobtn"></button>
-    <button class="tb" id="tidybtn"></button>
-  </div>
-
-  <div class="meter" id="meter" title="">
-    <span class="mlab" id="mlab"></span>
-    <span class="mtrack"><span class="mbar" id="mbar"></span></span>
-    <span class="mval" id="mval">0%</span>
-  </div>
-
-  <div class="tgroup">
-    <button class="tb asset-icon" id="notebookbtn"><span id="tb-note"></span><span class="badge" id="notebadge">0</span></button>
-    <button class="tb asset-icon" id="hintbtn"></button>
-    <button class="tb accuse asset-icon" id="accusebtn"></button>
-  </div>
-
-  <div class="tgroup">
-    <button class="tb asset-icon" id="casesbtn"></button>
-    <button class="tb" id="promptsbtn"></button>
-    <button class="tb" id="resetbtn"></button>
-    <button class="tb asset-icon" id="helpbtn"></button>
-    <button class="tb" id="langbtn"></button>
-  </div>
-</div>
-
-<div class="hint hidden" id="hint">
-  <span id="hint-text"></span><button id="hint-done"></button>
-</div>
-
-<aside class="investigation-hud" id="investigation-hud" aria-live="polite" aria-label="Investigation actions">
-  <div class="ih-copy"><span class="ih-kicker" id="ih-kicker">Active objective</span><strong class="ih-objective" id="ih-objective">Search Suite 402</strong><span class="ih-progress" id="ih-progress">0 of 9 scene details examined</span></div>
-  <div class="ih-actions">
-    <button class="ih-action ih-search" id="ih-search" type="button"><span aria-hidden="true">⌖</span><b>Search scene</b></button>
-    <button class="ih-action" id="ih-leads" type="button"><span aria-hidden="true">≡</span><b>Review leads</b></button>
-    <button class="ih-action" id="ih-connect" type="button"><span aria-hidden="true">⌁</span><b>Connect clues</b></button>
-  </div>
-</aside>
-
-<div class="board-scroll" id="scroller" dir="ltr">
-  <div class="board-canvas" id="canvas">
-    <div class="board" id="board">
-      <svg class="yarn-layer" id="yarn" viewBox="0 0 2560 1700" preserveAspectRatio="none"></svg>
-    </div>
-  </div>
-</div>
-
-<div class="overlay hidden" id="overlay"><div class="panel" id="panel"></div></div>
-<div class="overlay lvl2 hidden" id="overlay2"><div class="panel narrow" id="panel2"></div></div>
-
-<div class="toasts" id="toasts"></div>
-
-<div class="notebook" id="notebook">
-  <div class="notebook-head"><h2 id="nb-title"></h2><button class="notebook-close" id="nb-close">&times;</button></div>
-  <div class="nbtabs">
-    <button class="nbtab" id="tab-notes" data-tab="notes"></button>
-    <button class="nbtab" id="tab-leads" data-tab="leads"><span></span><span class="badge" id="leadbadge">0</span></button>
-    <button class="nbtab" id="tab-deductions" data-tab="deductions"><span></span><span class="badge" id="deductionbadge">0</span></button>
-  </div>
-  <div class="notebook-list" id="notebook-list"></div>
-</div>
-
-<script src="assets/sprites.js"></script>
-<script src="src/game.js"></script>
-
-</body>
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>The Bellweather — Case file 47-B</title>
+    <meta
+      name="description"
+      content="A hard-boiled interview mystery. Four accounts, one staircase, and a watch that stopped at the wrong time."
+    />
+    <meta name="color-scheme" content="dark" />
+    <link rel="stylesheet" href="src/styles/tokens.css" />
+    <link rel="stylesheet" href="src/styles/base.css" />
+    <link rel="stylesheet" href="src/styles/vn.css" />
+    <link rel="stylesheet" href="src/styles/screens.css" />
+  </head>
+  <body>
+    <main id="app" class="app"></main>
+    <noscript>
+      <p class="noscript">
+        The Bellweather is played in the browser and needs JavaScript switched on.
+      </p>
+    </noscript>
+    <script type="module" src="src/main.js"></script>
+  </body>
 </html>
