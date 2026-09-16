@@ -13,6 +13,11 @@ The game uses the evidence room as menu atmosphere, the wide interrogation and
 office scenes behind interactive search overlays, and full scene art on case
 selection. Text and controls remain HTML so they stay accessible and bilingual.
 
+The visual-novel interview frame is stored as the text-based
+`ui/visual-novel-dialogue-frame.svg`. It borrows the supplied sprite sheet's dark
+metal, parchment, clipped-corner, and gold-line language without adding a binary
+Git object; all dialogue remains selectable, accessible HTML.
+
 To reproduce all crops:
 
 ```sh

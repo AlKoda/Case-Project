@@ -2098,11 +2098,13 @@ function renderPerson(kind, key){
 
   panel.innerHTML =
     '<button class="close-x" data-close>&times;</button>'+
+    '<div class="dialogue-atmosphere" aria-hidden="true"><span></span><span></span><span></span></div>'+
     '<div class="panel-head"><span class="panel-portrait">'+ART[key]+'</span>'+
-    '<div><h2'+(eo?' dir="ltr"':'')+'>'+T(d.name)+'</h2><div class="role">'+T(d.role)+'</div></div></div>'+
-    '<div class="panel-body">'+langbar+actions+
-    (kind==="witness" ? '<p class="statement"'+(eo?' dir="ltr" style="text-align:left"':'')+'>\u201c'+tx(d.statement, key)+'\u201d</p>' : '')+
-    '<div class="topics" id="topics"></div></div>';
+    '<div class="speaker-card"><span class="speaker-kicker">'+T({en:"Interview subject",ar:"موضوع المقابلة"})+'</span><h2'+(eo?' dir="ltr"':'')+'>'+T(d.name)+'</h2><div class="role">'+T(d.role)+'</div></div>'+
+    '<span class="dialogue-record" aria-hidden="true"><i></i>'+T({en:"Statement in progress",ar:"إفادة قيد التسجيل"})+'</span></div>'+
+    '<div class="panel-body"><div class="dialogue-frame">'+langbar+actions+
+    (kind==="witness" ? '<div class="opening-line"><span class="line-label">'+T({en:"Opening statement",ar:"الإفادة الافتتاحية"})+'</span><p class="statement"'+(eo?' dir="ltr" style="text-align:left"':'')+'>\u201c'+tx(d.statement, key)+'\u201d</p></div>' : '')+
+    '<div class="question-label">'+T({en:"Choose a line of inquiry",ar:"اختر محور الاستجواب"})+'</div><div class="topics" id="topics"></div></div></div>';
   panel.querySelector("[data-close]").onclick = closePanel;
   var pb = document.getElementById("printbtn");
   if(pb) pb.onclick = function(){
