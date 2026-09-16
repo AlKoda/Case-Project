@@ -36,6 +36,20 @@ game JavaScript. For a manual smoke test, complete this short path in both Engli
 Arabic: open a case, inspect a scene hotspot, question a character, add and move a note,
 connect two cards, refresh and continue the saved session, then open the accusation flow.
 
+## Backups
+
+Before trying a change you might want to undo, save a named snapshot of the whole
+project:
+
+```sh
+python3 tools/backup.py save "before rewriting the interview UI"
+```
+
+List what you can return to with `python3 tools/backup.py list`, and step back to
+any of it with `python3 tools/backup.py restore <name>`. Restoring saves your
+current state first, so nothing is lost either way. See [`BACKUPS.md`](BACKUPS.md)
+for the full workflow.
+
 ## GitHub Pages
 
 The GitHub Actions workflow in `.github/workflows/deploy-pages.yml` publishes
