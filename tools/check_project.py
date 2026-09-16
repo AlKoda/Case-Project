@@ -125,7 +125,7 @@ def check_case_data() -> None:
 
 
 def main() -> None:
-    print("Checking the Bellweather build")
+    print("Checking the Al-Manar build")
     references = check_document()
     check_stylesheets(references)
     check_modules()

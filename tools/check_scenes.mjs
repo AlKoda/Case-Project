@@ -15,7 +15,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { SCENES, INTERVIEWS } from "../src/data/scenes.js";
-import { CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS } from "../src/data/case.js";
+import { CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS, WITNESSES } from "../src/data/case.js";
 import { MOODS } from "../src/data/manifest.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -49,7 +49,7 @@ for (const [id, scene] of Object.entries(SCENES)) {
     if (node.exit && !CAST[node.exit]) fail(id, `exit names unknown character "${node.exit}"`);
     if (node.who) {
       if (!CAST[node.who]) fail(id, `line spoken by unknown character "${node.who}"`);
-      else if (node.who !== "cole" && !onStage.has(node.who)) {
+      else if (!CAST[node.who].noPortrait && !onStage.has(node.who)) {
         fail(id, `"${node.who}" speaks before entering the stage`);
       }
     }
@@ -127,9 +127,28 @@ for (const id of Object.keys(EXHIBITS)) {
   }
 }
 
-for (const id of Object.keys(CAST)) {
+for (const [id, person] of Object.entries(CAST)) {
+  if (person.noPortrait) continue;   // deliberately has no art
   if (!artExists(`assets/characters/${id}/neutral.png`, `assets/characters/${id}/neutral.svg`)) {
     fail("CAST", `"${id}" has no neutral art; a placeholder will be drawn`);
+  }
+}
+
+// Witnesses feed the board and its timeline, so their data has to line up too.
+for (const witness of WITNESSES) {
+  if (!CAST[witness.person]) fail("WITNESSES", `unknown character "${witness.person}"`);
+  if (!/^\d{2}:\d{2}$/.test(witness.time ?? "")) {
+    fail("WITNESSES", `"${witness.person}" has no usable time for the timeline`);
+  }
+  if (!witness.headline || !witness.statement) {
+    fail("WITNESSES", `"${witness.person}" is missing a headline or statement`);
+  }
+}
+
+// Any exhibit that claims a time must state it in a form the timeline parses.
+for (const [id, exhibit] of Object.entries(EXHIBITS)) {
+  if (exhibit.time != null && !/^\d{2}:\d{2}$/.test(exhibit.time)) {
+    fail("EXHIBITS", `"${id}" has an unreadable time "${exhibit.time}"`);
   }
 }
 
@@ -142,5 +161,6 @@ if (problems.length) {
 const lines = Object.values(SCENES).reduce((n, s) => n + s.script.filter((x) => x.text != null).length, 0);
 console.log(
   `OK: ${Object.keys(SCENES).length} scenes, ${lines} lines, ${Object.keys(CAST).length} cast, ` +
-    `${Object.keys(EXHIBITS).length} exhibits, ${Object.keys(CONTRADICTIONS).length} contradictions`,
+    `${Object.keys(EXHIBITS).length} exhibits, ${Object.keys(CONTRADICTIONS).length} contradictions, ` +
+    `${SUSPECTS.length} suspects, ${WITNESSES.length} witnesses`,
 );

@@ -92,7 +92,7 @@
     opacity var(--beat) var(--ease-out),
     transform var(--beat-slow) var(--ease-snap),
     filter var(--beat) var(--ease-out);
-  filter: brightness(0.34) saturate(0.25) blur(0.4px);
+  filter: brightness(0.46) saturate(0.35) blur(0.4px);
 }
 
 /* The pop-out. */
@@ -103,7 +103,7 @@
 
 /* Whoever holds the floor comes up into the light. */
 .vn__actor.is-speaking {
-  filter: brightness(1.04) saturate(0.95) contrast(1.06)
+  filter: brightness(1.16) saturate(1) contrast(1.04)
     drop-shadow(0 24px 40px rgba(0, 0, 0, 0.75));
   transform: translateY(-8px) scale(1.03);
   z-index: 2;
@@ -245,6 +245,11 @@
   filter: contrast(1.1) saturate(0.8);
 }
 
+/* A speaker with no portrait keeps their name plate; only the frame goes. */
+.vn__box.is-faceless { grid-template-columns: minmax(0, 1fr); }
+.vn__box.is-faceless .vn__bust { display: none; }
+.vn__box.is-faceless .vn__name { color: var(--teal-100); }
+
 /* Narration has no speaker, so the frame gets out of the way. */
 .vn__box.is-narration .vn__bust { opacity: 0; visibility: hidden; }
 .vn__box.is-narration .vn__plate { display: none; }
@@ -328,7 +333,7 @@
 /* While a choice is open the stage steps back, so options never have to
  * compete with someone's face for contrast. */
 .vn:has(.vn__choices.is-open) .vn__cast {
-  filter: brightness(0.42) saturate(0.4);
+  filter: brightness(0.62) saturate(0.55);
   transition: filter var(--beat) var(--ease-out);
 }
 

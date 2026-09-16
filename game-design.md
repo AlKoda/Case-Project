@@ -1,11 +1,11 @@
-# The Bellweather — design notes
+# Al-Manar — design notes
 
 ## What it is
 
-A single-sitting interview mystery, played as a visual novel. One hotel, one
-night, four people who were somewhere else. The player questions each of them,
-collects physical evidence, and breaks the one account that cannot survive
-contact with it.
+A single-sitting interview mystery, played as a visual novel. One hotel on the
+Muttrah harbour, one night, seven people who were somewhere else. The player
+questions them, collects physical evidence, builds a corkboard out of it, and
+breaks the one account that cannot survive contact with the facts.
 
 It is a demonstration piece: the point is to show a concept carried through
 design, writing, implementation and iteration. The case is fiction and is not a
@@ -15,12 +15,16 @@ representation of real investigative procedure.
 
 1. **The stairs.** Search the scene. Four exhibits are there for anyone who
    looks; none of them mean anything yet.
-2. **The statements.** Question four people in any order. Each gives an account.
-   Each account contains at least one thing that is not true.
+2. **The statements.** Question people in any order — three suspects who can be
+   accused and four witnesses who cannot. Each gives an account, and each
+   account contains at least one thing that is not true.
 3. **The press.** When a claim is wrong, put an exhibit on the table. A hit
    breaks the account and opens what the subject was protecting. A miss costs a
    beat, and the subject enjoys it.
-4. **The name.** Accuse somebody. The verdict explains itself either way.
+4. **The wall.** Pin what matters to the corkboard, run string between the
+   things that belong together, and lay the timed exhibits out along the
+   timeline until the missing twenty-seven minutes are visible as a gap.
+5. **The name.** Accuse one of the three. The verdict explains itself either way.
 
 There is no fail state and no timer. A wrong accusation is a scene, not a game
 over, and the file can be reopened.
@@ -30,29 +34,57 @@ over, and the file can be reopened.
 Every scene is one person, one chair and one room. That is a deliberate
 constraint and it pays for itself three ways:
 
-* **Art.** Four portraits and one background carry the whole middle of the game.
-  A project that has to look finished before it is finished should spend its art
-  budget where the player is looking.
+* **Art.** Seven portraits and one background carry the whole middle of the
+  game. A project that has to look finished before it is finished should spend
+  its art budget where the player is looking.
 * **Writing.** The mystery is carried entirely by what people say and refuse to
   say, so the prose is doing the work the mechanics would otherwise have to.
 * **Feel.** The pop-out figure and the speech box that frames the speaker in its
   corner put the player across a table from somebody. That framing is the game.
 
+## The wall
+
+The board is the one screen the player builds rather than reads. That is the
+whole design goal: a case file printed as a list tells you what is known, and a
+corkboard shows you what you believe about it.
+
+Three rules keep it honest:
+
+* **Nothing on it is scored.** The game never checks whether a string is
+  "correct". A board that grades you is a puzzle wearing a board's clothes, and
+  it stops being a place to think.
+* **Nothing is destroyed.** Taking a card down returns it to the tray; clearing
+  the wall returns everything. The player should never hesitate over a
+  rearrangement.
+* **The timeline is the argument.** Exhibits that fix a moment carry their time
+  on their face. Laid out in order they make the twenty-seven minutes between
+  the watch and the pronouncement into a visible hole, which is the deduction
+  the case is built around.
+
+Positions are normalised against the cork rather than stored in pixels, so a
+board survives a resize; the cork's bounds were measured off the artwork so a
+card can never be pinned to the wooden frame.
+
 ## The contradiction web
 
-Six exhibits, six contradictions, four suspects, one killer.
+Six exhibits, six contradictions, three suspects, four witnesses, one killer.
 
 The design rule is that **everybody lies, and only one of them killed anybody.**
-Three of the four are protecting something that is merely embarrassing — an
-argument about wages, an illegal book behind a bar, eleven private minutes and a
-letter. Breaking their accounts is not wasted effort: each one removes a
-candidate and, in two cases, hands over the exhibit that breaks the killer.
+The others are protecting something merely embarrassing — an argument about
+wages, an illegal book under a counter, eleven private minutes and a letter.
+Breaking their accounts is not wasted effort: each one removes a candidate and,
+in two cases, hands over the exhibit that breaks the killer.
+
+Witnesses are questioned but never accused. They exist to fix the shape of the
+night — when the victim left the desk, when voices were heard on the stairs,
+when the door went — so the timeline can be assembled from testimony as well as
+from objects.
 
 The killer's three contradictions are load-bearing and build on each other:
 
 | Claim | Broken by | What it means |
 | --- | --- | --- |
-| Death occurred at 2:14 | the stopped pocket watch | twenty-seven minutes are missing |
+| Death occurred at 2:14 | the stopped watch | twenty-seven minutes are missing |
 | He saw the blood plainly | the unscrewed stairwell bulb | he described a scene he could not see |
 | He slept until the commotion | the switchboard log | he was awake and telephoning |
 
@@ -94,7 +126,9 @@ game stays fully playable.
 ## Accessibility
 
 Keyboard throughout: space and enter advance, choices are real buttons in tab
-order, escape closes the log. Dialogue is announced through a polite live
+order, escape closes the log. The wall never requires a drag — every tray item
+has a pin button, and a focused card takes arrow keys to move, `L` to start a
+string and `Delete` to come down. Dialogue is announced through a polite live
 region. Colour is never the only signal — a broken account is labelled as well
 as tinted. Type scales with the viewport and the layout holds at phone width.
 

@@ -1,74 +1,98 @@
 /**
- * Case file 47-B: the Bellweather.
+ * Case file 47-B: the Al-Manar.
  *
  * Everything factual about the case lives here -- who is in it, what can be
  * held in an evidence bag, and which claims can be broken. The dialogue that
  * hangs off these facts is in `scenes.js`.
  *
- * The case is fiction. Any resemblance to real procedure is incidental; this is
- * a mystery, not a manual.
+ * The case is fiction. The hotel, its staff and the investigation are invented;
+ * this is a mystery, not a manual.
  */
 
 export const CASE = {
-  id: "bellweather",
-  title: "The Bellweather",
+  id: "al-manar",
+  title: "Al-Manar",
   file: "Case file 47-B",
-  strapline: "One hotel. One staircase. Four people who were somewhere else.",
+  strapline: "One hotel. One staircase. Seven people who were somewhere else.",
   synopsis:
-    "Teddy Vance, night manager of the Bellweather Hotel, was found at the foot " +
-    "of the service stairs at 2:14 in the morning, in the middle of a storm that " +
-    "had taken half the district's lights with it. The house doctor called it a " +
+    "Tariq Al-Rawahi, night manager of the Al-Manar, was found at the foot of " +
+    "the service stairs at 2:14 in the morning, in the middle of a storm that " +
+    "had taken half the harbour's lights with it. The house doctor called it a " +
     "fall. The house doctor is not a doctor any more.",
 };
 
 /**
- * The cast. `accent` tints that person's frame in the speech box, so the player
- * learns who is talking before they read the name.
+ * The cast.
+ *
+ * `accent` tints that person's frame in the speech box, so the player learns
+ * who is talking before they read the name. `noPortrait` is for people with no
+ * stage art -- the detective, whose eyes we are behind, and the victim, who is
+ * past speaking.
  */
 export const CAST = {
-  cole: {
-    name: "Det. Sgt. Cole",
-    role: "Nightwatch, 4th Precinct",
+  harthy: {
+    name: "Det. Sgt. Al-Harthy",
+    role: "Nightwatch, Muttrah station",
     accent: "#7fa8ae",
+    noPortrait: true,
   },
-  calloway: {
-    name: "Iris Calloway",
-    role: "Lounge singer, six nights a week",
+  lawati: {
+    name: "Iman Al-Lawati",
+    role: "Runs the banquet floor",
     accent: "#c96f9e",
   },
-  brennan: {
-    name: "Sol Brennan",
-    role: "Bartender. Keeps a book on the side",
+  zadjali: {
+    name: "Sulaiman Al-Zadjali",
+    role: "Night steward. Keeps a book on the side",
     accent: "#d9635a",
   },
-  finch: {
-    name: "Dr. Ambrose Finch",
+  sharif: {
+    name: "Dr. Ayman Sharif",
     role: "Room 312. Physician, once",
     accent: "#e8b04b",
   },
-  roy: {
-    name: "Delphine Roy",
+  hinai: {
+    name: "Badriya Al-Hinai",
     role: "Switchboard, midnight to eight",
     accent: "#8fb08a",
   },
-  vance: {
-    name: "Teddy Vance",
+  kindi: {
+    name: "Majid Al-Kindi",
+    role: "Night porter",
+    accent: "#b98b5e",
+  },
+  busaidi: {
+    name: "Noor Al-Busaidi",
+    role: "Guest, room 214",
+    accent: "#9a86c4",
+  },
+  maskari: {
+    name: "Faisal Al-Maskari",
+    role: "Front desk, the late shift",
+    accent: "#6fa3c9",
+  },
+  rawahi: {
+    name: "Tariq Al-Rawahi",
     role: "Night manager. Deceased",
     accent: "#9a958b",
+    noPortrait: true,
   },
 };
 
 /**
  * Exhibits. `name` and `summary` are what the player reads; `note` is the
- * detail that only matters once they know what they are looking at.
+ * detail that only matters once they know what they are looking at. `time` is
+ * the moment the exhibit fixes, where it fixes one -- the board's timeline
+ * shows it on the card so the player can place it.
  */
 export const EXHIBITS = {
   "pocket-watch": {
-    name: "Vance's pocket watch",
+    name: "Tariq's watch",
     summary: "Stopped at 1:47.",
+    time: "01:47",
     note:
       "Glass starred, spring arrested. Watches stop when they are struck, and " +
-      "this one was struck at 1:47. Finch pronounced death at 2:14.",
+      "this one was struck at 1:47. Sharif pronounced death at 2:14.",
   },
   "stair-bulb": {
     name: "Bulb from the stairwell",
@@ -81,27 +105,31 @@ export const EXHIBITS = {
   "switchboard-log": {
     name: "Switchboard log",
     summary: "Room 312 placed an outside call at 1:52.",
+    time: "01:52",
     note:
-      "Delphine Roy's hand, in pencil, in a ruled book she keeps without being " +
-      "asked. Room 312 is Finch. He says he slept until the commotion at 2:14.",
+      "Badriya Al-Hinai's hand, in pencil, in a ruled book she keeps without " +
+      "being asked. Room 312 is Sharif. He says he slept until the commotion.",
   },
   ledger: {
-    name: "Brennan's book",
-    summary: "Vance's debt marked PAID, in fresh ink.",
+    name: "Al-Zadjali's book",
+    summary: "Tariq's debt marked settled, in fresh ink.",
+    time: "01:20",
     note:
-      "Eleven hundred, carried since August, cleared at twenty past one in the " +
-      "morning. Vance had no money on Tuesday. On Wednesday he had all of it.",
+      "Four hundred rials, carried since the spring, cleared at twenty past one " +
+      "in the morning. Tariq had nothing on Tuesday. On Wednesday he had all of it.",
   },
-  sequin: {
-    name: "Sequin from a stage dress",
+  "shawl-bead": {
+    name: "Bead from an embroidered shawl",
     summary: "Caught on the stair rail, third step.",
+    time: "01:30",
     note:
-      "Iris Calloway wears the only dress in the building that sheds these. It " +
+      "Iman Al-Lawati wears the only shawl in the building that sheds these. It " +
       "proves she was on those stairs. It does not say when.",
   },
   umbrella: {
     name: "Wet umbrella",
-    summary: "In the lobby closet, still running.",
+    summary: "In the lobby cupboard, still running.",
+    time: "02:00",
     note:
       "Somebody went out into the storm and came back. Staff are not supposed to " +
       "leave the floor between midnight and six.",
@@ -109,110 +137,146 @@ export const EXHIBITS = {
 };
 
 /**
- * Contradictions the player can prove. Proving all three of Finch's is what
+ * Contradictions the player can prove. Proving all three of Sharif's is what
  * turns an accusation into a case.
  */
 export const CONTRADICTIONS = {
-  "finch-saw-blood": {
-    subject: "finch",
+  "sharif-saw-blood": {
+    subject: "sharif",
     claim: "He saw the blood plainly when he found the body.",
     breaks: "stair-bulb",
     verdict:
-      "The stairwell bulb had been unscrewed. That staircase was black. Finch " +
+      "The stairwell bulb had been unscrewed. That staircase was black. Sharif " +
       "described a scene he could not have seen -- unless he already knew what " +
       "was on those stairs.",
     weight: 2,
   },
-  "finch-slept-through": {
-    subject: "finch",
+  "sharif-slept-through": {
+    subject: "sharif",
     claim: "He slept until the commotion woke him at 2:14.",
     breaks: "switchboard-log",
     verdict:
       "Room 312 placed an outside call at 1:52, five minutes after the watch " +
-      "stopped. Finch was awake, and he was telephoning somebody.",
+      "stopped. Sharif was awake, and he was telephoning somebody.",
     weight: 2,
   },
-  "finch-time-of-death": {
-    subject: "finch",
+  "sharif-time-of-death": {
+    subject: "sharif",
     claim: "Death occurred at 2:14, when he found the body.",
     breaks: "pocket-watch",
     verdict:
-      "The watch arrested at 1:47. Finch put twenty-seven minutes between the " +
+      "The watch arrested at 1:47. Sharif put twenty-seven minutes between the " +
       "fall and the death, and spent them establishing where he was.",
     weight: 3,
   },
-  "brennan-paid": {
-    subject: "brennan",
-    claim: "Vance never paid a penny of what he owed.",
+  "zadjali-paid": {
+    subject: "zadjali",
+    claim: "Tariq never paid a baisa of what he owed.",
     breaks: "ledger",
     verdict:
-      "Brennan's own book clears the debt at 1:20. Vance came into eleven hundred " +
-      "in the middle of a storm, hours before he died.",
+      "Al-Zadjali's own book clears the debt at 1:20. Tariq came into four " +
+      "hundred rials in the middle of a storm, hours before he died.",
     weight: 1,
   },
-  "calloway-stairs": {
-    subject: "calloway",
+  "lawati-stairs": {
+    subject: "lawati",
     claim: "She never went near the service stairs.",
-    breaks: "sequin",
+    breaks: "shawl-bead",
     verdict:
-      "A sequin from her dress was on the third step. She was there -- earlier " +
+      "A bead from her shawl was on the third step. She was there -- earlier " +
       "than the fall, angrier than she admits, but there.",
     weight: 1,
   },
-  "roy-left-the-floor": {
-    subject: "roy",
+  "hinai-left-the-board": {
+    subject: "hinai",
     claim: "She never left the switchboard.",
     breaks: "umbrella",
     verdict:
-      "The umbrella in the lobby closet is hers, and it was still wet. She broke " +
-      "a house rule, not a man's neck.",
+      "The umbrella in the lobby cupboard is hers, and it was still wet. She " +
+      "broke a house rule, not a man's neck.",
     weight: 1,
   },
 };
 
-/** Who the player may name, and what happens when they do. */
-export const SUSPECTS = ["calloway", "brennan", "finch", "roy"];
+/** Who the player may name. Witnesses are questioned but never accused. */
+export const SUSPECTS = ["lawati", "zadjali", "sharif"];
 
-export const CULPRIT = "finch";
+/**
+ * The four witnesses. Each contributes a statement the player can pin to the
+ * board and place on the timeline; between them they fix where everybody was
+ * while the stairs were dark.
+ */
+export const WITNESSES = [
+  {
+    person: "maskari",
+    time: "01:40",
+    headline: "Tariq left the desk at 1:40.",
+    statement:
+      "\"He handed me the keys and said he would be ten minutes. He said it the " +
+      "way a man says it when he has somewhere better to be. He went up the back " +
+      "stairs, not the front, and I have thought about that all night.\"",
+  },
+  {
+    person: "busaidi",
+    time: "01:45",
+    headline: "Two men arguing on the stairs, just before two.",
+    statement:
+      "\"I could not sleep in that storm. Through the wall of 214 I heard two men " +
+      "on the service stairs -- not shouting, worse than shouting, the quiet kind. " +
+      "One of them was pleading. I could not tell you which.\"",
+  },
+  {
+    person: "kindi",
+    time: "02:12",
+    headline: "A door, then the doctor already kneeling.",
+    statement:
+      "\"A door went at about ten past two, and I took the torch and ran. By the " +
+      "time I got down there the doctor was already on his knees beside him, in " +
+      "the pitch dark, telling me what I was looking at before I could see it.\"",
+  },
+  {
+    person: "hinai",
+    time: "02:14",
+    headline: "Every call in the building, written down as it happened.",
+    statement:
+      "\"Nobody asks me to keep the book. I keep it because a thing written down " +
+      "at the time it happens is worth more than anything anybody remembers " +
+      "afterwards.\"",
+  },
+];
+
+export const CULPRIT = "sharif";
 
 export const VERDICTS = {
-  finch: {
+  sharif: {
     correct: true,
-    headline: "Ambrose Finch, for the killing of Teddy Vance.",
+    headline: "Ayman Sharif, for the killing of Tariq Al-Rawahi.",
     body:
-      "Vance found out what Finch had been struck off for, and charged him for the " +
-      "silence. Finch paid once, on Tuesday -- eleven hundred, which went straight " +
-      "across Brennan's bar to clear a debt. On Wednesday, Finch decided there would " +
-      "not be a third time. He unscrewed the stairwell bulb, met Vance in the dark at " +
-      "1:47, and left him at the bottom of it. Then he went upstairs, telephoned the " +
-      "only person who could give him an alibi, waited until the hotel was awake, came " +
-      "down, and pronounced a man he had killed twenty-seven minutes dead.",
+      "Tariq found out what Sharif had been struck off for, and charged him for the " +
+      "silence. Sharif paid once, on Tuesday -- four hundred rials, which went " +
+      "straight across Al-Zadjali's counter to clear a debt. On Wednesday, Sharif " +
+      "decided there would not be a third time. He unscrewed the stairwell bulb, met " +
+      "Tariq in the dark at 1:47, and left him at the bottom of it. Then he went " +
+      "upstairs, telephoned the only person who could give him an alibi, waited " +
+      "until the hotel was awake, came down, and pronounced a man he had killed " +
+      "twenty-seven minutes dead.",
   },
-  calloway: {
+  lawati: {
     correct: false,
-    headline: "Iris Calloway.",
+    headline: "Iman Al-Lawati.",
     body:
-      "She was on those stairs and she lied about it, because she went down to shout " +
-      "at Vance about four weeks of short pay and did not want that on a statement. " +
-      "The sequin puts her there. Nothing puts her there at 1:47 -- she was under the " +
-      "lights in front of forty people, and forty people will say so.",
+      "She was on those stairs and she lied about it, because she went down to argue " +
+      "with Tariq about four weeks of short wages for her floor and did not want that " +
+      "on a statement. The bead puts her there. Nothing puts her there at 1:47 -- she " +
+      "was in front of a wedding party of forty people, and forty people will say so.",
   },
-  brennan: {
+  zadjali: {
     correct: false,
-    headline: "Sol Brennan.",
+    headline: "Sulaiman Al-Zadjali.",
     body:
-      "Brennan runs a book out of a hotel bar and lied about it from the first " +
-      "question, which is what a man does when he is guilty of the wrong crime. His " +
-      "ledger clears Vance's debt at 1:20. A bookmaker whose debt is paid has no " +
+      "Al-Zadjali runs a book out of a hotel counter and lied about it from the first " +
+      "question, which is what a man does when he is guilty of the wrong thing. His " +
+      "ledger clears Tariq's debt at 1:20. A man whose debt has just been paid has no " +
       "reason at all to put the payer down a staircase.",
-  },
-  roy: {
-    correct: false,
-    headline: "Delphine Roy.",
-    body:
-      "She left her switchboard for eleven minutes to post a letter she did not want " +
-      "anybody reading over her shoulder, and she would rather be suspected of murder " +
-      "than explain it. Her log is the most honest document in the building. It is " +
-      "also the thing that hangs Finch.",
   },
 };

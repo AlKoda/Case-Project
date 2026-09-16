@@ -180,6 +180,14 @@ export function createStage(root) {
     const profile = cast?.[person] ?? {};
     nodes.name.textContent = t(`cast.${person}.name`, profile.name ?? person);
     nodes.role.textContent = t(`cast.${person}.role`, profile.role ?? "");
+
+    // The detective is the eyes we are behind and the victim is past speaking:
+    // both get a name plate and no frame, rather than a drawn placeholder.
+    nodes.box.classList.toggle("is-faceless", Boolean(profile.noPortrait));
+    if (profile.noPortrait) {
+      nodes.bust.style.setProperty("--accent", profile.accent ?? "var(--lamp-200)");
+      return;
+    }
     const url = await assets.bust(person, mood ?? "neutral", profile.name ?? person);
     if (destroyed) return;
     if (nodes.bustImage.src !== url) {

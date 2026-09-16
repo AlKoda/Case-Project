@@ -8,7 +8,7 @@
  */
 
 const KEY = "case-board/bellweather";
-const VERSION = 3;
+const VERSION = 4;
 
 const listeners = new Set();
 
@@ -29,6 +29,17 @@ function blank() {
     completed: [],
     /** Every line the player has seen, for the backlog. */
     backlog: [],
+    /**
+     * The evidence wall. Positions are normalised 0..1 against the wall box so
+     * they survive a resize; `at` is minutes past midnight for anything the
+     * player has placed on the timeline, and null for anything pinned free.
+     */
+    board: {
+      pins: {},      // cardId -> { x, y, at }
+      strings: [],   // { a, b }
+      notes: {},     // noteId -> text
+      nextNote: 1,
+    },
     accusation: null,
   };
 }
@@ -61,6 +72,11 @@ export function has(list, id) {
 export function collect(list, id) {
   if (has(list, id)) return state;
   return update({ [list]: [...state[list], id] });
+}
+
+/** Replace the board, persisting and notifying like any other update. */
+export function setBoard(patch) {
+  return update({ board: { ...state.board, ...patch } });
 }
 
 export function setFlag(name, value = true) {
