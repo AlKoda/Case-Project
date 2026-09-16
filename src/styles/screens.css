@@ -331,6 +331,15 @@
 
 .accuse__lede { margin: 0 auto; max-width: 52ch; color: var(--text-300); }
 
+.accuse__gauge {
+  margin: 0.6rem auto 0;
+  max-width: 56ch;
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.04em;
+  color: var(--lamp-200);
+}
+
 .accuse__row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 190px));
@@ -370,6 +379,18 @@
 }
 
 .accuse__role { margin: 0.2rem 0 0; font-size: var(--step--1); color: var(--text-400); }
+
+.accuse__proof {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-type);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-400);
+}
+
+.accuse__card.has-proof .accuse__proof { color: var(--blood-100); }
+.accuse__card.has-proof { border-block-end-color: var(--blood-200); }
 
 /* ------------------------------------------------------------- verdict */
 

@@ -21,7 +21,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 import { SCENES, INTERVIEWS } from "../src/data/scenes.js";
-import { CAST, EXHIBITS, CONTRADICTIONS, CASE, VERDICTS } from "../src/data/case.js";
+import { CAST, EXHIBITS, CONTRADICTIONS, CASE, VERDICTS, WITNESSES } from "../src/data/case.js";
 import { keyed } from "../src/engine/script.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -64,6 +64,13 @@ for (const [id, v] of Object.entries(VERDICTS)) {
 }
 
 for (const interview of INTERVIEWS) add(`interview.${interview.person}.teaser`, interview.teaser);
+
+// Witness statements are reached through template-literal keys in board.js, so
+// the source scan below cannot see them; they have to be added from the data.
+for (const witness of WITNESSES) {
+  add(`witness.${witness.person}.headline`, witness.headline);
+  add(`witness.${witness.person}.statement`, witness.statement);
+}
 
 for (const [id, scene] of Object.entries(SCENES)) {
   for (const { node, key } of keyed(scene.script, id)) {

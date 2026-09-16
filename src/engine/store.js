@@ -5,10 +5,16 @@
  * then notifies. Saves are versioned: a save written by an older build is
  * discarded rather than half-loaded, because a partially-understood save is
  * worse than a fresh start.
+ *
+ * The version has to move whenever the *data* changes shape as well as when
+ * the state does. Renaming a character or an exhibit leaves an old save full of
+ * ids that no longer resolve -- cards that cannot be drawn, contradictions that
+ * match nothing -- which is exactly the half-loaded state this guards against.
+ * The key is named after the case for the same reason.
  */
 
-const KEY = "case-board/bellweather";
-const VERSION = 3;
+const KEY = "case-board/al-manar";
+const VERSION = 5;
 
 const listeners = new Set();
 
@@ -29,6 +35,17 @@ function blank() {
     completed: [],
     /** Every line the player has seen, for the backlog. */
     backlog: [],
+    /**
+     * The evidence wall. Positions are normalised 0..1 against the wall box so
+     * they survive a resize; `at` is minutes past midnight for anything the
+     * player has placed on the timeline, and null for anything pinned free.
+     */
+    board: {
+      pins: {},      // cardId -> { x, y, at }
+      strings: [],   // { a, b }
+      notes: {},     // noteId -> text
+      nextNote: 1,
+    },
     accusation: null,
   };
 }
@@ -61,6 +78,11 @@ export function has(list, id) {
 export function collect(list, id) {
   if (has(list, id)) return state;
   return update({ [list]: [...state[list], id] });
+}
+
+/** Replace the board, persisting and notifying like any other update. */
+export function setBoard(patch) {
+  return update({ board: { ...state.board, ...patch } });
 }
 
 export function setFlag(name, value = true) {

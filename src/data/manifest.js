@@ -9,7 +9,7 @@
  *
  *   assets/backgrounds/<scene>.png            1920 x 1080
  *   assets/characters/<person>/<mood>.png      900 x 1400, transparent
- *   assets/characters/<person>/bust.png        512 x  512, head and shoulders
+ *   assets/characters/<person>/bust-<mood>.png 512 x  512, head and shoulders
  *   assets/evidence/<exhibit>.png              512 x  512, transparent
  *
  * ## How a file is chosen
@@ -45,9 +45,10 @@ export const SLOTS = {
     width: 512,
     height: 512,
     note:
-      "Head and shoulders for the corner of the speech box. Optional: without it " +
-      "the stage art is cropped to the head instead, which is fine for a full " +
-      "figure and less flattering for anything else.",
+      "Head and shoulders for the corner of the speech box and the board's cards. " +
+      "`bust-<mood>.png` lets the corner portrait change expression with the stage " +
+      "figure; a plain `bust.png` covers every mood at once. Without either, the " +
+      "stage art is cropped to the head, which suits a full figure and little else.",
   },
   evidence: {
     width: 512,
@@ -84,11 +85,15 @@ export function portraitSources(person, mood = "neutral") {
 /** Candidate files for the portrait framed in the corner of the speech box.
  *  Falls through to the stage art when no dedicated bust has been supplied. */
 export function bustSources(person, mood = "neutral") {
-  return [
-    `${ROOT}/characters/${person}/bust.png`,
-    `${ROOT}/characters/${person}/bust.svg`,
-    ...portraitSources(person, mood),
-  ];
+  const sources = [];
+  if (mood !== "neutral") {
+    sources.push(`${ROOT}/characters/${person}/bust-${mood}.png`);
+    sources.push(`${ROOT}/characters/${person}/bust-${mood}.svg`);
+  }
+  sources.push(`${ROOT}/characters/${person}/bust-neutral.png`);
+  sources.push(`${ROOT}/characters/${person}/bust.png`);
+  sources.push(`${ROOT}/characters/${person}/bust.svg`);
+  return [...sources, ...portraitSources(person, mood)];
 }
 
 /** Candidate files for an evidence exhibit, best first. */

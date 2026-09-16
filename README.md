@@ -1,14 +1,18 @@
-# The Bellweather
+# Al-Manar
 
 A hard-boiled interview mystery that runs in the browser with no build step, no
-dependencies and no network requests. Four people were awake in a hotel the
-night the night manager went down the service stairs. All four were somewhere
-else. You have until morning.
+dependencies and no network requests. Seven people were awake in a hotel on the
+Muttrah harbour the night the night manager went down the service stairs. All
+seven were somewhere else. You have until morning.
 
 The game is played as a visual novel: the person you are questioning stands in
 the room, and the speech box along the bottom frames them in its corner, the way
 a subject sits framed across a table. When an account contradicts the evidence
 in your file, you put the exhibit on the table and the account comes apart.
+
+Between interviews you work a corkboard — drag anything out of the tray, pin it
+where it makes sense, run string between the things that belong together, and
+drop whatever fixes a time onto the timeline along the bottom.
 
 ## Run it
 
@@ -38,18 +42,52 @@ src/
     store.js            state and the save
     i18n.js             translation and text direction
     dom.js              element helpers
-  game/screens.js       title, case board, accusation, verdict
+  game/
+    board.js            the evidence wall: pinning, string, timeline
+    screens.js          title, accusation, verdict
   data/
     manifest.js         where art lives and how a file is chosen
-    case.js             cast, exhibits, contradictions, verdicts
+    case.js             cast, exhibits, contradictions, witnesses, verdicts
     scenes.js           the script
-  styles/               tokens, base, stage, screens
+  styles/               tokens, base, stage, screens, board
 ```
 
 The split that matters is between `data/` and everything else. A scene is a list
 of plain objects, so the whole script reads top to bottom as a screenplay and a
 new interview is written without touching a line of engine code. The node
 grammar is documented at the top of [`src/engine/vn.js`](src/engine/vn.js).
+
+## The evidence wall
+
+The board between interviews is a corkboard you build yourself.
+
+- **Drag** anything from the tray on the right onto the wall, or press the `+`
+  on a tray item to pin it without a mouse.
+- **Click** a pinned card to read it in the tray, question that person, or start
+  a string from it; click a second card to tie the string, and click a string to
+  cut it.
+- **Drop a card on the timeline** along the bottom and it takes a time. Anything
+  that fixes a moment — a stopped watch, a logged call — says so on its face and
+  goes straight to the right place when pinned from the tray.
+- **Drag a card off the wall** to take it down. Nothing is ever lost; it goes
+  back to the tray.
+- **Add note** puts a blank card up for whatever you are thinking. **Tidy** lays
+  the loose cards out on a grid. **Clear wall** returns everything to the tray.
+- **Undo** (or `Ctrl`/`Cmd`+`Z`) takes back the last change — a move, a string,
+  a card taken down, a wall cleared. Rearranging a board should never be a
+  decision you have to think about first.
+
+If you left the scene of the crime without examining everything, the board says
+so and offers a way back down. Walking away from an exhibit would otherwise put
+a contradiction permanently out of reach.
+
+Pinned cards are focusable: arrow keys nudge (hold shift for bigger steps),
+`L` starts a string, `Delete` takes the card down, `Enter` opens it.
+
+Positions are stored normalised against the cork, so the wall survives a resize,
+a rotation and a different monitor without anything drifting. Nothing on the
+wall is scored — the game never checks whether your strings are "right", because
+the point of a board is that it holds a theory while you decide what you believe.
 
 ## Artwork
 
@@ -60,7 +98,7 @@ file in the right place:
 ```
 assets/backgrounds/<scene>.png          1920 x 1080
 assets/characters/<person>/<mood>.png    900 x 1400, transparent
-assets/characters/<person>/bust.png      512 x  512, head and shoulders (optional)
+assets/characters/<person>/bust-<mood>.png 512 x 512, head and shoulders
 assets/evidence/<exhibit>.png            512 x  512, transparent
 ```
 
@@ -69,10 +107,12 @@ fallback (a missing mood drops to `neutral`, a missing bust drops to the stage
 figure), then a placeholder drawn at runtime. Nothing is ever a broken image, and
 a character needs only `neutral.png` to appear in every scene.
 
-**The art currently in those folders is placeholder art**, recovered from the
-project's previous sprite sheets. To replace any of it, overwrite the file at the
-same path — that is the entire process. [`assets/README.md`](assets/README.md)
-lists every name in use.
+Character art usually arrives as one strip per person, one expression per panel.
+`tools/slice_sheet.py` cuts it up, scales every panel by the same factor, aligns
+them so a character does not jump when their expression changes, and writes the
+square bust the speech box and board cards use. The backgrounds and the six
+exhibits are still placeholder art. [`assets/README.md`](assets/README.md)
+documents every name in use and the exact commands the current art was cut with.
 
 Moods a script may ask for are listed in the manifest: `neutral`, `tense`,
 `evasive`, `broken`, `cold`.
@@ -81,11 +121,12 @@ Moods a script may ask for are listed in the manifest: `neutral`, `tense`,
 
 The game ships English only, but no English string is written straight into the
 DOM: every one passes through `t(key, english)`, which returns the active
-locale's version when there is one. Adding a language is one command and one
-file:
+locale's version when there is one — interface, dialogue, cast, exhibits, the
+board's cards and the witnesses' statements alike. Adding a language is one
+command and one file:
 
 ```sh
-node tools/i18n_extract.mjs ar > src/data/strings.ar.js   # 283 keys, English alongside
+node tools/i18n_extract.mjs ar > src/data/strings.ar.js   # every string, English alongside
 # fill in the blanks, then:
 open "http://localhost:8000/?lang=ar"
 ```
@@ -108,8 +149,30 @@ Checks the document for duplicate ids and dead references, the stylesheets for
 missing assets, every module for parse errors, and — via
 `tools/check_scenes.mjs` — the case data itself: jumps that land on no label,
 exhibits nobody can obtain, contradictions no press can prove, characters who
-speak before walking on. Those are the failures that would otherwise surface
-halfway through an interview in front of a player.
+speak before walking on, witnesses whose times the timeline cannot parse. Those
+are the failures that would otherwise surface halfway through an interview in
+front of a player.
+
+## Play tests
+
+`check_project.py` checks that the build is coherent. To check that it is
+*playable*, there is an end-to-end suite that drives a real browser:
+
+```sh
+npm install playwright     # once; the game itself needs nothing
+node tools/playtest.mjs    # 45 checks over seven scenarios
+node tools/playtest.mjs board undo
+```
+
+It starts its own server on a free port, plays a night from the title screen to
+a verdict, pins and ties and undoes on the wall, presses a witness, checks the
+accusation reports the file's real strength, and confirms no card hangs off the
+cork at desktop, tablet or phone width. Every scenario also fails if anything
+was thrown or logged as an error along the way.
+
+Playwright is a development dependency and nothing else needs it — the game is
+still a static site with no build step and no runtime dependencies. Without it
+the suite exits cleanly and says so, so it is safe to wire into a hook.
 
 ## Backups
 
@@ -132,5 +195,5 @@ hosted from a subdirectory.
 
 ## A note on the fiction
 
-The Bellweather, its staff and the case are invented. Nothing here reflects real
+The Al-Manar, its staff and the case are invented. Nothing here reflects real
 investigative procedure, and it should not be read as though it does.

@@ -13,7 +13,8 @@ import * as assets from "../engine/assets.js";
 import { createStage } from "../engine/vn.js";
 import { playScene } from "../engine/player.js";
 import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS } from "../data/case.js";
-import { SCENES, INTERVIEWS } from "../data/scenes.js";
+import { SCENES } from "../data/scenes.js";
+import { mountBoard } from "./board.js";
 
 /** Screens fade through this so a hard cut never happens mid-sentence. */
 function transition(root, build) {
@@ -114,156 +115,76 @@ function flash(host, label, body) {
   }, 2600);
 }
 
-/* ------------------------------------------------------------------- hub */
+/* ------------------------------------------------------------------ wall */
 
+/**
+ * The case board. The scene work is done in `board.js`; this only guarantees
+ * the player has been to the stairs first, since a wall with nothing to pin on
+ * it is a poor introduction to a wall.
+ */
 export function hub(root, go) {
-  const state = store.get();
-  const proven = state.proven.map((id) => CONTRADICTIONS[id]).filter(Boolean);
-  const againstFinch = state.proven.filter((id) => id.startsWith("finch-")).length;
-
-  const board = el("section", { class: "screen board grain" });
-
-  board.append(
-    el("header", { class: "board__head" },
-      el("div", null,
-        el("p", { class: "board__file", text: CASE.file }),
-        el("h1", { class: "board__title", text: CASE.title }),
-      ),
-      el("p", { class: "board__synopsis", text: CASE.synopsis }),
-    ),
-  );
-
-  const columns = el("div", { class: "board__cols" });
-
-  /* People */
-  const people = el("div", { class: "panel" },
-    el("h2", { class: "panel__title", text: t("hub.people", "Statements") }),
-  );
-  for (const interview of INTERVIEWS) {
-    const person = CAST[interview.person];
-    const done = state.completed.includes(interview.id);
-    const card = el("button", {
-      class: `person${done ? " is-done" : ""}`,
-      type: "button",
-      onClick: () => go("scene", { id: interview.id, next: "hub" }),
-    });
-    const shot = el("img", { class: "person__shot", alt: "" });
-    assets.portrait(interview.person, "neutral", person.name).then((url) => { shot.src = url; });
-    card.append(
-      shot,
-      el("div", { class: "person__body" },
-        el("p", { class: "person__name", text: person.name }),
-        el("p", { class: "person__role", text: person.role }),
-        el("p", { class: "person__teaser", text: interview.teaser }),
-      ),
-      el("span", { class: "person__state", text: done ? t("hub.again", "Question again") : t("hub.open", "Question") }),
-    );
-    card.style.setProperty("--accent", person.accent);
-    people.append(card);
+  if (!store.get().completed.includes("scene:stairs")) {
+    return go("scene", { id: "scene:stairs", next: "hub" });
   }
-  columns.append(people);
-
-  /* Evidence */
-  const evidence = el("div", { class: "panel" },
-    el("h2", { class: "panel__title", text: t("hub.evidence", "In the file") }),
-  );
-  if (state.exhibits.length === 0) {
-    evidence.append(el("p", { class: "panel__empty", text: t("hub.noEvidence", "Nothing yet. The stairs are where it starts.") }));
-  }
-  const grid = el("div", { class: "exhibits" });
-  for (const id of state.exhibits) {
-    const exhibit = EXHIBITS[id];
-    if (!exhibit) continue;
-    const shot = el("img", { alt: "", class: "exhibit__shot" });
-    assets.evidence(id, exhibit.name).then((url) => { shot.src = url; });
-    grid.append(
-      el("article", { class: "exhibit" },
-        shot,
-        el("div", null,
-          el("h3", { class: "exhibit__name", text: exhibit.name }),
-          el("p", { class: "exhibit__summary", text: exhibit.summary }),
-          el("p", { class: "exhibit__note", text: exhibit.note }),
-        ),
-      ),
-    );
-  }
-  evidence.append(grid);
-
-  if (!state.completed.includes("scene:stairs")) {
-    evidence.append(
-      el("button", {
-        class: "btn btn--major",
-        type: "button",
-        text: t("hub.goStairs", "Go down to the stairs"),
-        onClick: () => go("scene", { id: "scene:stairs", next: "hub" }),
-      }),
-    );
-  }
-  columns.append(evidence);
-
-  /* Broken accounts */
-  const broken = el("div", { class: "panel" },
-    el("h2", { class: "panel__title", text: t("hub.broken", "Accounts broken") }),
-  );
-  if (proven.length === 0) {
-    broken.append(el("p", { class: "panel__empty", text: t("hub.noProof", "Everyone's story is still standing.") }));
-  }
-  for (const item of proven) {
-    broken.append(
-      el("article", { class: "proof" },
-        el("p", { class: "proof__who", text: CAST[item.subject]?.name ?? item.subject }),
-        el("q", { class: "proof__claim", text: item.claim }),
-        el("p", { class: "proof__verdict", text: item.verdict }),
-      ),
-    );
-  }
-  broken.append(
-    el("div", { class: "board__finish" },
-      el("p", {
-        class: "board__gauge",
-        text:
-          againstFinch >= 3
-            ? t("hub.ready", "Three of one man's statements are in pieces. That is a case.")
-            : t("hub.notReady", "You can name somebody now. Whether it stands up is another question."),
-      }),
-      el("button", {
-        class: `btn ${againstFinch >= 3 ? "btn--major" : ""}`,
-        type: "button",
-        text: t("hub.accuse", "Name a suspect"),
-        onClick: () => go("accuse"),
-      }),
-    ),
-  );
-  columns.append(broken);
-
-  board.append(columns);
-  root.append(board);
+  mountBoard(root, go);
 }
 
 /* --------------------------------------------------------------- accuse */
 
 export function accuse(root, go) {
+  const state = store.get();
+
+  /** How much of a person's account the player has actually taken apart. */
+  const brokenFor = (id) =>
+    state.proven
+      .map((proofId) => CONTRADICTIONS[proofId])
+      .filter((proof) => proof?.subject === id);
+
   const list = el("div", { class: "accuse__row" });
   for (const id of SUSPECTS) {
     const person = CAST[id];
+    const broken = brokenFor(id);
+    const weight = broken.reduce((sum, proof) => sum + proof.weight, 0);
+
     const shot = el("img", { alt: "", class: "accuse__shot" });
-    assets.portrait(id, "cold", person.name).then((url) => { shot.src = url; });
+    assets.bust(id, "cold", person.name).then((url) => { shot.src = url; });
+
     const card = el("button", {
-      class: "accuse__card",
+      class: `accuse__card${broken.length ? " has-proof" : ""}`,
       type: "button",
       onClick: () => {
         store.update({ accusation: id });
         go("verdict");
       },
-    }, shot, el("p", { class: "accuse__name", text: person.name }), el("p", { class: "accuse__role", text: person.role }));
+    },
+      shot,
+      el("p", { class: "accuse__name", text: t(`cast.${id}.name`, person.name) }),
+      el("p", { class: "accuse__role", text: t(`cast.${id}.role`, person.role) }),
+      el("p", {
+        class: "accuse__proof",
+        text: broken.length
+          ? `${broken.length} ${t("accuse.broken", "broken")} \u00b7 ${t("accuse.weight", "weight")} ${weight}`
+          : t("accuse.nothing", "nothing broken"),
+      }),
+    );
     card.style.setProperty("--accent", person.accent);
     list.append(card);
   }
+
+  /* One honest line about how the file reads, without naming anyone. */
+  const strongest = Math.max(0, ...SUSPECTS.map((id) => brokenFor(id).length));
+  const gauge =
+    strongest >= 3
+      ? t("accuse.ready", "Three of one person's statements are in pieces. That is a case.")
+      : strongest > 0
+        ? t("accuse.thin", "You can name somebody on this. Whether it stands up in the morning is another question.")
+        : t("accuse.none", "Nobody's account has been broken yet. This would be a guess with a signature on it.");
 
   root.append(
     el("section", { class: "screen accuse grain" },
       el("h1", { class: "accuse__title", text: t("accuse.title", "Name one.") }),
       el("p", { class: "accuse__lede", text: t("accuse.lede", "Once it is said out loud it is said. The file goes forward with your name on it.") }),
+      el("p", { class: "accuse__gauge", text: gauge }),
       list,
       el("button", {
         class: "btn",
@@ -287,7 +208,7 @@ export function verdict(root, go) {
   const weight = supporting.reduce((sum, p) => sum + p.weight, 0);
 
   const shot = el("img", { alt: "", class: "verdict__shot" });
-  assets.portrait(named, "broken", person.name).then((url) => { shot.src = url; });
+  assets.bust(named, "broken", person.name).then((url) => { shot.src = url; });
 
   root.append(
     el("section", { class: `screen verdict grain ${result.correct ? "is-right" : "is-wrong"}` },
