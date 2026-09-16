@@ -108,6 +108,8 @@ export function mountBoard(root, go) {
         art: () => assets.bust(interview.person, "neutral", person.name),
         accent: person.accent,
         interview: interview.id,
+        // Seven people is more than anybody tracks in their head.
+        questioned: state.completed.includes(interview.id),
       });
     }
 
@@ -337,9 +339,17 @@ export function mountBoard(root, go) {
   }
 
   function trayCard(id, card) {
-    const node = el("div", { class: `chip chip--${card.kind}`, dataset: { card: id } },
+    const node = el("div", {
+      class: `chip chip--${card.kind}${card.questioned ? " is-done" : ""}`,
+      dataset: { card: id },
+    },
       el("div", { class: "chip__body" },
-        el("p", { class: "chip__title", text: card.title }),
+        el("p", { class: "chip__title" },
+          card.title,
+          card.questioned
+            ? el("span", { class: "chip__done", title: t("board.questioned", "Already questioned"), text: "\u2713" })
+            : null,
+        ),
         card.line ? el("p", { class: "chip__line", text: card.line }) : null,
       ),
       el("button", {
@@ -443,10 +453,27 @@ export function mountBoard(root, go) {
   }
 
   function pinNode(id, card, pin) {
+    const described = [
+      card.title,
+      card.line,
+      pin.at != null ? `${t("board.atTime", "at")} ${clock(pin.at)}` : t("board.onWall", "pinned to the wall"),
+      card.questioned ? t("board.questioned", "Already questioned") : null,
+      tiedTo(id),
+    ]
+      .filter(Boolean)
+      // The card's own text already punctuates itself; joining blindly would
+      // give a screen reader "stopped at one forty-seven dot dot".
+      .map((part) => String(part).trim().replace(/[.,;]+$/, ""))
+      .join(". ") + ".";
+
     const node = el("article", {
-      class: `pin pin--${card.kind}${pin.at != null ? " is-timed" : ""}${linkFrom === id ? " is-linking" : ""}`,
+      class:
+        `pin pin--${card.kind}${pin.at != null ? " is-timed" : ""}` +
+        `${linkFrom === id ? " is-linking" : ""}${card.questioned ? " is-done" : ""}`,
       dataset: { card: id },
       tabindex: "0",
+      role: "group",
+      "aria-label": described,
       style: { insetInlineStart: `${pin.x * 100}%`, insetBlockStart: `${pin.y * 100}%` },
     });
     if (card.accent) node.style.setProperty("--accent", card.accent);
@@ -471,6 +498,16 @@ export function mountBoard(root, go) {
     node.addEventListener("pointerdown", (event) => beginDrag(event, id, false));
     node.addEventListener("keydown", (event) => onPinKey(event, id));
     return node;
+  }
+
+  /** "Tied to X and Y", for the card's spoken description. */
+  function tiedTo(id) {
+    const names = store.get().board.strings
+      .filter((s) => s.a === id || s.b === id)
+      .map((s) => cards.get(s.a === id ? s.b : s.a)?.title)
+      .filter(Boolean);
+    if (!names.length) return null;
+    return `${t("board.tiedTo", "Tied to")} ${names.join(", ")}`;
   }
 
   function onPinKey(event, id) {
@@ -580,7 +617,7 @@ export function mountBoard(root, go) {
     store.setBoard({ strings });
     announce(already ? t("board.cut", "String cut.") : t("board.tied", "String tied."));
     linkFrom = null;
-    renderPins();
+    renderPins();   // also refreshes each card's spoken description
   }
 
   /** Redraw every string. Called on any change and on resize. */

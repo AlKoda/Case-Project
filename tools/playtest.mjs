@@ -349,6 +349,37 @@ const scenarios = {
     check("but proves no contradiction against them", (await d.save()).proven.length === 0);
   },
 
+  /** Questioned people are marked, and pinned cards describe themselves. */
+  async marking(page, base) {
+    const d = driver(page, base);
+    await d.resume();
+    check("nobody is marked before any interview", (await page.locator(".chip.is-done").count()) === 0);
+
+    await d.question("Badriya Al-Hinai");
+    await d.until(".vn__choices.is-open");
+    await d.choose("Thank you");
+    await d.sleep(500);
+    await d.until(".wall", 25);
+    await d.sleep(700);
+    check("the person you questioned is marked", (await page.locator(".chip.is-done").count()) === 1);
+
+    await page.locator(".chip__pin").first().click();
+    await d.sleep(250);
+    await page.locator(".chip__pin").first().click();
+    await d.sleep(250);
+    const label = await page.locator(".pin").first().getAttribute("aria-label");
+    check("a pinned card describes itself", Boolean(label && label.length > 10), label);
+
+    await page.locator(".pin").first().click();
+    await d.sleep(250);
+    await page.locator(".tray .btn", { hasText: "Run string" }).click();
+    await d.sleep(200);
+    await page.locator(".pin").nth(1).click();
+    await d.sleep(400);
+    const tied = await page.locator(".pin").first().getAttribute("aria-label");
+    check("and says what it is tied to", /Tied to/.test(tied || ""), tied);
+  },
+
   /** The log holds everything said, and the keyboard drives the stage. */
   async log(page, base) {
     const d = driver(page, base);

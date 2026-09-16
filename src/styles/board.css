@@ -234,6 +234,12 @@
 
 .pin--suspect { box-shadow: 0 0 0 2px var(--accent), var(--shadow-card); }
 
+/* A questioned person's card is stamped, the way a file is. */
+.pin.is-done .pin__title::after {
+  content: " \2713";
+  color: var(--blood-200);
+}
+
 /* On the timeline a card hangs from the band's top edge rather than being
  * centred on its pin, and goes compact so it fits inside the band. */
 .pin.is-timed {
@@ -399,6 +405,16 @@
 
 .chip:hover { transform: translateX(3px); border-color: var(--accent); }
 .chip.is-dragging { opacity: 0.35; }
+
+/* Somebody already questioned. Still openable -- people say different things
+ * once you know more -- but it should not read as outstanding work. */
+.chip.is-done .chip__title { color: var(--text-300); }
+
+.chip__done {
+  margin-inline-start: 0.4em;
+  color: var(--lamp-200);
+  font-family: var(--font-type);
+}
 
 .chip__body { flex: 1; min-width: 0; }
 
