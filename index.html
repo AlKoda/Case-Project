@@ -44,6 +44,12 @@ button{font-family:inherit}
 .tb.accuse{background:var(--red);color:#fff}
 .tb.accuse:hover{background:#A6362C}
 .tb .lbl{font-size:12.5px}
+#linkbtn svg,#notebookbtn svg,#hintbtn svg,#accusebtn svg{display:none}
+#linkbtn::before,#notebookbtn::before,#hintbtn::before,#accusebtn::before{content:"";width:18px;height:18px;flex:none;background:center/contain no-repeat}
+#linkbtn::before{background-image:var(--sprite-icon-network)}
+#notebookbtn::before{background-image:var(--sprite-icon-document)}
+#hintbtn::before{background-image:var(--sprite-icon-warning)}
+#accusebtn::before{background-image:var(--sprite-icon-justice)}
 @media (max-width:1180px){.tb .lbl{display:none}.tb{padding:7px 8px}}
 .toolbar .title{font-family:var(--type);font-size:14px;white-space:nowrap}
 body.ar .toolbar .title{font-family:var(--arf);font-weight:600;font-size:13.5px}
@@ -96,7 +102,7 @@ body.ar .zone-label{font-family:var(--arf);font-weight:600;letter-spacing:0}
 .pin.blue{background:radial-gradient(circle at 34% 28%,#6E97BE,#2C4A66 72%)}
 .pin.gold{background:radial-gradient(circle at 34% 28%,#E3C168,#B8892F 72%)}
 .thumb{display:block;width:100%;aspect-ratio:1;overflow:hidden;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.22);margin-bottom:10px}
-.thumb svg{display:block;width:100%;height:100%}
+.thumb svg,.thumb img{display:block;width:100%;height:100%;object-fit:cover}
 .card .cname{font-weight:600;font-size:13.5px;line-height:1.3;margin:0}
 .card .crole{color:var(--muted);font-size:11.5px;margin-top:2px;line-height:1.3}
 .card .cstatus{margin-top:9px;font-family:var(--type);font-size:10.5px;color:var(--muted);padding-top:7px;border-top:1px solid var(--paper2)}
@@ -156,7 +162,7 @@ body.ar .scene-card .location-kicker{font-family:var(--arf);font-size:10px;font-
 .panel-head{padding:18px 26px 16px;border-bottom:2px solid var(--paper2);display:flex;gap:15px;align-items:center}
 body.ar .panel-head{direction:rtl}
 .panel-portrait{width:64px;height:64px;flex:none;overflow:hidden;border:3px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.2)}
-.panel-portrait svg{display:block;width:100%;height:100%}
+.panel-portrait svg,.panel-portrait img{display:block;width:100%;height:100%;object-fit:cover}
 .panel-head h2{font-family:var(--type);font-weight:400;font-size:18.5px;margin:0;line-height:1.3}
 body.ar .panel-head h2{font-family:var(--arf);font-weight:600}
 .panel-head .role{color:var(--muted);font-size:13px;margin-top:3px}
@@ -179,7 +185,7 @@ body.ar .flag{font-family:var(--arf);font-size:11px;font-weight:600}
 .flag.clue{background:var(--blue);color:#fff}
 .flag.clear{background:var(--green);color:#fff}
 .flag.locked{background:#D9CBAA;color:#5C4F36}
-.response{background:#fff;border:1px solid #D9CBAA;border-inline-start:3px solid var(--gold);padding:12px 15px;font-size:14.5px;line-height:1.65;animation:reveal .26s ease}
+.response{background:#fff var(--sprite-ui-notebook-page) center/100% 100% no-repeat;border:1px solid #D9CBAA;border-inline-start:3px solid var(--gold);padding:12px 15px;font-size:14.5px;line-height:1.65;animation:reveal .26s ease}
 body.ar .response{font-size:15px;line-height:1.9}
 @keyframes reveal{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:none}}
 .linkrow{margin-top:9px;padding-top:9px;border-top:1px dashed #DDD0B2}
@@ -235,7 +241,7 @@ body.ar .scene-out{line-height:1.9}
 body.ar .pickitem{direction:rtl;text-align:right}
 .pickitem:hover{border-color:var(--red)}
 .pickitem .pp{width:34px;height:34px;flex:none;overflow:hidden;border:2px solid #fff}
-.pickitem .pp svg{display:block;width:100%;height:100%}
+.pickitem .pp svg,.pickitem .pp img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* ---------- notebook ---------- */
 .notebook{position:fixed;top:0;inset-inline-end:0;bottom:0;z-index:70;width:min(370px,94vw);background:var(--paper);box-shadow:-10px 0 34px rgba(0,0,0,.45);transform:translateX(105%);transition:transform .26s ease;display:flex;flex-direction:column}
@@ -249,7 +255,7 @@ body.ar .notebook-head h2{font-family:var(--arf);font-weight:600}
 .notebook-close:hover{background:rgba(0,0,0,.12);color:var(--ink)}
 .notebook-list{flex:1;overflow-y:auto;padding:14px 16px}
 body.ar .notebook-list{direction:rtl;text-align:right}
-.note-entry{border-inline-start:3px solid var(--gold);padding:10px 13px;margin-bottom:10px;background:#fff;font-size:13.5px;line-height:1.55;animation:reveal .24s ease}
+.note-entry{border-inline-start:3px solid var(--gold);padding:10px 13px;margin-bottom:10px;background:#fff var(--sprite-ui-notebook-page) center/100% 100% no-repeat;font-size:13.5px;line-height:1.55;animation:reveal .24s ease}
 body.ar .note-entry{font-size:14px;line-height:1.8}
 .note-entry.contradiction{border-color:var(--red)}
 .note-entry.clue{border-color:var(--blue)}
@@ -351,8 +357,8 @@ body.ar .cs-teaser{font-size:13.5px;line-height:1.8}
   radial-gradient(circle at 50% 44%,transparent 0 16%,rgba(182,159,105,.13) 16.2% 16.5%,transparent 16.8%)}
 .menu-visual::after{content:"EVIDENCE ARCHIVE  /  RESTRICTED";position:absolute;bottom:7%;left:10%;font:10px var(--sans);letter-spacing:.28em;color:#756d5d}
 .menu-case-mark{position:absolute;left:11%;top:12%;writing-mode:vertical-rl;font:500 11px var(--sans);letter-spacing:.32em;color:#8d826c}
-.menu-placeholder{position:absolute;inset:21% 17% 18% 14%;display:flex;align-items:center;justify-content:center;text-align:center;border:1px dashed rgba(214,199,163,.22);color:#776f61;font:500 10px var(--sans);letter-spacing:.17em;text-transform:uppercase}
-.menu-placeholder span{max-width:170px;line-height:1.8}
+.menu-placeholder{position:absolute;inset:auto 13% 9% 13%;height:180px;background:var(--sprite-ui-paper-stack) center/contain no-repeat;filter:sepia(.15) brightness(.55);opacity:.72}
+.menu-placeholder span{display:none}
 .splash-frame{position:relative;align-self:center;width:min(560px,88%);padding:42px 4vw 42px 6vw;z-index:1}
 .menu-kicker{margin:0 0 24px;color:#b69f69;font:600 10px var(--sans);letter-spacing:.3em;text-transform:uppercase}
 .splash-title{margin:0;font:400 clamp(42px,5.5vw,78px)/.94 Georgia,serif;letter-spacing:-.035em;color:#f0f2f1;max-width:600px}
@@ -401,7 +407,7 @@ body.ar .intro-line{font-family:var(--arf);font-size:15px;line-height:2}
 body.ar .accuse-opt{direction:rtl;text-align:right}
 .accuse-opt.picked{border-color:var(--red);background:#FDF6F5}
 .mini-portrait{width:42px;height:42px;flex:none;overflow:hidden;border:2px solid #fff}
-.mini-portrait svg{display:block;width:100%;height:100%}
+.mini-portrait svg,.mini-portrait img{display:block;width:100%;height:100%;object-fit:cover}
 .confirmbtn{background:var(--red);color:#fff;border:none;font-weight:600;font-size:14.5px;padding:12px 24px;cursor:pointer;font-family:inherit}
 .confirmbtn:disabled{background:#D9CBAA;color:#8A7C5F;cursor:default}
 .verdict-stamp{font-family:var(--type);font-size:23px;padding:8px 18px;display:inline-block;border:3px solid;transform:rotate(-4deg);margin-bottom:16px}
@@ -618,6 +624,35 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
 @media (max-width:760px){.toolbar{padding:6px 9px;gap:5px}.toolbar .title{display:none}.tb{padding:7px 9px;font-size:11.5px}.meter .mlab{display:none}.toasts{max-width:240px}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.001s!important;transition-duration:.001s!important}}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+
+/* ---------- supplied sprite atlas integration ---------- */
+.menu-visual::before{inset:9% 8% 8%;border:0;background:url("assets/ui/case-file.svg") center/contain no-repeat;filter:saturate(.72) contrast(1.08);opacity:.72}
+.menu-placeholder{display:none}
+.card{background-color:transparent;background-image:url("assets/ui/card-paper.svg");background-size:100% 100%;background-repeat:no-repeat}
+.card.k-suspect{background-image:url("assets/ui/card-red.svg")}
+.card.k-witness{background-image:url("assets/ui/card-blue.svg")}
+.card.k-evidence{background-image:url("assets/ui/card-paper.svg")}
+.card .card-topline,.card .card-inner{position:relative;z-index:1}
+.card .card-inner{margin:0 8px 12px;background:rgba(247,240,223,.91);padding:9px!important}
+.card.k-evidence .card-inner{margin-top:4px}
+.scene-card{background-color:transparent;background-image:url("assets/ui/case-file.svg");background-size:100% 100%}
+.panel,.intro-card{background-color:var(--paper);background-image:url("assets/ui/paper-lined.svg");background-size:100% auto;background-repeat:repeat-y}
+.panel-head,.panel-body,.intro-inner{position:relative;background:rgba(243,235,216,.9)}
+.notebook{background:var(--paper) url("assets/ui/book-green.svg") left center/auto 100% no-repeat}
+.notebook-head,.nbtabs,.notebook-list{background:rgba(243,235,216,.91)}
+.snote{background-image:url("assets/ui/paper-note.svg")!important;background-size:100% 100%!important}
+.tb.asset-icon>svg,.tb.asset-icon>.tb-svg{display:none}
+.tb.asset-icon::before{content:"";width:24px;height:24px;flex:none;background:center/contain no-repeat}
+#linkbtn::before{background-image:url("assets/icons/action-analyze.svg")}
+#notebookbtn::before{background-image:url("assets/icons/category-documents.svg")}
+#hintbtn::before{background-image:url("assets/icons/category-theories.svg")}
+#accusebtn::before{background-image:url("assets/icons/status-contradicts.svg")}
+#casesbtn::before{background-image:url("assets/icons/category-people.svg")}
+#helpbtn::before{background-image:url("assets/icons/status-unknown.svg")}
+.zone-label svg{display:none}.zone-label::before{content:"";width:24px;height:24px;background:url("assets/icons/category-objects.svg") center/contain no-repeat;display:inline-block;vertical-align:middle;margin-right:6px}
+.toast{background-color:var(--paper);background-image:url("assets/ui/paper-clipped.svg");background-size:100% 100%}
+.toast.new::before{content:"";float:left;width:26px;height:26px;margin:2px 9px 2px 0;background:url("assets/icons/status-confirmed.svg") center/contain no-repeat}
+@media(max-width:760px){.menu-visual::before{inset:4%;opacity:.5}.card .card-inner{margin-inline:6px}}
 </style>
 </head>
 <body>
@@ -683,7 +718,7 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
   <div class="tgroup">
     <div class="group" id="swatches" style="border:none;background:transparent;padding:0"></div>
     <span class="tsep"></span>
-    <button class="tb" id="linkbtn"></button>
+    <button class="tb asset-icon" id="linkbtn"></button>
     <button class="tb" id="notebtn"></button>
     <button class="tb" id="undobtn"></button>
     <button class="tb" id="tidybtn"></button>
@@ -696,16 +731,16 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
   </div>
 
   <div class="tgroup">
-    <button class="tb" id="notebookbtn"><span id="tb-note"></span><span class="badge" id="notebadge">0</span></button>
-    <button class="tb" id="hintbtn"></button>
-    <button class="tb accuse" id="accusebtn"></button>
+    <button class="tb asset-icon" id="notebookbtn"><span id="tb-note"></span><span class="badge" id="notebadge">0</span></button>
+    <button class="tb asset-icon" id="hintbtn"></button>
+    <button class="tb accuse asset-icon" id="accusebtn"></button>
   </div>
 
   <div class="tgroup">
-    <button class="tb" id="casesbtn"></button>
+    <button class="tb asset-icon" id="casesbtn"></button>
     <button class="tb" id="promptsbtn"></button>
     <button class="tb" id="resetbtn"></button>
-    <button class="tb" id="helpbtn"></button>
+    <button class="tb asset-icon" id="helpbtn"></button>
     <button class="tb" id="langbtn"></button>
   </div>
 </div>
@@ -737,7 +772,11 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
   <div class="notebook-list" id="notebook-list"></div>
 </div>
 
+<script src="assets/sprites.js"></script>
 <script>
+Object.keys(CASE_SPRITES).forEach(function(key){
+  document.documentElement.style.setProperty("--sprite-"+key, 'url("'+CASE_SPRITES[key]+'")');
+});
 (function(){
 "use strict";
 
@@ -2132,6 +2171,19 @@ var CASE2 = {
 
 var CASES = {case1:CASE1, case2:CASE2};
 var CASE = CASE1;
+
+/* The supplied blank-name portrait sheet is intentionally assigned here rather
+   than using the named reference cards for unrelated story characters. */
+function spritePortrait(name){
+  return '<img src="'+CASE_SPRITES['portrait-'+name]+'" alt="" loading="lazy" draggable="false">';
+}
+var PORTRAIT_SPRITES = {
+  yusuf:"man-red", fahad:"man-blue", sara:"woman-purple",
+  aisha:"analyst-red", khalid:"man-glasses", devon:"young-man-cap",
+  hamdan:"young-man-teal", mariam:"woman-headscarf", rashid:"older-man-gold",
+  yara:"woman-magenta", faisal:"man-profile", whitfield:"older-man"
+};
+Object.keys(PORTRAIT_SPRITES).forEach(function(key){ ART[key] = spritePortrait(PORTRAIT_SPRITES[key]); });
 
 function loadCase(id){
   CASE = CASES[id];

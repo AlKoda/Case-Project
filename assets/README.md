@@ -1,4 +1,4 @@
-# Investigation artwork
+# Supplied investigation sprites
 
 The two supplied 1536×1024 police-academy sprite sheets have been cut into
 purpose-specific SVG image containers instead of being displayed as whole contact sheets.

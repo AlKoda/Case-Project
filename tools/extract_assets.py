@@ -5,7 +5,6 @@ import argparse
 import base64
 import io
 from pathlib import Path
-from PIL import Image
 
 EXPECTED_SIZE = (1536, 1024)
 SHEETS = {
