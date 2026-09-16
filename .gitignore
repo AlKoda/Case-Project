@@ -1,3 +1,6 @@
 
 __pycache__/
 *.py[cod]
+
+# Local backup exports written by tools/backup.py
+backups/
