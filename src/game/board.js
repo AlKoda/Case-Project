@@ -32,7 +32,7 @@ import { t } from "../engine/i18n.js";
 import * as store from "../engine/store.js";
 import * as assets from "../engine/assets.js";
 import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, WITNESSES } from "../data/case.js";
-import { INTERVIEWS } from "../data/scenes.js";
+import { SCENES, INTERVIEWS } from "../data/scenes.js";
 
 /* The window the timeline covers: 01:00 to 02:30, the ninety minutes that
  * matter. Everything outside it is somebody's alibi. */
@@ -146,6 +146,44 @@ export function mountBoard(root, go) {
   let linkFrom = null;
   let drag = null;
 
+  /**
+   * Undo history for the wall.
+   *
+   * Rearranging a board should never be a decision, so every change that moves,
+   * removes or ties something can be taken back. Nudging a card with the arrow
+   * keys deliberately does not push an entry -- holding an arrow down would
+   * otherwise bury everything else under a hundred one-pixel steps.
+   */
+  const history = [];
+  const HISTORY_LIMIT = 30;
+
+  function remember() {
+    const board = store.get().board;
+    history.push({
+      pins: { ...board.pins },
+      strings: board.strings.map((s) => ({ ...s })),
+      notes: { ...board.notes },
+      nextNote: board.nextNote,
+    });
+    if (history.length > HISTORY_LIMIT) history.shift();
+    undoButton?.toggleAttribute("disabled", false);
+  }
+
+  function undo() {
+    const previous = history.pop();
+    if (!previous) {
+      announce(t("board.nothingToUndo", "Nothing to undo."));
+      return;
+    }
+    store.setBoard(previous);
+    linkFrom = null;
+    cards = catalogue();
+    renderPins();
+    renderTray();
+    undoButton?.toggleAttribute("disabled", history.length === 0);
+    announce(t("board.undone", "Undone."));
+  }
+
   /* ------------------------------------------------------------- layout */
 
   const strings = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -158,6 +196,15 @@ export function mountBoard(root, go) {
   const tray = el("aside", { class: "tray" });
   const status = el("p", { class: "board__status", "aria-live": "polite" });
 
+  const undoButton = el("button", {
+    class: "btn btn--small",
+    type: "button",
+    text: t("board.undo", "Undo"),
+    title: t("board.undoTitle", "Take back the last change to the wall (Ctrl+Z)"),
+    disabled: true,
+    onClick: undo,
+  });
+
   const screen = el(
     "section",
     { class: "screen board grain" },
@@ -168,6 +215,16 @@ export function mountBoard(root, go) {
       ),
       status,
       el("div", { class: "board__tools" },
+        missedAtTheStairs().length
+          ? el("button", {
+              class: "btn btn--small btn--alert",
+              type: "button",
+              text: t("board.backToStairs", "Back to the stairs"),
+              title: t("board.backToStairsTitle", "There is still something down there you have not looked at"),
+              onClick: () => go("scene", { id: "scene:stairs", next: "hub" }),
+            })
+          : null,
+        undoButton,
         toolButton(t("board.addNote", "Add note"), addNote),
         toolButton(t("board.tidy", "Tidy"), tidy),
         toolButton(t("board.clear", "Clear wall"), clearWall),
@@ -183,6 +240,28 @@ export function mountBoard(root, go) {
   );
 
   root.append(screen);
+
+  /**
+   * Exhibits the scene-of-the-crime search hands over, read out of the script
+   * rather than listed here, so adding one to the stairs cannot leave this
+   * behind.
+   */
+  function stairsExhibits() {
+    return (SCENES["scene:stairs"]?.script ?? [])
+      .filter((node) => node.give)
+      .map((node) => node.give);
+  }
+
+  /**
+   * A player who leaves the stairs early would otherwise never see the
+   * exhibits they skipped, and some contradictions would become unprovable --
+   * a dead end with no signpost. The stairs stay open while anything is still
+   * down there.
+   */
+  function missedAtTheStairs() {
+    const held = store.get().exhibits;
+    return stairsExhibits().filter((id) => !held.includes(id));
+  }
 
   function toolButton(label, onClick) {
     return el("button", { class: "btn btn--small", type: "button", text: label, onClick });
@@ -406,7 +485,7 @@ export function mountBoard(root, go) {
     if (moves[event.key]) {
       event.preventDefault();
       const [dx, dy] = moves[event.key];
-      place(id, pin.x + dx, pin.y + dy);
+      place(id, pin.x + dx, pin.y + dy, false);   // nudges do not flood history
     } else if (event.key === "Delete" || event.key === "Backspace") {
       event.preventDefault();
       unpin(id);
@@ -421,7 +500,8 @@ export function mountBoard(root, go) {
 
   /* -------------------------------------------------------------- pinning */
 
-  function place(id, x, y) {
+  function place(id, x, y, record = true) {
+    if (record) remember();
     const clampedX = Math.min(CORK.x1 - MARGIN_X, Math.max(CORK.x0 + MARGIN_X, x));
     const clampedY = Math.min(CORK.y1 - MARGIN_Y, Math.max(CORK.y0 + MARGIN_Y, y));
     const onBand = clampedY >= BAND_TOP;
@@ -464,6 +544,7 @@ export function mountBoard(root, go) {
   }
 
   function unpin(id) {
+    remember();
     const pins = { ...store.get().board.pins };
     delete pins[id];
     const kept = store.get().board.strings.filter((s) => s.a !== id && s.b !== id);
@@ -492,6 +573,7 @@ export function mountBoard(root, go) {
     const already = existing.some(
       (s) => (s.a === linkFrom && s.b === id) || (s.a === id && s.b === linkFrom),
     );
+    remember();
     const strings = already
       ? existing.filter((s) => !((s.a === linkFrom && s.b === id) || (s.a === id && s.b === linkFrom)))
       : [...existing, { a: linkFrom, b: id }];
@@ -524,6 +606,7 @@ export function mountBoard(root, go) {
       path.setAttribute("d", `M ${x1} ${y1} Q ${(x1 + x2) / 2} ${(y1 + y2) / 2 + sag} ${x2} ${y2}`);
       path.setAttribute("class", "string");
       path.addEventListener("click", () => {
+        remember();
         store.setBoard({ strings: store.get().board.strings.filter((s) => !(s.a === a && s.b === b)) });
         drawStrings();
         announce(t("board.cut", "String cut."));
@@ -627,6 +710,7 @@ export function mountBoard(root, go) {
   }
 
   function addNote() {
+    remember();
     const board = store.get().board;
     const id = String(board.nextNote);
     store.setBoard({
@@ -641,6 +725,7 @@ export function mountBoard(root, go) {
 
   /** Lay every pinned card out on a grid, leaving the timeline alone. */
   function tidy() {
+    remember();
     const pins = { ...store.get().board.pins };
     const free = Object.entries(pins).filter(([, pin]) => pin.at == null);
     const columns = Math.ceil(Math.sqrt(free.length)) || 1;
@@ -663,11 +748,12 @@ export function mountBoard(root, go) {
 
   function clearWall() {
     if (!Object.keys(store.get().board.pins).length) return;
+    remember();
     store.setBoard({ pins: {}, strings: [] });
     linkFrom = null;
     renderPins();
     renderTray();
-    announce(t("board.cleared", "Wall cleared. Nothing was lost -- it is all back in the tray."));
+    announce(t("board.cleared", "Wall cleared. Everything is back in the tray, and Undo puts it back."));
   }
 
   function announce(message) {
@@ -680,6 +766,13 @@ export function mountBoard(root, go) {
     if (event.key === "Escape" && linkFrom) {
       linkFrom = null;
       renderPins();
+      return;
+    }
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "z") {
+      // Not while the player is typing in a note.
+      if (event.target instanceof HTMLTextAreaElement) return;
+      event.preventDefault();
+      undo();
     }
   }
   document.addEventListener("keydown", onKey);
@@ -691,12 +784,18 @@ export function mountBoard(root, go) {
   renderPins();
   renderTray();
 
+  const missed = missedAtTheStairs().length;
   const proven = store.get().proven.length;
-  announce(
-    proven
-      ? `${proven} ${t("board.provenCount", "account(s) broken.")}`
-      : t("board.hint", "Drag anything from the tray onto the wall. Click a pinned card to run string from it."),
-  );
+  if (missed) {
+    announce(
+      `${t("board.missed", "You left the stairs with something unexamined.")} ` +
+        t("board.missedHint", "Go back down before you name anybody."),
+    );
+  } else if (proven) {
+    announce(`${proven} ${t("board.provenCount", "account(s) broken.")}`);
+  } else {
+    announce(t("board.hint", "Drag anything from the tray onto the wall. Click a pinned card to run string from it."));
+  }
 
   return () => {
     document.removeEventListener("keydown", onKey);

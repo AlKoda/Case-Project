@@ -73,6 +73,13 @@ The board between interviews is a corkboard you build yourself.
   back to the tray.
 - **Add note** puts a blank card up for whatever you are thinking. **Tidy** lays
   the loose cards out on a grid. **Clear wall** returns everything to the tray.
+- **Undo** (or `Ctrl`/`Cmd`+`Z`) takes back the last change — a move, a string,
+  a card taken down, a wall cleared. Rearranging a board should never be a
+  decision you have to think about first.
+
+If you left the scene of the crime without examining everything, the board says
+so and offers a way back down. Walking away from an exhibit would otherwise put
+a contradiction permanently out of reach.
 
 Pinned cards are focusable: arrow keys nudge (hold shift for bigger steps),
 `L` starts a string, `Delete` takes the card down, `Enter` opens it.

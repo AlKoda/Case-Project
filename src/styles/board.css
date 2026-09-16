@@ -60,6 +60,16 @@
   letter-spacing: 0.1em;
 }
 
+/* Used only for the "back to the stairs" prompt, which is a warning rather
+ * than an ordinary tool. */
+.btn--alert {
+  border-color: var(--blood-200);
+  color: var(--blood-100);
+}
+
+.btn--alert:hover,
+.btn--alert:focus-visible { border-color: var(--blood-100); color: var(--lamp-100); }
+
 .board__stage {
   display: grid;
   grid-template-columns: minmax(0, 1fr) clamp(220px, 22vw, 320px);
@@ -410,6 +420,16 @@
 /* -------------------------------------------------------------- narrow */
 
 @media (max-width: 900px) {
-  .board__stage { grid-template-columns: 1fr; grid-template-rows: auto minmax(160px, 40vh); }
+  /* Used only for the "back to the stairs" prompt, which is a warning rather
+ * than an ordinary tool. */
+.btn--alert {
+  border-color: var(--blood-200);
+  color: var(--blood-100);
+}
+
+.btn--alert:hover,
+.btn--alert:focus-visible { border-color: var(--blood-100); color: var(--lamp-100); }
+
+.board__stage { grid-template-columns: 1fr; grid-template-rows: auto minmax(160px, 40vh); }
   .tray { max-height: 40vh; }
 }
