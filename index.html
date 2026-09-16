@@ -293,30 +293,39 @@ body.ar .deduction-title,body.ar .deduction-result,body.ar .relation-row .predic
 
 /* ---------- case select (gate #0.5, between splash and briefing) ---------- */
 #case-select{
-  position:fixed;inset:0;z-index:998;background:var(--cork-deep);
+  position:fixed;inset:0;z-index:998;background:#0b1115 url("assets/rooms/evidence-room.svg") center/cover no-repeat;
   display:flex;align-items:center;justify-content:center;padding:26px;overflow-y:auto;
   transition:opacity 380ms var(--e-in);
 }
+#case-select::before{content:"";position:fixed;inset:0;background:linear-gradient(90deg,rgba(6,10,13,.96),rgba(6,10,13,.76)),linear-gradient(0deg,rgba(4,7,9,.92),transparent 60%);pointer-events:none}
 #case-select.hidden{display:none}
 #case-select.leaving{opacity:0;pointer-events:none}
-.cs-wrap{max-width:900px;width:100%}
+.cs-wrap{position:relative;z-index:1;max-width:980px;width:100%}
 .cs-head{text-align:center;color:var(--paper);margin-bottom:26px}
 .cs-head h1{font-family:var(--type);font-weight:400;font-size:22px;margin:0 0 5px}
 body.ar .cs-head h1{font-family:var(--arf);font-weight:700}
 .cs-head p{margin:0;color:#B9A780;font-size:13.5px}
 body.ar .cs-head p{font-family:var(--arf)}
+.cs-brief{display:flex;align-items:center;gap:12px;width:max-content;max-width:100%;margin:0 0 24px;color:#c9d0d2;animation:bubble-in 500ms 80ms var(--e-out) backwards}
+.cs-brief img{width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.45))}
+.cs-bubble{position:relative;margin:0;padding:11px 15px;border:1px solid #4c5a60;background:rgba(18,27,32,.94);font-size:12.5px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.cs-bubble::before{content:"";position:absolute;left:-7px;top:14px;width:12px;height:12px;background:#121b20;border-left:1px solid #4c5a60;border-bottom:1px solid #4c5a60;transform:rotate(45deg)}
+body.ar .cs-brief{flex-direction:row-reverse;margin-left:auto}.cs-bubble strong{display:block;color:#b69f69;font-size:9px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:2px}
+body.ar .cs-bubble{text-align:right}body.ar .cs-bubble::before{left:auto;right:-7px;transform:rotate(225deg)}
 .cs-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 @media (max-width:720px){.cs-grid{grid-template-columns:1fr}}
 .cs-card{
   background:var(--paper);cursor:pointer;border:none;text-align:start;padding:0;
   box-shadow:0 16px 40px rgba(0,0,0,.4);overflow:hidden;
   transition:transform var(--t-ui) var(--e-out),box-shadow var(--t-ui) var(--e-out);
-  animation:settle var(--t-enter) var(--e-out) backwards;
+  transform-origin:50% 85%;animation:case-file-in 560ms 170ms var(--e-out) backwards;
 }
-.cs-card:nth-of-type(2){animation-delay:90ms}
+.cs-card:nth-of-type(2){animation-delay:270ms}
 .cs-card:hover{transform:translateY(-4px);box-shadow:0 22px 50px rgba(0,0,0,.5)}
 .cs-thumb{width:100%;aspect-ratio:600/200;overflow:hidden;border-bottom:3px solid var(--paper2)}
 .cs-thumb svg,.cs-thumb img{display:block;width:100%;height:100%;object-fit:cover}
+.cs-thumb img{transition:transform 650ms var(--e-out),filter 300ms ease;filter:saturate(.72) contrast(1.08)}
+.cs-card:hover .cs-thumb img,.cs-card:focus-visible .cs-thumb img{transform:scale(1.035);filter:saturate(.95) contrast(1.04)}
 .cs-body{padding:16px 18px 18px;position:relative}
 body.ar .cs-body{direction:rtl;text-align:right}
 .cs-tag{
@@ -336,6 +345,8 @@ body.ar .cs-teaser{font-size:13.5px;line-height:1.8}
   font-family:inherit;font-size:12.5px;padding:9px 18px;cursor:pointer;
 }
 .cs-foot button:hover{border-color:#B9A780;color:#EAD9AE}
+@keyframes case-file-in{from{opacity:0;transform:translateY(22px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes bubble-in{from{opacity:0;transform:translateX(-12px) scale(.92)}to{opacity:1;transform:none}}
 
 /* ---------- command menu (gate #0) ---------- */
 #academy-splash{
@@ -352,14 +363,22 @@ body.ar .cs-teaser{font-size:13.5px;line-height:1.8}
   linear-gradient(0deg,rgba(4,8,11,.42),rgba(4,8,11,.12)),
   url("assets/rooms/evidence-room.svg") center/cover no-repeat,#11191e;
   border-right:1px solid rgba(182,159,105,.2);overflow:hidden}
+.menu-visual>*{z-index:1}
 .menu-visual::before{content:"";position:absolute;inset:8% 10%;border:1px solid rgba(182,159,105,.18);background:
   linear-gradient(135deg,transparent 46%,rgba(182,159,105,.06) 46.2%,rgba(182,159,105,.06) 46.8%,transparent 47%),
   radial-gradient(circle at 50% 44%,transparent 0 16%,rgba(182,159,105,.13) 16.2% 16.5%,transparent 16.8%)}
-.menu-visual::after{content:"EVIDENCE ARCHIVE  /  RESTRICTED";position:absolute;bottom:7%;left:10%;font:10px var(--sans);letter-spacing:.28em;color:#756d5d}
+.menu-visual::after{content:"EVIDENCE ARCHIVE  /  RESTRICTED";position:absolute;top:7%;left:10%;font:10px var(--sans);letter-spacing:.28em;color:#756d5d}
 .menu-case-mark{position:absolute;left:11%;top:12%;writing-mode:vertical-rl;font:500 11px var(--sans);letter-spacing:.32em;color:#8d826c}
+.menu-dispatch{position:absolute;left:10%;right:10%;bottom:8%;display:flex;align-items:flex-end;gap:13px;color:#d1d8da;animation:bubble-in 650ms 800ms var(--e-out) backwards}
+.menu-dispatch img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 4px 10px #000)}
+.dispatch-bubble{position:relative;max-width:310px;margin:0 0 8px;padding:13px 16px;background:rgba(12,19,23,.92);border:1px solid rgba(182,159,105,.42);font-size:12px;line-height:1.55;box-shadow:0 12px 30px rgba(0,0,0,.35)}
+.dispatch-bubble::before{content:"";position:absolute;left:-7px;bottom:9px;width:12px;height:12px;background:#0d1418;border-left:1px solid rgba(182,159,105,.42);border-bottom:1px solid rgba(182,159,105,.42);transform:rotate(45deg)}
+.dispatch-bubble strong{display:block;margin-bottom:3px;color:#b69f69;font-size:9px;letter-spacing:.17em;text-transform:uppercase}
 .menu-placeholder{position:absolute;inset:auto 13% 9% 13%;height:180px;background:var(--sprite-ui-paper-stack) center/contain no-repeat;filter:sepia(.15) brightness(.55);opacity:.72}
 .menu-placeholder span{display:none}
 .splash-frame{position:relative;align-self:center;width:min(560px,88%);padding:42px 4vw 42px 6vw;z-index:1}
+.splash-frame>*{animation:menu-item-in 520ms var(--e-out) backwards}.splash-frame>:nth-child(1){animation-delay:80ms}.splash-frame>:nth-child(2){animation-delay:150ms}.splash-frame>:nth-child(3){animation-delay:220ms}.splash-frame>:nth-child(4){animation-delay:270ms}.splash-frame>:nth-child(5){animation-delay:340ms}.splash-frame>:nth-child(6){animation-delay:410ms}.splash-frame>:nth-child(7){animation-delay:470ms}
+@keyframes menu-item-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
 .menu-kicker{margin:0 0 24px;color:#b69f69;font:600 10px var(--sans);letter-spacing:.3em;text-transform:uppercase}
 .splash-title{margin:0;font:400 clamp(42px,5.5vw,78px)/.94 Georgia,serif;letter-spacing:-.035em;color:#f0f2f1;max-width:600px}
 .splash-title span{display:block;color:#8f2928;font-style:italic}
@@ -375,12 +394,11 @@ body.ar .cs-teaser{font-size:13.5px;line-height:1.8}
 .menu-meta{display:flex;gap:18px;margin-top:24px;font:500 9px var(--sans);letter-spacing:.16em;color:#58666c;text-transform:uppercase}
 .splash-foot{margin:28px 0 0;font:400 9px var(--sans);letter-spacing:.12em;color:#4e5b60;text-transform:uppercase}
 .splash-foot .ar{display:block;font-family:var(--arf);direction:rtl;text-align:left;margin-top:5px;text-transform:none}
-@media(max-width:760px){#academy-splash{grid-template-columns:1fr}.menu-visual{position:absolute;inset:0;opacity:.28;border:0}.splash-frame{justify-self:center;width:min(520px,90%);padding:32px 20px}.splash-title{font-size:49px}.menu-meta{flex-wrap:wrap}}
-@media(prefers-reduced-motion:reduce){#academy-splash{transition:none}}
+@media(max-width:760px){#academy-splash{grid-template-columns:1fr}.menu-visual{position:absolute;inset:0;opacity:.28;border:0}.menu-dispatch{display:none}.splash-frame{justify-self:center;width:min(520px,90%);padding:32px 20px}.splash-title{font-size:49px}.menu-meta{flex-wrap:wrap}.cs-brief{margin-inline:auto}.cs-head{text-align:center!important}}
+@media(prefers-reduced-motion:reduce){#academy-splash{transition:none}.splash-frame>*,.menu-dispatch,.cs-brief,.cs-card{animation:none!important}}
 body:has(#academy-splash) .overlay{z-index:1001}
 
 /* ---------- grounded case archive ---------- */
-#case-select{background:#0b1115}
 .cs-head{text-align:left}.cs-head h1{font-family:Georgia,serif;font-size:30px}.cs-head p{color:#738086}
 .cs-grid{gap:14px}.cs-card{background:#121a1f;border:1px solid #29343a;box-shadow:none;color:#e6eaeb}
 .cs-card:hover{transform:translateY(-2px);border-color:#8e7a50;box-shadow:0 16px 38px rgba(0,0,0,.36)}
@@ -660,6 +678,10 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
 <div id="academy-splash">
   <div class="menu-visual" aria-hidden="true">
     <span class="menu-case-mark">CASEWORK / 01</span>
+    <div class="menu-dispatch">
+      <img src="assets/icons/academy-crest.svg" alt="">
+      <p class="dispatch-bubble"><strong>Archive dispatch</strong>Two case files are ready for review. Begin when you are prepared to examine the record.</p>
+    </div>
   </div>
   <main class="splash-frame" aria-labelledby="game-title">
     <p class="menu-kicker">Interactive investigation prototype</p>
@@ -682,6 +704,10 @@ body.ar .helprow .hn{font-family:var(--arf);font-weight:700}
     <div class="cs-head">
       <h1 id="cs-h1"></h1>
       <p id="cs-p1"></p>
+    </div>
+    <div class="cs-brief">
+      <img src="assets/icons/academy-crest.svg" alt="">
+      <p class="cs-bubble"><strong id="cs-brief-label"></strong><span id="cs-brief-text"></span></p>
     </div>
     <div class="cs-grid" id="cs-grid"></div>
     <div class="cs-foot"><button id="cs-later"></button></div>
@@ -1276,6 +1302,8 @@ var UI = {
   cases:{en:"Cases", ar:"القضايا"},
   csTitle:{en:"Choose a case", ar:"اختر قضية"},
   csSub:{en:"Pick which case file to open. Switch anytime from the toolbar.", ar:"اختر ملف القضية الذي تريد فتحه. يمكنك التبديل في أي وقت من شريط الأدوات."},
+  csBriefLabel:{en:"Archive officer", ar:"ضابط الأرشيف"},
+  csBriefText:{en:"Select a file to receive your briefing.", ar:"اختر ملفاً لتلقي الإحاطة الخاصة بك."},
   csLater:{en:"Skip \u2014 open Case 1", ar:"تجاوز \u2014 افتح القضية ١"},
   strength:{en:"Case strength", ar:"قوة القضية"},
   strengthTip:{en:"How much of a provable case you have assembled.", ar:"مقدار ما جمعته من قضية قابلة للإثبات."},
@@ -3253,6 +3281,8 @@ document.getElementById("splashcontinue").onclick = function(){
 function renderCaseSelect(){
   document.getElementById("cs-h1").textContent = T(UI.csTitle);
   document.getElementById("cs-p1").textContent = T(UI.csSub);
+  document.getElementById("cs-brief-label").textContent = T(UI.csBriefLabel);
+  document.getElementById("cs-brief-text").textContent = T(UI.csBriefText);
   document.getElementById("cs-later").textContent = T(UI.csLater);
   var grid = document.getElementById("cs-grid");
   grid.innerHTML = Object.keys(CASES).map(function(id){
