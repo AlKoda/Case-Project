@@ -153,6 +153,27 @@ speak before walking on, witnesses whose times the timeline cannot parse. Those
 are the failures that would otherwise surface halfway through an interview in
 front of a player.
 
+## Play tests
+
+`check_project.py` checks that the build is coherent. To check that it is
+*playable*, there is an end-to-end suite that drives a real browser:
+
+```sh
+npm install playwright     # once; the game itself needs nothing
+node tools/playtest.mjs    # 45 checks over seven scenarios
+node tools/playtest.mjs board undo
+```
+
+It starts its own server on a free port, plays a night from the title screen to
+a verdict, pins and ties and undoes on the wall, presses a witness, checks the
+accusation reports the file's real strength, and confirms no card hangs off the
+cork at desktop, tablet or phone width. Every scenario also fails if anything
+was thrown or logged as an error along the way.
+
+Playwright is a development dependency and nothing else needs it — the game is
+still a static site with no build step and no runtime dependencies. Without it
+the suite exits cleanly and says so, so it is safe to wire into a hook.
+
 ## Backups
 
 Before trying something you might want to undo:

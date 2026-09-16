@@ -4,3 +4,7 @@ __pycache__/
 
 # Local backup exports written by tools/backup.py
 backups/
+
+# Optional dev dependency for tools/playtest.mjs
+node_modules/
+package-lock.json
