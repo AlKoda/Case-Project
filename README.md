@@ -16,6 +16,22 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000/>.
 
+Progress is saved automatically in the browser. Returning players can use **Continue**
+from the opening screen; starting another case creates a fresh session for that case.
+
+## Preflight check
+
+Before sharing a play-test build, run the dependency-free project check:
+
+```sh
+python3 tools/check_project.py
+```
+
+It verifies unique document IDs, local asset references, and the syntax of the inline
+game JavaScript. For a manual smoke test, complete this short path in both English and
+Arabic: open a case, inspect a scene hotspot, question a character, add and move a note,
+connect two cards, refresh and continue the saved session, then open the accusation flow.
+
 ## GitHub Pages
 
 The GitHub Actions workflow in `.github/workflows/deploy-pages.yml` publishes
