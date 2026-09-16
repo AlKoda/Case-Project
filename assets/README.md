@@ -1,24 +1,21 @@
-# Investigation artwork
+# Supplied investigation sprites
 
-This directory is the destination for game-ready exports made from the three
-supplied asset sheets. The files are grouped by their role rather than by source sheet:
+The two supplied 1536×1024 sheets are integrated through the merge-safe,
+text-only [`sprites.js`](sprites.js) data-URI bundle. It contains the 21 crops
+used by the running game: twelve cast portraits, four control icons, two card
+backs, a named menu card, and two paper surfaces. Keeping the runtime bundle as
+JavaScript avoids binary-file patches that GitHub's patch importer cannot apply.
 
-- `characters/` — the ten complete, bordered character cards.
-- `locations/` — the six large location cards (not the small alternates along
-  the bottom of the sheet).
-- `ui/` — reusable paper panels, cards, board furniture, and controls.
-- `icons/` — compact category and status symbols.
+`tools/extract_assets.py` remains the canonical crop map. Given
+`named-characters.png` and `sprite-sheet.png`, it also exports the complete set
+of 105 PNG crops locally:
 
-See [`SOURCE-MAP.md`](SOURCE-MAP.md) for the exact source rectangles and the
-places where the exports are used.  To reproduce the exports, place the three
-original 1536×1024 sheets in `/source-assets` and run:
+- 18 label-free portraits and ten named reference cards;
+- 18 complete blank-label person cards and six card backs;
+- 36 circular interface/status icons;
+- 15 anonymous silhouette tokens; and
+- a paper stack and ruled notebook panel.
 
-```sh
-python3 -m pip install -r tools/requirements-assets.txt
-python3 tools/extract_assets.py --source /source-assets --output assets
-```
-
-The extractor samples the supplied sheet dimensions, validates every crop,
-and uses hand-inspected rectangles that retain each item's outer border while
-excluding adjacent artwork. It deliberately does **not** divide a sheet into
-an equal grid.
+Generated PNGs are intentionally gitignored. The extractor finishes by rebuilding
+`assets/sprites.js` from the exact subset used at runtime, so the committed file
+is deterministic and reviewable as text.
