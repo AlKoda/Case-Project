@@ -27,6 +27,20 @@ to try.
 By default the backup is also pushed to GitHub, so it survives losing this machine.
 Add `--no-push` to keep it local.
 
+### If the push is refused
+
+Some automated sessions run with credentials that may create branches but not tags.
+If `save` reports that the GitHub push failed, the backup still exists on the machine
+that made it and is listed by `list` and usable by `restore` as normal — only the
+off-machine copy is missing. Push it yourself when you have your own credentials:
+
+```sh
+git push origin <backup-name>
+```
+
+If that is refused too, `python3 tools/backup.py export <backup-name>` writes the
+snapshot out as a zip you can store anywhere.
+
 ## See what you can go back to
 
 ```sh
