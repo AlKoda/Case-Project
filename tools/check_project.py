@@ -44,7 +44,10 @@ def main() -> None:
     if duplicates:
         fail(f"duplicate HTML ids: {', '.join(duplicates)}")
 
-    css_references = re.findall(r'url\(["\']?(assets/[^)"\']+)', source)
+    stylesheets = [ROOT / ref for ref in parser.references if ref.endswith(".css")]
+    css_source = "\n".join(path.read_text(encoding="utf-8") for path in stylesheets if path.is_file())
+    css_references = re.findall(r'url\(["\']?((?:\.\./)?assets/[^)"\']+)', css_source)
+    css_references = [reference.removeprefix("../") for reference in css_references]
     missing = sorted(
         reference
         for reference in set(parser.references + css_references)
@@ -54,13 +57,17 @@ def main() -> None:
         fail(f"missing local assets: {', '.join(missing)}")
 
     scripts = re.findall(r"<script(?:\s[^>]*)?>(.*?)</script>", source, re.DOTALL)
+    external_scripts = [ROOT / ref for ref in parser.references if ref.endswith(".js")]
     inline = "\n".join(script for script in scripts if script.strip())
+    javascript = inline + "\n" + "\n".join(
+        path.read_text(encoding="utf-8") for path in external_scripts if path.is_file()
+    )
     with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8") as script_file:
-        script_file.write(inline)
+        script_file.write(javascript)
         script_file.flush()
         result = subprocess.run(["node", "--check", script_file.name], check=False)
     if result.returncode:
-        fail("inline JavaScript did not pass node --check")
+        fail("JavaScript did not pass node --check")
 
     print(f"OK: {len(parser.ids)} unique ids, {len(set(parser.references + css_references))} local references, JavaScript syntax")
 

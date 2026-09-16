@@ -1,7 +1,9 @@
 # Case Project
 
-A self-contained HTML/CSS/JavaScript investigation game. The site is entirely
-static and does not require Jekyll or another build system.
+A dependency-free HTML/CSS/JavaScript investigation game. The site is entirely
+static and does not require Jekyll or another build system. Its small application
+shell lives in `index.html`, presentation in `src/styles.css`, and game data and
+behaviour in `src/game.js`, so each layer can be upgraded independently.
 
 The intended player loop, story structure, accessibility goals, and technical
 constraints are documented in [`game-design.md`](game-design.md).
@@ -18,6 +20,8 @@ Then open <http://localhost:8000/>.
 
 Progress is saved automatically in the browser. Returning players can use **Continue**
 from the opening screen; starting another case creates a fresh session for that case.
+During a case, the field-action dock provides direct access to scene search, active
+leads, and clue linking without requiring players to discover toolbar controls first.
 
 ## Preflight check
 
