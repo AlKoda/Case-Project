@@ -434,6 +434,43 @@ body[data-case="case1"] .panel.scene-investigation{max-width:1120px;background:#
 @media(max-width:760px){.investigation-hud{bottom:10px;left:10px;width:calc(100vw - 20px)}.scene-investigation .panel-body{grid-template-columns:1fr}.scene-side{border-left:0;border-top:1px solid #3b494f}.scene-investigation .scene-wrap svg{min-height:310px}.ih-search{padding:0 12px}}
 @media(prefers-reduced-motion:reduce){body[data-case="case1"] .card.k-evidence .thumb img,body[data-case="case1"] .card.k-evidence .thumb svg,.investigation-hud,.scene-investigation .hot .burst{animation:none!important}}
 
+/* ---------- Case 2: neon noir homicide deck ---------- */
+body[data-case="case2"]{--case-neon:#e7c35d;--case-night:#071118;--case-red:#d0443a;background:#071118;color:#e9eeee}
+body[data-case="case2"] .toolbar{background:linear-gradient(90deg,#09131a 0%,#17242a 48%,#081116 100%);border-bottom:1px solid #66726f;box-shadow:0 8px 35px #0009}
+body[data-case="case2"] .toolbar .title{font-family:Georgia,serif;color:#f3e6c7;letter-spacing:.035em}
+body[data-case="case2"] .board-scroll{background-color:#0b151b;background-image:radial-gradient(circle at 23% 13%,rgba(210,62,48,.15),transparent 25%),linear-gradient(rgba(231,195,93,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(231,195,93,.035) 1px,transparent 1px);background-size:auto,36px 36px,36px 36px}
+body[data-case="case2"] .board{background:radial-gradient(circle at 52% 42%,rgba(45,64,70,.34),transparent 48%)}
+body[data-case="case2"] .zone-panel{background:rgba(7,16,22,.5);border:1px solid rgba(231,195,93,.17);box-shadow:inset 0 0 70px #0005}
+body[data-case="case2"] .zone-label{color:#d8bd70;letter-spacing:.16em;text-shadow:0 2px 8px #000}
+body[data-case="case2"] .card{background:#d8d0bd;background-image:none;border:0;border-radius:3px;box-shadow:0 18px 35px #0008,0 0 0 1px #645f54;filter:none;transition:transform .22s var(--e-out),box-shadow .22s ease}
+body[data-case="case2"] .card::after{content:"";position:absolute;inset:7px;border:1px solid rgba(20,29,32,.22);pointer-events:none}
+body[data-case="case2"] .card:hover{transform:translateY(-10px) rotate(var(--tilt,0deg)) scale(1.025);box-shadow:0 28px 48px #000c,0 0 0 2px var(--case-neon);z-index:30}
+body[data-case="case2"] .card.k-suspect{background:linear-gradient(145deg,#241b1a,#38211f);color:#f5e8d0;box-shadow:0 18px 35px #0009,inset 0 0 0 1px #6f3c36}
+body[data-case="case2"] .card.k-witness{background:linear-gradient(145deg,#14232a,#1e3740);color:#e5eef0;box-shadow:0 18px 35px #0009,inset 0 0 0 1px #3e6571}
+body[data-case="case2"] .card .thumb{overflow:hidden;background:#0b1115;border:5px solid #eee8d9;box-shadow:0 7px 14px #0007}
+body[data-case="case2"] .card .thumb img{width:100%;height:100%;object-fit:cover;filter:saturate(.82) contrast(1.12)}
+body[data-case="case2"] .card.k-suspect .thumb{border-color:#af4b42}body[data-case="case2"] .card.k-witness .thumb{border-color:#4e8290}
+body[data-case="case2"] .scene-card{background:#0e181e;border:1px solid #806f45;color:#f2e7cc;box-shadow:0 20px 48px #000b;overflow:hidden}
+body[data-case="case2"] .scene-card .mini{height:185px}body[data-case="case2"] .scene-card .mini img{filter:saturate(1.15) contrast(1.08);transition:transform .7s var(--e-out)}body[data-case="case2"] .scene-card:hover .mini img{transform:scale(1.08)}
+body[data-case="case2"] .scene-card .open-tag{background:var(--case-red);color:white;letter-spacing:.14em}
+body[data-case="case2"] .investigation-hud{display:grid;grid-template-columns:1fr auto;border-color:#6d776f;border-left-color:var(--case-red);background:linear-gradient(120deg,rgba(9,19,25,.97),rgba(28,39,42,.96));box-shadow:0 18px 46px #000c}
+body[data-case="case2"] .ih-kicker{color:var(--case-neon)}body[data-case="case2"] .ih-search{background:#7e2925;border-color:#a8473f}body[data-case="case2"] .ih-search:hover{background:#b63d35}
+body[data-case="case2"] .panel.dialogue-panel{max-width:900px;background:#0d171d;color:#edf1ef;border:1px solid #637078;box-shadow:0 30px 90px #000}
+body[data-case="case2"] .dialogue-panel .panel-head{min-height:145px;padding:24px 32px;background:linear-gradient(105deg,#251817,#102129 60%,#0a1217);border-bottom:1px solid #756743;position:relative;overflow:hidden}
+body[data-case="case2"] .dialogue-panel .panel-head::after{content:"REC • INTERVIEW ROOM 02";position:absolute;right:28px;top:20px;color:#dc554c;font:700 9px var(--sans);letter-spacing:.18em;animation:recblink 1.5s steps(2,end) infinite}
+body[data-case="case2"] .dialogue-panel .panel-portrait{width:105px;height:125px;border:2px solid var(--case-neon);box-shadow:10px 10px 0 #050a0d;animation:portrait-in .45s var(--e-out) both}
+body[data-case="case2"] .dialogue-panel .panel-head h2{font:31px Georgia,serif;color:#fff}body[data-case="case2"] .dialogue-panel .role{color:#d5bd78;letter-spacing:.14em;text-transform:uppercase}
+body[data-case="case2"] .dialogue-panel .panel-body{background:radial-gradient(circle at 90% 0,rgba(215,181,88,.08),transparent 35%),#0d171d}
+body[data-case="case2"] .dialogue-panel .topic-btn{background:#14242b;border:1px solid #344a53;color:#e4eaeb;border-left:3px solid transparent;transition:transform .18s var(--e-out),background .18s,border-color .18s}
+body[data-case="case2"] .dialogue-panel .topic-btn:hover{transform:translateX(7px);background:#20353e;border-left-color:var(--case-neon)}
+body[data-case="case2"] .dialogue-panel .response{background:#ddd2ba;color:#1c1b18;border-left:5px solid var(--case-red);box-shadow:0 14px 30px #0007;font:16px/1.7 Georgia,serif;animation:statement-in .35s var(--e-out) both}
+body[data-case="case2"] .dialogue-panel .response::before{content:"RECORDED STATEMENT";display:block;color:#8d2923;font:700 9px var(--sans);letter-spacing:.18em;margin-bottom:7px}
+body[data-case="case2"] .panel.scene-investigation{max-width:1160px;background:#081117;color:#edf1ef;border:1px solid #637078;overflow:hidden}
+body[data-case="case2"] .scene-investigation .panel-head{background:#111e24;border-color:#59666b}body[data-case="case2"] .scene-investigation .scene-wrap{background:#050b0f}
+body[data-case="case2"] .scene-side{border-left-color:#536168}body[data-case="case2"] .scene-side .scene-out{border-left-color:var(--case-red)}body[data-case="case2"] .scene-investigation .hot .ring{stroke:var(--case-neon);filter:drop-shadow(0 0 9px #e7c35d)}
+@keyframes recblink{50%{opacity:.25}}@keyframes portrait-in{from{opacity:0;transform:translateX(-20px) rotate(-3deg)}to{opacity:1;transform:none}}@keyframes statement-in{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){body[data-case="case2"] *{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+
 /* ---------- grounded case archive ---------- */
 .cs-head{text-align:left}.cs-head h1{font-family:Georgia,serif;font-size:30px}.cs-head p{color:#738086}
 .cs-grid{gap:14px}.cs-card{background:#121a1f;border:1px solid #29343a;box-shadow:none;color:#e6eaeb}
@@ -2215,7 +2252,7 @@ var CASE2 = {
   suspects:SUSPECTS2, witnesses:WITNESSES2, evidence:EVIDENCE2, hotspots:HOTSPOTS2,
   leads:LEADS2, verdicts:VERDICTS2, correct:ACCUSE_CORRECT2, keyExhibits:KEY_EXHIBITS2,
   par:PAR2, layout:LAYOUT2, roomArt:CASE2_ROOMART, sceneMini:SCENE_MINI2,
-  sceneAsset:"assets/locations/office-wide.svg", selectAsset:"assets/locations/office.svg", sceneIcon:"assets/icons/archive.svg",
+  sceneAsset:"assets/case2/villa-study.svg", selectAsset:"assets/case2/villa-card.svg", sceneIcon:"assets/icons/pin-alert.svg",
   title:{en:"Case 2027/0212 \u2014 Silence at Villa Al-Nawras", ar:"القضية \u0662\u0660\u0662\u0667/\u0660\u0662\u0661\u0662 \u2014 صمتٌ في فيلا النورس"},
   brief:[
     {en:"Villa Al-Nawras, the Al-Khuwair coast. 10:40pm.", ar:"فيلا النورس، ساحل الخوير. الساعة ١٠:٤٠ مساءً."},
@@ -2769,7 +2806,7 @@ function openCard(key){
   var e = ALL[key]; if(!e) return;
   state.openPanel = {kind:e.kind, id:key};
   if(e.kind==="evidence") renderEvidence(key); else renderPerson(e.kind, key);
-  showOverlay(CASE === CASE1 && e.kind !== "evidence" ? "dialogue-panel" : "");
+  showOverlay((CASE === CASE1 || CASE === CASE2) && e.kind !== "evidence" ? "dialogue-panel" : "");
 }
 /* ---- qualities: the single vocabulary every storylet is gated on ----
    ev:<id>    an exhibit has been read
@@ -3018,14 +3055,15 @@ function pinToTimeline(key){
 /* ========== SCENE ========== */
 function openScene(){
   state.openPanel = {kind:"scene"};
-  var cinematic = CASE === CASE1;
+  var cinematic = CASE === CASE1 || CASE === CASE2;
+  var case2 = CASE === CASE2;
   panel.innerHTML =
     '<button class="close-x" data-close>&times;</button>'+
     '<div class="panel-head"><div><h2>'+T(CASE.sceneTitle)+'</h2>'+
     '<div class="role">'+num(Object.keys(state.examined).length)+' / '+num(HOTSPOTS.length)+'</div></div></div>'+
     '<div class="panel-body">'+
     '<div class="scene-wrap'+(state.glow?" glow":"")+'" id="scenewrap">'+sceneSVG()+'</div>'+
-    (cinematic ? '<aside class="scene-side"><span class="scene-kicker">'+T({en:"Point & click investigation",ar:"تحقيق بالنقر والاستكشاف"})+'</span><h3>'+T({en:"Suite 402",ar:"الجناح ٤٠٢"})+'</h3><p>'+T({en:"Sweep the room. Every numbered marker can hide testimony, a contradiction, or a new evidence card.",ar:"فتّش الغرفة. قد تخفي كل علامة مرقّمة شهادة أو تناقضاً أو بطاقة دليل جديدة."})+'</p>' : '')+
+    (cinematic ? '<aside class="scene-side"><span class="scene-kicker">'+T({en:"Point & click investigation",ar:"تحقيق بالنقر والاستكشاف"})+'</span><h3>'+T(case2?{en:"Villa Al-Nawras",ar:"فيلا النورس"}:{en:"Suite 402",ar:"الجناح ٤٠٢"})+'</h3><p>'+T(case2?{en:"Sweep the study. Reconstruct the locked-room route and recover every exhibit before the trail goes cold.",ar:"فتّش المكتب. أعد بناء مسار الغرفة المغلقة واستخرج كل دليل قبل أن يبرد الأثر."}:{en:"Sweep the room. Every numbered marker can hide testimony, a contradiction, or a new evidence card.",ar:"فتّش الغرفة. قد تخفي كل علامة مرقّمة شهادة أو تناقضاً أو بطاقة دليل جديدة."})+'</p>' : '')+
     '<div class="scene-out" id="sceneout"><span class="scene-empty">'+T(UI.scenePrompt)+'</span></div>'+
     '<div class="scene-tools"><button class="actbtn" id="glowbtn">'+T(state.glow?UI.glowOn:UI.glowOff)+'</button></div>'+
     (cinematic ? '</aside>' : '')+'</div>';
@@ -3363,11 +3401,12 @@ document.getElementById("cs-later").onclick = function(){
 document.getElementById("casesbtn").onclick = openCaseSelect;
 function updateInvestigationHUD(){
   var hud = document.getElementById("investigation-hud");
-  if(!hud || CASE !== CASE1) return;
+  if(!hud || (CASE !== CASE1 && CASE !== CASE2)) return;
   var done = Object.keys(state.examined).length;
   var found = Object.keys(state.found).length;
+  var homicide = CASE === CASE2;
   document.getElementById("ih-kicker").textContent = T({en:"Active objective",ar:"الهدف النشط"});
-  document.getElementById("ih-objective").textContent = T(done < HOTSPOTS.length ? {en:"Search Suite 402",ar:"فتّش الجناح ٤٠٢"} : {en:"Question the witnesses",ar:"استجوب الشهود"});
+  document.getElementById("ih-objective").textContent = T(done < HOTSPOTS.length ? (homicide ? {en:"Reconstruct the villa study",ar:"أعد بناء أحداث مكتب الفيلا"} : {en:"Search Suite 402",ar:"فتّش الجناح ٤٠٢"}) : (homicide ? {en:"Break the three alibis",ar:"اختبر حجج الغياب الثلاث"} : {en:"Question the witnesses",ar:"استجوب الشهود"}));
   document.getElementById("ih-progress").textContent = T({en:done+" of "+HOTSPOTS.length+" scene details examined · "+found+" evidence cards recovered",ar:"فُحصت "+done+" من "+HOTSPOTS.length+" علامات · جُمعت "+found+" بطاقات أدلة"});
   document.getElementById("ih-search").textContent = T({en:"Enter scene →",ar:"ادخل الموقع ←"});
 }
