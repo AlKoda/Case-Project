@@ -1,2 +1,4 @@
-__pycache__/
-*.py[cod]
+
+# Binary sprite crops are reproducible build outputs; the merge-safe runtime
+# bundle is committed as assets/sprites.js.
+assets/**/*.png

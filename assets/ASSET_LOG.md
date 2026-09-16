@@ -1,20 +1,23 @@
-# UI asset integration log
+# Supplied asset integration log
 
-The supplied UI atlases are exported into merge-friendly, text-based SVG files
-under `assets/ui/` and `assets/icons/`. The live game currently
-uses the exports for:
+The two delivered sheets define 105 discrete production crops. The checked-in
+runtime representation is the text-only `assets/sprites.js` bundle rather than
+binary PNG files, allowing the change to pass through GitHub patch-based PR and
+merge systems. The dependency-free extractor can regenerate all individual PNGs
+and the bundle from the source sheets.
 
-- the main-menu case-file illustration;
-- suspect, witness, and evidence card frames;
-- the crime-scene case-file surface;
-- modal, briefing, notebook, note, and toast paper treatments;
-- toolbar actions, categories, help, hint, accusation, and board-zone symbols.
+## In-game use
 
-Text is deliberately not baked into interactive controls. Labels remain HTML so
-English and Arabic modes, focus states, screen readers, and responsive layouts
-continue to work. Crops containing example words are retained as reference
-assets, but are not placed underneath live labels where duplicated wording would
-be misleading.
+- Twelve label-free portraits are assigned to the two playable cases. Cards with
+  printed identities are never assigned to differently named story characters.
+- The captain reference card and paper stack furnish the opening menu.
+- Red and compass card backs identify the theft and homicide case files.
+- Four supplied symbols identify link, notebook, hint, and accusation controls.
+- The ruled-paper sprite textures dialogue responses and notebook entries.
 
-Generic silhouettes from these UI sheets are likewise not presented as named
-case characters. The project keeps dedicated directories for future story art.
+## Not present in these sheets
+
+The delivered images do not contain room backgrounds, evidence-object photos,
+or dedicated dialogue-button strips. Existing interactive SVG scene diagrams
+and accessible HTML controls therefore remain in use rather than substituting
+unrelated artwork.

@@ -1,148 +1,137 @@
 #!/usr/bin/env python3
-"""Slice supplied UI atlases into merge-friendly SVG-wrapped image assets."""
+"""Extract the two supplied 1536x1024 sprite sheets without external tools."""
 
 from __future__ import annotations
 
 import argparse
 import base64
-from io import BytesIO
+import binascii
+import struct
+import zlib
 from pathlib import Path
-from PIL import Image
 
-EXPECTED_SIZE = (1536, 1024)
+SIZE = (1536, 1024)
 
-# Rectangles are hand measured, inclusive-exclusive.  They intentionally keep
-# painted edges and shadows; this is an atlas, not an evenly spaced sprite grid.
-SHEETS = {
-    "ui-part1": {
-        "ui": {
-            "case-file": (27, 91, 392, 337),
-            "evidence-card": (418, 91, 634, 341),
-            "person-card": (666, 91, 896, 333),
-            "dialogue-panel": (27, 387, 644, 504),
-            "note": (844, 386, 1040, 511),
-            "leads": (1068, 386, 1310, 515),
-            "inventory-grid": (27, 544, 223, 757),
-            "evidence-board": (242, 543, 557, 757),
-            "details-panel": (579, 543, 1028, 750),
-            "log-panel": (1049, 547, 1264, 757),
-            "hints-panel": (1287, 550, 1510, 650),
-            "conclusions-panel": (1287, 658, 1510, 758),
-            "book-blue": (608, 786, 689, 906),
-            "book-green": (702, 786, 783, 906),
-            "book-paper": (794, 786, 877, 906),
-            "book-red": (888, 786, 970, 906),
-            "book-purple": (980, 786, 1061, 906),
-            "time-display": (28, 936, 490, 1008),
-            "notification-bar": (521, 936, 920, 1008),
-            "button-new-case": (951, 942, 1053, 998),
-            "button-save": (1061, 942, 1162, 998),
-            "button-load": (1172, 942, 1271, 998),
-            "button-settings": (1281, 942, 1394, 998),
-            "button-exit": (1403, 942, 1510, 998),
-        },
-        "icons": {
-            "category-people": (936, 68, 1023, 161),
-            "category-places": (1027, 68, 1116, 161),
-            "category-objects": (1121, 68, 1208, 161),
-            "category-documents": (1213, 68, 1301, 161),
-            "category-events": (1308, 68, 1398, 161),
-            "category-theories": (1405, 68, 1495, 161),
-            "action-search": (946, 190, 1022, 240),
-            "action-observe": (1039, 190, 1115, 240),
-            "action-listen": (1132, 190, 1208, 240),
-            "action-talk": (1226, 190, 1301, 240),
-            "action-analyze": (1319, 190, 1395, 240),
-            "status-confirmed": (961, 285, 1017, 339),
-            "status-observed": (1072, 285, 1128, 339),
-            "status-related": (1183, 285, 1239, 339),
-            "status-contradicts": (1294, 285, 1350, 339),
-            "status-unknown": (1405, 285, 1461, 339),
-        },
-    },
-    "ui-part2": {
-        "ui": {
-            "popup-information": (18, 100, 215, 286),
-            "popup-confirmation": (224, 100, 425, 286),
-            "popup-alert": (432, 88, 606, 290),
-            "toast-success": (630, 101, 945, 148),
-            "toast-info": (630, 151, 945, 196),
-            "toast-warning": (630, 199, 945, 244),
-            "toast-error": (630, 247, 945, 292),
-            "objectives": (966, 102, 1238, 293),
-            "tab-description": (28, 328, 145, 360),
-            "tab-details": (145, 328, 245, 360),
-            "tab-links": (245, 328, 347, 360),
-            "tab-notes": (347, 328, 451, 360),
-            "tooltip": (483, 337, 769, 407),
-            "context-menu": (990, 341, 1177, 565),
-            "filter-controls": (1196, 341, 1371, 516),
-            "card-paper": (377, 438, 478, 591),
-            "card-blue": (490, 438, 593, 591),
-            "card-red": (604, 438, 708, 591),
-            "card-green": (718, 438, 823, 591),
-            "card-purple": (835, 438, 941, 591),
-            "portrait-blue": (375, 621, 520, 752),
-            "portrait-red": (531, 621, 675, 752),
-            "portrait-gold": (687, 621, 832, 752),
-            "portrait-purple": (843, 621, 987, 752),
-            "progress-bars": (1008, 603, 1289, 761),
-            "paper-clipped": (685, 791, 773, 895),
-            "paper-note": (783, 791, 872, 895),
-            "paper-lined": (878, 787, 985, 904),
-            "paper-torn": (993, 812, 1096, 919),
-        },
-        "icons": {
-            "pin-important": (28, 792, 77, 869),
-            "pin-person": (84, 792, 132, 869),
-            "pin-vehicle": (139, 792, 187, 869),
-            "pin-building": (194, 792, 242, 869),
-            "pin-search": (247, 792, 296, 869),
-            "pin-alert": (299, 792, 347, 869),
-            "misc-icons": (1181, 795, 1505, 915),
-        },
-    },
+NAMED = {
+    "ahmed-al-kindi": (22, 26, 306, 493), "laila-hassan": (327, 26, 611, 493),
+    "dr-faisal-nasr": (628, 26, 912, 493), "captain-al-maamari": (929, 26, 1215, 493),
+    "nora-salim": (1230, 26, 1516, 493), "salim-al-balushi": (22, 514, 306, 985),
+    "yusuf-al-harthi": (326, 514, 611, 985), "mariam-al-zadjali": (628, 514, 912, 985),
+    "confidential-unknown": (930, 514, 1215, 985), "dr-samira-al-lawati": (1230, 514, 1517, 985),
+}
+
+CARD_X = [(18, 190), (199, 372), (382, 554), (562, 731), (741, 910), (920, 1090)]
+CARD_Y = [(15, 275), (285, 544), (554, 814)]
+PORTRAIT_NAMES = [
+    "officer", "man-red", "woman-purple", "young-man-teal", "analyst-red", "older-man",
+    "woman-headscarf", "man-glasses", "young-man-cap", "woman-magenta", "man-profile", "woman-bob",
+    "detective-hat", "woman-blonde", "man-blue", "woman-red", "older-man-gold", "young-man-blue",
+]
+ICON_NAMES = [
+    "police", "person", "group", "briefcase", "education", "medical", "cafe", "document", "key", "location", "vehicle", "camera",
+    "search", "witness", "audio", "dialogue", "fingerprint", "unknown", "agreement", "heart", "broken-heart", "justice", "money", "star",
+    "medical-cross", "city", "book", "settings", "laboratory", "nature", "danger", "fire", "warning", "network", "time", "mask",
+]
+
+BUNDLE = {
+    **{f"portrait-{name}": f"characters/{name}.png" for name in (
+        "man-red", "man-blue", "woman-purple", "analyst-red", "man-glasses", "young-man-cap",
+        "young-man-teal", "woman-headscarf", "older-man-gold", "woman-magenta", "man-profile", "older-man",
+    )},
+    "menu-captain": "characters/reference/captain-al-maamari.png",
+    "ui-paper-stack": "ui/paper-stack.png", "ui-notebook-page": "ui/notebook-page.png",
+    "icon-network": "icons/network.png", "icon-document": "icons/document.png",
+    "icon-warning": "icons/warning.png", "icon-justice": "icons/justice.png",
+    "card-back-red": "cards/back-red.png", "card-back-compass": "cards/back-compass.png",
 }
 
 
-def locate(root: Path, stem: str) -> Path:
-    for suffix in (".png", ".jpg", ".jpeg", ".webp"):
-        candidate = root / f"{stem}{suffix}"
-        if candidate.exists():
-            return candidate
-    raise FileNotFoundError(f"No {stem} sheet found in {root}")
+class PNG:
+    def __init__(self, path: Path):
+        blob = path.read_bytes()
+        if blob[:8] != b"\x89PNG\r\n\x1a\n":
+            raise ValueError(f"{path} is not a PNG")
+        pos, data = 8, bytearray()
+        self.color = None
+        while pos < len(blob):
+            n = struct.unpack(">I", blob[pos:pos + 4])[0]
+            kind, payload = blob[pos + 4:pos + 8], blob[pos + 8:pos + 8 + n]
+            pos += n + 12
+            if kind == b"IHDR":
+                self.width, self.height, depth, self.color, comp, filt, interlace = struct.unpack(">IIBBBBB", payload)
+                if depth != 8 or self.color not in (2, 6) or interlace:
+                    raise ValueError("Only non-interlaced 8-bit RGB/RGBA sheets are supported")
+            elif kind == b"IDAT": data.extend(payload)
+            elif kind == b"IEND": break
+        self.channels = 3 if self.color == 2 else 4
+        stride = self.width * self.channels
+        raw, offset, prior = zlib.decompress(data), 0, bytearray(stride)
+        self.rows = []
+        for _ in range(self.height):
+            mode, scan = raw[offset], bytearray(raw[offset + 1:offset + stride + 1]); offset += stride + 1
+            for x in range(stride):
+                left = scan[x - self.channels] if x >= self.channels else 0
+                up = prior[x]
+                ul = prior[x - self.channels] if x >= self.channels else 0
+                if mode == 1: scan[x] = (scan[x] + left) & 255
+                elif mode == 2: scan[x] = (scan[x] + up) & 255
+                elif mode == 3: scan[x] = (scan[x] + ((left + up) >> 1)) & 255
+                elif mode == 4:
+                    p = left + up - ul; pa, pb, pc = abs(p-left), abs(p-up), abs(p-ul)
+                    scan[x] = (scan[x] + (left if pa <= pb and pa <= pc else up if pb <= pc else ul)) & 255
+                elif mode != 0: raise ValueError(f"Unsupported PNG filter {mode}")
+            self.rows.append(bytes(scan)); prior = scan
+
+    def crop(self, box: tuple[int, int, int, int], target: Path) -> None:
+        left, top, right, bottom = box; width, height = right-left, bottom-top
+        scan = b"".join(b"\0" + row[left*self.channels:right*self.channels] for row in self.rows[top:bottom])
+        def chunk(kind: bytes, payload: bytes) -> bytes:
+            return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", binascii.crc32(kind + payload) & 0xffffffff)
+        out = b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, self.color, 0, 0, 0))
+        out += chunk(b"IDAT", zlib.compress(scan, 9)) + chunk(b"IEND", b"")
+        target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(out)
+
+
+def find(root: Path, names: tuple[str, ...]) -> Path:
+    for name in names:
+        path = root / name
+        if path.exists(): return path
+    raise FileNotFoundError(f"Missing source sheet; expected one of: {', '.join(names)}")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--source", type=Path, default=Path("source-assets"))
-    parser.add_argument("--output", type=Path, default=Path("assets"))
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--source", type=Path, default=Path("/source-assets"))
+    ap.add_argument("--output", type=Path, default=Path("assets"))
+    args = ap.parse_args()
+    named = PNG(find(args.source, ("named-characters.png", "image_1.png")))
+    sprites = PNG(find(args.source, ("sprite-sheet.png", "image_2.png")))
+    for image in (named, sprites):
+        if (image.width, image.height) != SIZE: raise ValueError(f"Sheet must be {SIZE[0]}x{SIZE[1]}")
+    for name, box in NAMED.items(): named.crop(box, args.output / "characters" / "reference" / f"{name}.png")
+    for i, name in enumerate(PORTRAIT_NAMES):
+        col, row = i % 6, i // 6; x1, x2 = CARD_X[col]; y1, _ = CARD_Y[row]
+        sprites.crop((x1 + 4, y1 + 4, x2 - 4, y1 + 205), args.output / "characters" / f"{name}.png")
+        sprites.crop((x1, CARD_Y[row][0], x2, CARD_Y[row][1]), args.output / "cards" / f"person-{name}.png")
+    for i, name in enumerate(ICON_NAMES):
+        col, row = i % 6, i // 6
+        sprites.crop((1111 + col*68, 20 + row*80, 1168 + col*68, 77 + row*80), args.output / "icons" / f"{name}.png")
+    for i in range(15):
+        col, row = i % 5, i // 5
+        sprites.crop((1104 + col*84, 531 + row*101, 1180 + col*84, 627 + row*101), args.output / "tokens" / f"silhouette-{i+1:02}.png")
+    for i, name in enumerate(("blue", "red", "gold", "purple", "black", "compass")):
+        sprites.crop((22 + i*152, 834, 166 + i*152, 999), args.output / "cards" / f"back-{name}.png")
+    sprites.crop((950, 835, 1201, 1004), args.output / "ui" / "paper-stack.png")
+    sprites.crop((1217, 848, 1510, 1007), args.output / "ui" / "notebook-page.png")
+    bundle = ["/* Text-only data-URI bundle generated from the supplied sheets. */", "window.CASE_SPRITES = {"]
+    for key, relative in BUNDLE.items():
+        encoded = base64.b64encode((args.output / relative).read_bytes()).decode("ascii")
+        chunks = ["data:image/png;base64," + encoded[:96]] + [encoded[i:i + 96] for i in range(96, len(encoded), 96)]
+        bundle.append(f'  "{key}": [')
+        bundle.extend(f'    "{chunk}",' for chunk in chunks)
+        bundle.append('  ].join(""),')
+    bundle.append("};\n")
+    (args.output / "sprites.js").write_text("\n".join(bundle), encoding="ascii")
 
-    count = 0
-    for sheet_name, groups in SHEETS.items():
-        image = Image.open(locate(args.source, sheet_name)).convert("RGB")
-        if image.size != EXPECTED_SIZE:
-            raise ValueError(f"{sheet_name} is {image.size}; expected {EXPECTED_SIZE}")
-        for group, regions in groups.items():
-            target = args.output / group
-            target.mkdir(parents=True, exist_ok=True)
-            for name, box in regions.items():
-                crop = image.crop(box)
-                encoded = BytesIO()
-                crop.save(encoded, "PNG", optimize=True)
-                payload = base64.b64encode(encoded.getvalue()).decode("ascii")
-                svg = (
-                    f'<svg xmlns="http://www.w3.org/2000/svg" width="{crop.width}" '
-                    f'height="{crop.height}" viewBox="0 0 {crop.width} {crop.height}">\n'
-                    f'  <image width="{crop.width}" height="{crop.height}" '
-                    f'href="data:image/png;base64,{payload}"/>\n</svg>\n'
-                )
-                (target / f"{name}.svg").write_text(svg, encoding="ascii")
-                print(f"{group}/{name}.svg <- {sheet_name} {box} ({crop.width}x{crop.height})")
-                count += 1
-    print(f"Extracted {count} assets.")
 
-
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()

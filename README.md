@@ -24,12 +24,12 @@ the source to **GitHub Actions**. Pushes to `main` will then deploy the game at
 `https://<owner>.github.io/Case-Project/`.
 
 The `.nojekyll` marker explicitly disables Jekyll processing. The game is the
-root `index.html` document and its sprite assets use repository-relative paths,
+root `index.html` document and its sprite images use repository-relative paths,
 so it works without path rewriting when hosted at `/Case-Project/`.
 
-## Prototype art direction
+## Supplied sprite artwork
 
-The interface uses named crops from the supplied UI atlases for card frames,
-paper, menu art, status symbols, and toolbar categories while retaining live
-HTML text for accessibility and translation. See
-[`assets/SOURCE-MAP.md`](assets/SOURCE-MAP.md) for the crop manifest.
+The supplied sheets are split into characters, cards, icons, tokens, and UI
+surfaces, and those exports are used throughout the opening flow and case board.
+See [`assets/ASSET_LOG.md`](assets/ASSET_LOG.md) for integration details and
+[`assets/SOURCE-MAP.md`](assets/SOURCE-MAP.md) for the reproducible crop map.
