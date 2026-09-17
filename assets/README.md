@@ -91,7 +91,8 @@ it with art whose frame sits elsewhere means updating the `CORK` constants).
 no art.
 
 **Exhibits** — `pocket-watch`, `stair-bulb`, `switchboard-log`, `ledger`,
-`shawl-bead`, `umbrella`.
+`shawl-bead`, `umbrella`, `fingerprint-stairs`, `fingerprint-lawati`,
+`fingerprint-zadjali`, and `fingerprint-sharif`.
 
 Four carry placeholder art recovered from the project's previous sprite sheets.
 `shawl-bead` and `umbrella` deliberately have none: the closest stand-ins showed

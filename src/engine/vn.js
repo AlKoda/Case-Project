@@ -18,6 +18,8 @@
  *   { choice: [ { text, goto } ] }                let the detective choose
  *   { press: { claim, accepts, hit, miss } }      challenge a claim with an exhibit
  *   { give: "pocket-watch" }                      hand the player an exhibit
+ *   { fingerprint: "finch" }                      take and file a comparison print
+ *   { clue: "finch" }                             choose whether to file spoken testimony
  *   { prove: "finch-lied-about-the-light" }       record a proven contradiction
  *   { flag: "name" }                              set a story flag
  *   { label: "name" } / { goto: "name" }          jump targets

@@ -54,6 +54,7 @@ export const SCENES = {
           { text: "Find out why it's so dark in here.", goto: "bulb", when: (s) => !s.exhibits.includes("stair-bulb") },
           { text: "Run a hand along the stair rail.", goto: "bead", when: (s) => !s.exhibits.includes("shawl-bead") },
           { text: "Look in the lobby cupboard.", goto: "umbrella", when: (s) => !s.exhibits.includes("umbrella") },
+          { text: "Dust the stairwell light for fingerprints.", goto: "fingerprint", when: (s) => !s.exhibits.includes("fingerprint-stairs") },
           { text: "Enough. Go and talk to the living.", goto: "done" },
         ],
       },
@@ -89,8 +90,14 @@ export const SCENES = {
       { give: "umbrella" },
       { goto: "look" },
 
+      { label: "fingerprint" },
+      { text: "The powder catches on the wire cage around the stairwell light: one clean thumb where a hand would brace to turn the bulb." },
+      { who: "harthy", mood: "cold", text: "Type A. Whoever made these stairs dark left an alphabet behind." },
+      { give: "fingerprint-stairs" },
+      { goto: "look" },
+
       { label: "done" },
-      { text: "Four floors of stairs and one honest witness, and the honest one is a watch." },
+      { text: "Four floors of stairs, a stopped watch, and a Type A fingerprint waiting for a name." },
       { end: true },
     ],
   },
@@ -115,6 +122,7 @@ export const SCENES = {
           { text: "What was Tariq to you?", goto: "tariq", when: (s) => !s.flags.lawatiTariq },
           { text: "Who else was awake?", goto: "who", when: (s) => !s.flags.lawatiWho },
           { text: "Did you go near the service stairs?", goto: "stairs", when: (s) => s.flags.lawatiWhere },
+          { text: "I need a comparison fingerprint.", goto: "print", when: (s) => !s.exhibits.includes("fingerprint-lawati") },
           { text: "That'll do for now.", goto: "done" },
         ],
       },
@@ -183,6 +191,12 @@ export const SCENES = {
       { flag: "darkBeforeTheFall" },
       { goto: "ask" },
 
+      { label: "print" },
+      { who: "harthy", text: "One thumb on the card. For comparison." },
+      { text: "She presses her thumb to the card without looking away. Type C." },
+      { fingerprint: "lawati" },
+      { goto: "ask" },
+
       { label: "done" },
       { who: "lawati", mood: "neutral", text: "Detective. When you find out it was somebody, come and tell me. I'd like to know which face I've been serving coffee to." },
       { exit: "lawati" },
@@ -208,6 +222,7 @@ export const SCENES = {
           { text: "You keep a book behind that counter.", goto: "book", when: (s) => !s.flags.zadjaliBook },
           { text: "Did Tariq owe anybody?", goto: "owe", when: (s) => s.flags.zadjaliBook && !s.flags.zadjaliOwe },
           { text: "Let's talk about what Tariq owed you.", goto: "debt", when: (s) => s.flags.zadjaliOwe },
+          { text: "I need a comparison fingerprint.", goto: "print", when: (s) => !s.exhibits.includes("fingerprint-zadjali") },
           { text: "That's all.", goto: "done" },
         ],
       },
@@ -277,6 +292,12 @@ export const SCENES = {
       { who: "zadjali", mood: "cold", text: "Then he laughed and went off up the back stairs and I never saw him again, and when they found him I marked the debt settled and said nothing, because a man in my line does not volunteer." },
       { who: "harthy", mood: "cold", text: "Somebody in this hotel bought silence on Tuesday and stopped paying on Wednesday." },
       { flag: "knowsBlackmail" },
+      { goto: "ask" },
+
+      { label: "print" },
+      { who: "harthy", text: "One thumb on the card. For comparison." },
+      { text: "He gives you a thumbprint with the air of settling an unfair bill. Type B." },
+      { fingerprint: "zadjali" },
       { goto: "ask" },
 
       { label: "done" },
@@ -353,6 +374,7 @@ export const SCENES = {
       { who: "harthy", text: "I don't need what's in it. I need the eleven minutes." },
       { who: "hinai", mood: "neutral", text: "Two until ten past. The board was covered by nobody, and nobody called, and I have felt sick about it since." },
       { text: "Eleven minutes of a woman's private business. Not a murder. The wrong secret, honestly kept." },
+      { clue: "hinai" },
       { goto: "ask" },
 
       { label: "done" },
@@ -382,6 +404,7 @@ export const SCENES = {
           { text: "You wrote two-fourteen on the form.", goto: "time", when: (s) => s.flags.sharifFinding },
           { text: "You saw the blood plainly, you said.", goto: "light", when: (s) => s.flags.sharifFinding },
           { text: "What did Tariq have on you?", goto: "blackmail", when: (s) => s.flags.knowsBlackmail && s.proven.length >= 2 },
+          { text: "I need a comparison fingerprint.", goto: "print", when: (s) => !s.exhibits.includes("fingerprint-sharif") },
           { text: "We'll leave it there.", goto: "done" },
         ],
       },
@@ -499,6 +522,12 @@ export const SCENES = {
       { flag: "sharifCornered" },
       { goto: "ask" },
 
+      { label: "print" },
+      { who: "harthy", text: "One thumb on the card. For comparison." },
+      { text: "He smiles at the ink pad, then leaves a careful print. Type A." },
+      { fingerprint: "sharif" },
+      { goto: "ask" },
+
       { label: "done" },
       {
         when: (s) => s.proven.filter((id) => id.startsWith("sharif-")).length >= 3,
@@ -558,6 +587,7 @@ export const SCENES = {
       { who: "maskari", mood: "broken", text: "No. That's the thing I've been sitting here with. The lift was working — it's on the house circuit, it stayed on. He walked past a working lift and took a dark staircase." },
       { who: "maskari", mood: "neutral", text: "You don't do that unless you're meeting someone who doesn't want to be met in a lobby." },
       { flag: "tariqWentToMeetSomeone" },
+      { clue: "maskari" },
       { goto: "ask" },
 
       { label: "seem" },
@@ -626,6 +656,7 @@ export const SCENES = {
       { who: "busaidi", mood: "neutral", text: "One of them was older and was doing most of the talking. The other one laughed once. And then the older one said something I've been turning over since." },
       { who: "busaidi", mood: "broken", text: "He said: 'there is no third time.'" },
       { flag: "noThirdTime" },
+      { clue: "busaidi" },
       { goto: "ask" },
 
       { label: "after" },
@@ -694,6 +725,7 @@ export const SCENES = {
       { who: "kindi", mood: "broken", text: "Black as the inside of a pocket. And he was telling me what I was looking at before my torch was on it. 'His neck, Majid. The blood, Majid.'" },
       { who: "kindi", mood: "neutral", text: "I remember thinking he had very good eyes for a man of sixty-one. I have been trying not to think about it since." },
       { flag: "kindiTorch" },
+      { clue: "kindi" },
       { goto: "ask" },
 
       { label: "light" },

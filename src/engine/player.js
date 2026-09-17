@@ -125,6 +125,29 @@ async function run(node, ctx) {
     return null;
   }
 
+  if (node.fingerprint) {
+    const id = `fingerprint-${node.fingerprint}`;
+    store.collect("exhibits", id);
+    context.onExhibit?.(id);
+    return null;
+  }
+
+  if (node.clue) {
+    const state = store.get();
+    if (state.clues.includes(node.clue) || state.dismissedClues.includes(node.clue)) return null;
+    const chosen = await stage.ask([
+      { text: t("vn.fileClue", "File this as a clue"), action: "file" },
+      { text: t("vn.leaveTestimony", "Leave it as testimony"), action: "leave" },
+    ]);
+    if (chosen.action === "file") {
+      store.collect("clues", node.clue);
+      context.onClue?.(node.clue);
+    } else {
+      store.collect("dismissedClues", node.clue);
+    }
+    return null;
+  }
+
   if (node.prove) {
     store.collect("proven", node.prove);
     context.onProof?.(node.prove);

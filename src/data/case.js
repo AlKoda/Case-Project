@@ -86,6 +86,38 @@ export const CAST = {
  * shows it on the card so the player can place it.
  */
 export const EXHIBITS = {
+  "fingerprint-stairs": {
+    name: "Stairwell fingerprint · Type A",
+    summary: "A clear Type A print lifted from the bulb's wire cage.",
+    note:
+      "The print was left where somebody had to reach to loosen the stairwell bulb. " +
+      "Compare its alphabetical ridge type with a suspect's taken print.",
+    fingerprint: "A",
+  },
+  "fingerprint-lawati": {
+    name: "Al-Lawati fingerprint · Type C",
+    summary: "Comparison print: Type C. No match.",
+    note: "Iman Al-Lawati's taken print is Type C. It does not match the Type A print from the stairwell.",
+    fingerprint: "C",
+    person: "lawati",
+  },
+  "fingerprint-zadjali": {
+    name: "Al-Zadjali fingerprint · Type B",
+    summary: "Comparison print: Type B. No match.",
+    note: "Sulaiman Al-Zadjali's taken print is Type B. It does not match the Type A print from the stairwell.",
+    fingerprint: "B",
+    person: "zadjali",
+  },
+  "fingerprint-sharif": {
+    name: "Sharif fingerprint · Type A",
+    summary: "Comparison print: Type A. MATCH.",
+    note:
+      "Ayman Sharif's taken print is Type A: the same alphabetical ridge type as the print lifted from " +
+      "the stairwell bulb cage. The match places his hand at the sabotaged light.",
+    fingerprint: "A",
+    person: "sharif",
+    matches: "fingerprint-stairs",
+  },
   "pocket-watch": {
     name: "Tariq's watch",
     summary: "Stopped at 1:47.",
@@ -244,6 +276,11 @@ export const WITNESSES = [
       "afterwards.\"",
   },
 ];
+
+/** Spoken details the detective may actively file, rather than receiving automatically. */
+export const DIALOGUE_CLUES = Object.fromEntries(
+  WITNESSES.map((witness) => [witness.person, witness]),
+);
 
 export const CULPRIT = "sharif";
 
