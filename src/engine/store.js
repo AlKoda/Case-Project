@@ -25,6 +25,8 @@ function blank() {
     /** Scene the player is in, and how far through it. */
     scene: null,
     line: 0,
+    /** Last place selected on the field map. */
+    currentLocation: "lobby",
     /** Exhibit ids the player has collected. */
     exhibits: [],
     /** Contradiction ids the player has proven. */

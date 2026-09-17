@@ -10,7 +10,10 @@ the room, and the speech box along the bottom frames them in its corner, the way
 a subject sits framed across a table. When an account contradicts the evidence
 in your file, you put the exhibit on the table and the account comes apart.
 
-Between interviews you work a corkboard — drag anything out of the tray, pin it
+Between interviews you move through a field map of the Al-Manar and Muttrah
+station. Pick a floor or room to revisit the crime scene, find a witness, or
+return to Nightwatch. At the station you work a corkboard — drag anything out
+of the tray, pin it
 where it makes sense, run string between the things that belong together, and
 drop whatever fixes a time onto the timeline along the bottom.
 
@@ -53,10 +56,12 @@ src/
     dom.js              element helpers
   game/
     board.js            the evidence wall: pinning, string, timeline
+    map.js              field navigation: buildings, rooms and witnesses
     screens.js          title, accusation, verdict
   data/
     manifest.js         where art lives and how a file is chosen
     case.js             cast, exhibits, contradictions, witnesses, verdicts
+    locations.js        destinations and who can be found there
     scenes.js           the script
   styles/               tokens, base, stage, screens, board
 ```

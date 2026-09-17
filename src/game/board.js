@@ -234,6 +234,12 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
         toolButton(t("board.tidy", "Tidy"), tidy),
         toolButton(t("board.clear", "Clear wall"), clearWall),
         !overlay ? el("button", {
+          class: "btn btn--small",
+          type: "button",
+          text: t("map.back", "Back to map"),
+          onClick: () => go("hub"),
+        }) : null,
+        !overlay ? el("button", {
           class: "btn btn--major",
           type: "button",
           text: t("hub.accuse", "Name a suspect"),

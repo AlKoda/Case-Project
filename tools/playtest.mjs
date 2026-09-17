@@ -110,12 +110,21 @@ function driver(page, base) {
       await sleep(400);
       await page.locator(".btn", { hasText: "Resume" }).click();
       await sleep(900);
+      // Most legacy scenarios exercise the evidence wall. It now lives one
+      // step beyond the field map, so enter it explicitly.
+      await page.locator(".field-nav__item", { hasText: "Case board" }).click();
+      await sleep(500);
     },
 
     /** Click through dialogue until `selector` appears, or the scene ends. */
     async until(selector, limit = 90) {
       for (let i = 0; i < limit; i += 1) {
         if (await page.locator(selector).count()) return true;
+        if (selector === ".wall" && await page.locator(".map-screen").count()) {
+          await page.locator(".field-nav__item", { hasText: "Case board" }).click();
+          await sleep(400);
+          continue;
+        }
         if (!(await page.locator(".vn").count())) return false;
         await page.locator(".vn").click({ position: { x: 800, y: 250 } }).catch(() => {});
         await sleep(150);
@@ -146,6 +155,22 @@ function driver(page, base) {
 /* ----------------------------------------------------------- scenarios */
 
 const scenarios = {
+  /** The field hub exposes every room and its occupants without hiding tools. */
+  async map(page, base) {
+    const d = driver(page, base);
+    await page.goto(base, { waitUntil: "networkidle" });
+    await page.evaluate((s) => localStorage.setItem("case-board/al-manar", JSON.stringify(s)), seeded());
+    await page.reload({ waitUntil: "networkidle" });
+    await d.sleep(400);
+    await page.locator(".btn", { hasText: "Resume" }).click();
+    await d.sleep(700);
+
+    check("the field map shows all destinations", (await page.locator(".map-pin").count()) === 6);
+    await page.locator(".map-pin", { hasText: "Room 312" }).click();
+    check("selecting a room reveals its witness", await page.locator(".location-person", { hasText: "Sharif" }).count() === 1);
+    check("field tools stay available", (await page.locator(".field-nav__item").count()) === 4);
+  },
+
   /** Title to verdict, the whole night, taking every exhibit on the way. */
   async playthrough(page, base) {
     const d = driver(page, base);

@@ -20,6 +20,7 @@ const ROUTES = {
   intro: (r, go) => SCREENS.scene(r, go, { id: "intro", next: "stairs" }),
   stairs: (r, go) => SCREENS.scene(r, go, { id: "scene:stairs", next: "hub" }),
   hub: (r, go) => SCREENS.hub(r, go),
+  board: (r, go) => SCREENS.board(r, go),
   accuse: (r, go) => SCREENS.accuse(r, go),
   verdict: (r, go) => SCREENS.verdict(r, go),
   scene: (r, go, params) => SCREENS.scene(r, go, params),
