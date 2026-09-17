@@ -39,7 +39,10 @@ export function mountMap(root, go) {
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
     const onKeyDown = (event) => {
-      if (event.key === "Escape") close();
+      if (event.key === "Escape") {
+        event.preventDefault();
+        close();
+      }
     };
     const modal = el("div", { class: "phone-modal", role: "dialog", "aria-modal": "true", "aria-label": t("phone.title", "Switchboard handset") },
       el("div", { class: "phone" },
