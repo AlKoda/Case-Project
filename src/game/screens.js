@@ -82,7 +82,13 @@ export function title(root, go) {
         ),
       ),
       el("footer", { class: "title__foot" },
-        el("p", { class: "title__note", text: t("title.note", "A work of fiction. Click or press space to advance dialogue.") }),
+        el("div", { class: "title__credits" },
+          el("p", { class: "title__note", text: t("title.note", "A work of fiction. Click or press space to advance dialogue.") }),
+          el("p", { class: "title__maker" },
+            el("span", { lang: "en", text: 'Made by Officer Cadet Almunther Abdullah Rashid Almakhmari' }),
+            el("span", { lang: "ar", dir: "rtl", text: 'صنع بواسطة الضابط المرشح المنذر بن عبدالله بن راشد المخمري' }),
+          ),
+        ),
         el("p", { class: "title__edition", text: t("title.edition", "The Muttrah file · 1948") }),
       ),
     ),
@@ -162,7 +168,33 @@ export async function scene(root, go, { id, next }) {
   const host = el("section", { class: "screen screen--scene" });
   root.append(host);
 
-  const stage = createStage(host);
+  let closeBoard = null;
+  let boardWasOpen = false;
+  const openBoard = () => {
+    if (boardWasOpen) return;
+    boardWasOpen = true;
+    host.setAttribute("inert", "");
+    const overlay = el("div", { class: "board-overlay", role: "dialog", "aria-modal": "true", "aria-label": t("board.dialog", "Case board") });
+    root.append(overlay);
+    const cleanup = mountBoard(overlay, go, {
+      overlay: true,
+      onClose: () => {
+        cleanup();
+        overlay.remove();
+        host.removeAttribute("inert");
+        boardWasOpen = false;
+        stage.dom.boardButton.focus();
+      },
+    });
+    closeBoard = () => {
+      cleanup();
+      overlay.remove();
+      host.removeAttribute("inert");
+      boardWasOpen = false;
+    };
+  };
+
+  const stage = createStage(host, { onOpenBoard: openBoard });
   store.update({ scene: id });
 
   await playScene(stage, definition, {
@@ -172,6 +204,7 @@ export async function scene(root, go, { id, next }) {
     onProof: (proofId) => flash(host, t("hud.broken", "Account broken:"), CONTRADICTIONS[proofId]?.claim ?? proofId),
   });
 
+  closeBoard?.();
   stage.destroy();
   store.collect("completed", id);
   go(next ?? "hub");

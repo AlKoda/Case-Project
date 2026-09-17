@@ -179,6 +179,26 @@
 
 .vn__chip:hover { border-color: var(--lamp-300); color: var(--lamp-100); }
 
+.vn__board-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  border-color: rgba(232, 176, 75, 0.55);
+  color: var(--lamp-100);
+}
+
+.vn__board-button::before {
+  content: "";
+  inline-size: 0.95em;
+  block-size: 0.78em;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  background:
+    radial-gradient(circle at 28% 35%, currentColor 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 62%, currentColor 0 1px, transparent 2px),
+    linear-gradient(25deg, transparent 47%, currentColor 48% 52%, transparent 53%);
+}
+
 /* --------------------------------------------------------- speech box */
 
 .vn__box {

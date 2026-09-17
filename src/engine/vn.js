@@ -33,8 +33,8 @@ import { t } from "./i18n.js";
 import * as assets from "./assets.js";
 import * as preferences from "./preferences.js";
 
-export function createStage(root) {
-  const nodes = buildDom();
+export function createStage(root, { onOpenBoard } = {}) {
+  const nodes = buildDom(onOpenBoard);
   clear(root).append(nodes.stage);
 
   const actors = new Map();
@@ -315,7 +315,7 @@ export function createStage(root) {
   };
 }
 
-function buildDom() {
+function buildDom(onOpenBoard) {
   const bg = el("div", { class: "vn__bg" });
   const cast = el("div", { class: "vn__cast" });
   const bustImage = el("img", { alt: "", class: "vn__bust-img" });
@@ -330,6 +330,14 @@ function buildDom() {
     type: "button",
     text: "Log",
     title: "Show everything said so far",
+  });
+  const boardButton = el("button", {
+    class: "vn__chip vn__board-button",
+    type: "button",
+    text: t("vn.caseBoard", "Case board"),
+    title: t("vn.caseBoardTitle", "Open the case board without leaving this scene"),
+    "aria-label": t("vn.caseBoardTitle", "Open the case board without leaving this scene"),
+    onClick: () => onOpenBoard?.(),
   });
   const backlog = el("div", { class: "vn__backlog" });
   const choices = el("div", { class: "vn__choices" });
@@ -358,6 +366,7 @@ function buildDom() {
       el("span", { class: "vn__rec" }, el("i", { "aria-hidden": "true" }), "REC"),
       clock,
       logButton,
+      boardButton,
     ),
     backlog,
     tray,
@@ -365,5 +374,5 @@ function buildDom() {
     box,
   );
 
-  return { stage, bg, cast, box, bust, bustImage, name, role, text, advance, choices, tray, backlog, clock, logButton };
+  return { stage, bg, cast, box, bust, bustImage, name, role, text, advance, choices, tray, backlog, clock, logButton, boardButton };
 }
