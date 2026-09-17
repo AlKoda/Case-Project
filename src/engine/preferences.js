@@ -3,12 +3,22 @@
 const KEY = "case-board/preferences";
 const DEFAULTS = { textSpeed: "normal", motion: "system", grain: true };
 const SPEEDS = { slow: 32, normal: 52, fast: 90, instant: Infinity };
+const MOTIONS = new Set(["system", "reduced"]);
+
+function normalise(value) {
+  const saved = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  return {
+    textSpeed: Object.hasOwn(SPEEDS, saved.textSpeed) ? saved.textSpeed : DEFAULTS.textSpeed,
+    motion: MOTIONS.has(saved.motion) ? saved.motion : DEFAULTS.motion,
+    grain: typeof saved.grain === "boolean" ? saved.grain : DEFAULTS.grain,
+  };
+}
 
 let current = read();
 
 function read() {
   try {
-    return { ...DEFAULTS, ...JSON.parse(localStorage.getItem(KEY) ?? "{}") };
+    return normalise(JSON.parse(localStorage.getItem(KEY) ?? "{}"));
   } catch {
     return { ...DEFAULTS };
   }
@@ -19,7 +29,7 @@ export function get() {
 }
 
 export function update(patch) {
-  current = { ...current, ...patch };
+  current = normalise({ ...current, ...patch });
   try { localStorage.setItem(KEY, JSON.stringify(current)); } catch { /* Session-only is fine. */ }
   apply();
   return get();
@@ -34,4 +44,3 @@ export function apply() {
 export function typeSpeed() {
   return SPEEDS[current.textSpeed] ?? SPEEDS.normal;
 }
-

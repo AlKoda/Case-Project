@@ -55,6 +55,57 @@ function blank() {
   };
 }
 
+const isRecord = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+const strings = (value) => Array.isArray(value) ? [...new Set(value.filter((item) => typeof item === "string"))] : [];
+
+/**
+ * Treat localStorage as untrusted input. A save can be hand-edited, partially
+ * written, or left behind by a development build with the same version. Keep
+ * usable fields while restoring every collection to the shape the UI expects.
+ */
+function normalise(saved) {
+  const fresh = blank();
+  const board = isRecord(saved.board) ? saved.board : {};
+  const pins = isRecord(board.pins)
+    ? Object.fromEntries(Object.entries(board.pins).flatMap(([id, pin]) => {
+        if (!isRecord(pin) || !Number.isFinite(pin.x) || !Number.isFinite(pin.y)) return [];
+        return [[id, {
+          x: Math.min(1, Math.max(0, pin.x)),
+          y: Math.min(1, Math.max(0, pin.y)),
+          at: Number.isFinite(pin.at) ? pin.at : null,
+        }]];
+      }))
+    : {};
+  const notes = isRecord(board.notes)
+    ? Object.fromEntries(Object.entries(board.notes).filter(([, note]) => typeof note === "string"))
+    : {};
+  const links = Array.isArray(board.strings)
+    ? board.strings.filter((link) => isRecord(link) && typeof link.a === "string" && typeof link.b === "string")
+    : [];
+
+  return {
+    ...fresh,
+    startedAt: Number.isFinite(saved.startedAt) ? saved.startedAt : null,
+    scene: typeof saved.scene === "string" ? saved.scene : null,
+    line: Number.isInteger(saved.line) && saved.line >= 0 ? saved.line : 0,
+    currentLocation: typeof saved.currentLocation === "string" ? saved.currentLocation : fresh.currentLocation,
+    exhibits: strings(saved.exhibits),
+    clues: strings(saved.clues),
+    dismissedClues: strings(saved.dismissedClues),
+    proven: strings(saved.proven),
+    flags: isRecord(saved.flags) ? { ...saved.flags } : {},
+    completed: strings(saved.completed),
+    backlog: Array.isArray(saved.backlog) ? saved.backlog.filter(isRecord) : [],
+    board: {
+      pins,
+      strings: links,
+      notes,
+      nextNote: Number.isInteger(board.nextNote) && board.nextNote > 0 ? board.nextNote : 1,
+    },
+    accusation: typeof saved.accusation === "string" ? saved.accusation : null,
+  };
+}
+
 let state = blank();
 
 export function get() {
@@ -118,7 +169,7 @@ function read() {
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (parsed?.version !== VERSION) return null;
-    return parsed;
+    return normalise(parsed);
   } catch {
     return null;
   }
@@ -128,7 +179,7 @@ function read() {
 export function restore() {
   const saved = read();
   if (!saved) return false;
-  state = { ...blank(), ...saved };
+  state = saved;
   for (const listener of listeners) listener(state);
   return true;
 }

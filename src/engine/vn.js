@@ -332,8 +332,9 @@ function buildDom(onOpenBoard) {
   const logButton = el("button", {
     class: "vn__chip",
     type: "button",
-    text: "Log",
-    title: "Show everything said so far",
+    text: t("vn.log", "Log"),
+    title: t("vn.logTitle", "Show everything said so far"),
+    "aria-label": t("vn.logTitle", "Show everything said so far"),
   });
   const boardButton = el("button", {
     class: "vn__chip vn__board-button",
@@ -367,7 +368,7 @@ function buildDom(onOpenBoard) {
     el("div", { class: "vn__vignette", "aria-hidden": "true" }),
     cast,
     el("div", { class: "vn__hud" },
-      el("span", { class: "vn__rec" }, el("i", { "aria-hidden": "true" }), "REC"),
+      el("span", { class: "vn__rec" }, el("i", { "aria-hidden": "true" }), t("vn.recording", "REC")),
       clock,
       logButton,
       boardButton,
