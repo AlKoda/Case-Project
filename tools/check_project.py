@@ -5,12 +5,13 @@ Run before sharing a play-test build:
 
     python3 tools/check_project.py
 
-It checks four things, in the order they tend to break:
+It checks five things, in the order they tend to break:
 
   1. the document: no duplicate ids, every local href/src resolves
   2. the stylesheets: every url(...) resolves
   3. the modules: every .js under src/ parses as an ES module
-  4. the case data: handed to tools/check_scenes.mjs, which walks the scripts
+  4. persisted state: malformed local data is normalised before reaching the UI
+  5. the case data: handed to tools/check_scenes.mjs, which walks the scripts
      for dead jumps, unreachable exhibits and unprovable contradictions
 """
 
@@ -130,6 +131,17 @@ def check_case_data() -> None:
             print(f"            {line.strip()}")
 
 
+def check_persisted_state() -> None:
+    checker = ROOT / "tools" / "check_state.mjs"
+    if not shutil.which("node"):
+        print("  state:    skipped (node is not installed)")
+        return
+    result = subprocess.run(["node", str(checker)], capture_output=True, text=True, check=False)
+    if result.returncode:
+        fail(result.stderr.strip() or "persisted state check failed")
+    print(f"  state:    {result.stdout.strip()}")
+
+
 def check_asset_catalog() -> None:
     checker = ROOT / "tools" / "catalog_assets.py"
     result = subprocess.run(
@@ -146,6 +158,7 @@ def main() -> None:
     check_stylesheets(references)
     check_asset_catalog()
     check_modules()
+    check_persisted_state()
     check_case_data()
     print("OK")
 

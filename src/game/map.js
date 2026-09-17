@@ -29,13 +29,25 @@ export function mountMap(root, go) {
     for (const [time, who, body] of messages) feed.append(el("article", { class: "phone__message" },
       el("span", { text: time }), el("b", { text: who }), el("p", { text: body })));
     const status = el("p", { class: "phone__status", "aria-live": "polite", text: alreadyRead ? t("phone.filed", "Lead filed · the final call was at 01:47") : t("phone.instruction", "Scroll through the complete exchange") });
+    const previousFocus = document.activeElement;
+    let closed = false;
+    const close = () => {
+      if (closed) return;
+      closed = true;
+      modal.remove();
+      document.removeEventListener("keydown", onKeyDown);
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
+    };
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") close();
+    };
     const modal = el("div", { class: "phone-modal", role: "dialog", "aria-modal": "true", "aria-label": t("phone.title", "Switchboard handset") },
       el("div", { class: "phone" },
         el("header", { class: "phone__header" }, el("span", { text: "AL-MANAR / INTERNAL" }), el("i", { text: "● LIVE LINE" })),
         el("h2", { text: t("phone.heading", "Recovered messages") }),
         el("p", { class: "phone__hint", text: t("phone.hint", "The clerk left the exchange open. Read to the end.") }),
         feed, status,
-        el("button", { class: "btn phone__close", type: "button", text: t("phone.close", "Pocket the handset"), onClick: () => modal.remove() })));
+        el("button", { class: "btn phone__close", type: "button", text: t("phone.close", "Pocket the handset"), onClick: close })));
     const reveal = () => {
       if (feed.scrollTop + feed.clientHeight < feed.scrollHeight - 8) return;
       store.setFlag("switchboard_messages_read");
@@ -43,11 +55,8 @@ export function mountMap(root, go) {
       status.classList.add("is-found");
     };
     feed.addEventListener("scroll", reveal, { passive: true });
-    modal.addEventListener("click", (event) => { if (event.target === modal) modal.remove(); });
-    document.addEventListener("keydown", function close(event) {
-      if (event.key !== "Escape" || !modal.isConnected) return;
-      modal.remove(); document.removeEventListener("keydown", close);
-    });
+    modal.addEventListener("click", (event) => { if (event.target === modal) close(); });
+    document.addEventListener("keydown", onKeyDown);
     root.append(modal);
     feed.focus();
   }

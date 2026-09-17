@@ -13,7 +13,7 @@
  *   * Adding a language means shipping one file of key -> string and calling
  *     `registerLocale`. No screen, script or component changes.
  *
- * `tools/i18n_extract.py` walks the case data and writes the template of every
+ * `tools/i18n_extract.mjs` walks the case data and writes the template of every
  * key with its English source, so a translator never has to read the code.
  *
  * Text direction is handled here too, so a right-to-left locale flips the
