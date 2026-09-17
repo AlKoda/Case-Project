@@ -22,6 +22,12 @@ Opening it pauses the conversation in place, and closing it returns to the same
 line. Every pin, note, timeline placement and string is saved immediately on the
 device, whether the board was opened between interviews or in the field.
 
+Important spoken details are not filed automatically. When testimony contains a
+usable lead, choose whether to **file it as a clue** (which adds its statement to
+the board) or leave it as testimony. Suspects can also be asked for comparison
+fingerprints: ridge groups are labelled alphabetically, so a Type A scene print
+can be compared directly with each suspect's Type A, B, or C result.
+
 ## Run it
 
 Serve the repository root with any static HTTP server:

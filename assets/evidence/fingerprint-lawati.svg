@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Fingerprint type C">
+ <rect x="18" y="18" width="476" height="476" rx="20" fill="#e6dcc5" stroke="#3c342b" stroke-width="12"/>
+ <g fill="none" stroke="#70959b" stroke-width="10" stroke-linecap="round" opacity=".9">
+  <path d="M128 303c0-93 54-157 128-157s128 64 128 157"/>
+  <path d="M154 335c-10-116 36-163 102-163s112 47 102 163"/>
+  <path d="M184 360c-15-105 14-158 72-158s87 53 72 158"/>
+  <path d="M213 369c-10-84 1-136 43-136s53 52 43 136"/>
+  <path d="M241 365c-5-62-2-99 15-99s20 37 15 99"/>
+ </g>
+ <circle cx="256" cy="256" r="182" fill="none" stroke="#3c342b" stroke-width="3" stroke-dasharray="5 12" opacity=".45"/>
+ <rect x="337" y="337" width="125" height="125" rx="10" fill="#171b24" stroke="#70959b" stroke-width="6"/>
+ <text x="399.5" y="430" text-anchor="middle" font-family="Georgia,serif" font-size="92" font-weight="700" fill="#f4ead4">C</text>
+ <text x="55" y="78" font-family="monospace" font-size="23" letter-spacing="3" fill="#3c342b">RIDGE TYPE</text>
+</svg>

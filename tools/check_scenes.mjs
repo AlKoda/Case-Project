@@ -67,6 +67,12 @@ for (const [id, scene] of Object.entries(SCENES)) {
       fail(id, `unknown mood "${node.mood}" (manifest knows: ${MOODS.join(", ")})`);
     }
     if (node.give && !EXHIBITS[node.give]) fail(id, `gives unknown exhibit "${node.give}"`);
+    if (node.fingerprint && !EXHIBITS[`fingerprint-${node.fingerprint}`]) {
+      fail(id, `takes a fingerprint with no exhibit "fingerprint-${node.fingerprint}"`);
+    }
+    if (node.clue && !WITNESSES.some((witness) => witness.person === node.clue)) {
+      fail(id, `offers unknown dialogue clue "${node.clue}"`);
+    }
     if (node.prove && !CONTRADICTIONS[node.prove]) fail(id, `proves unknown contradiction "${node.prove}"`);
     if (node.choice) {
       for (const option of node.choice) {
@@ -128,7 +134,10 @@ for (const id of Object.keys(CONTRADICTIONS)) {
 // Every exhibit should be obtainable.
 const given = new Set();
 for (const scene of Object.values(SCENES)) {
-  for (const node of scene.script) if (node.give) given.add(node.give);
+  for (const node of scene.script) {
+    if (node.give) given.add(node.give);
+    if (node.fingerprint) given.add(`fingerprint-${node.fingerprint}`);
+  }
 }
 for (const id of Object.keys(EXHIBITS)) {
   if (!given.has(id)) fail("EXHIBITS", `"${id}" is never given to the player`);

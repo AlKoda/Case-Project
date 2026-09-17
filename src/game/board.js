@@ -126,7 +126,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
           accent: person.accent,
         });
       }
-      cards.set(`st:${witness.person}`, {
+      if (state.clues.includes(witness.person)) cards.set(`st:${witness.person}`, {
         kind: "statement",
         title: t(`witness.${witness.person}.headline`, witness.headline),
         line: t(`cast.${witness.person}.name`, person.name),

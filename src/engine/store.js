@@ -14,7 +14,7 @@
  */
 
 const KEY = "case-board/al-manar";
-const VERSION = 5;
+const VERSION = 6;
 
 const listeners = new Set();
 
@@ -29,6 +29,9 @@ function blank() {
     currentLocation: "lobby",
     /** Exhibit ids the player has collected. */
     exhibits: [],
+    /** Spoken leads deliberately filed (or deliberately left as testimony). */
+    clues: [],
+    dismissedClues: [],
     /** Contradiction ids the player has proven. */
     proven: [],
     /** Free-form flags set by dialogue scripts. */

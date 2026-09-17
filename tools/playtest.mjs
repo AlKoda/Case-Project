@@ -28,11 +28,13 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** A save with the scene of the crime already searched. */
 const seeded = (over = {}) => ({
-  version: 5,
+  version: 6,
   startedAt: Date.now(),
   scene: null,
   line: 0,
   exhibits: ["pocket-watch", "stair-bulb", "shawl-bead", "umbrella", "ledger", "switchboard-log"],
+  clues: [],
+  dismissedClues: [],
   proven: [],
   flags: {},
   completed: ["scene:stairs"],
@@ -184,7 +186,7 @@ const scenarios = {
     await d.sleep(700);
 
     await d.until(".vn__choices.is-open");
-    for (const want of ["pockets", "so dark", "stair rail", "lobby cupboard"]) {
+    for (const want of ["pockets", "so dark", "stair rail", "lobby cupboard", "fingerprints"]) {
       if (await d.choose(want)) await d.until(".vn__choices.is-open");
     }
     await d.choose("Enough");
@@ -193,7 +195,7 @@ const scenarios = {
     await d.sleep(800);
 
     const state = await d.save();
-    check("all four scene exhibits collected", state.exhibits.length === 4, state.exhibits.join(", "));
+    check("all five scene exhibits collected", state.exhibits.length === 5, state.exhibits.join(", "));
     check("the wall is reachable", (await page.locator(".wall").count()) === 1);
 
     await d.question("Dr. Ayman Sharif");
@@ -322,7 +324,7 @@ const scenarios = {
     await d.sleep(1100);
     await d.until(".vn__choices.is-open");
     const options = await page.$$eval(".vn__choice-text", (ns) => ns.map((n) => n.textContent));
-    check("returning offers exactly what was missed", options.length === 4, options.length + " choices");
+    check("returning offers exactly what was missed", options.length === 5, options.length + " choices");
 
     await d.resume();
     check("and says nothing once the scene is exhausted",
@@ -362,6 +364,11 @@ const scenarios = {
     await d.until(".vn__choices.is-open");
     await d.choose("What did you find");
     await d.until(".vn__choices.is-open");
+    check("spoken evidence asks whether it should enter the file",
+      (await page.locator(".vn__choice", { hasText: "File this as a clue" }).count()) === 1);
+    await d.choose("File this as a clue");
+    await d.until(".vn__choices.is-open");
+    check("filing testimony records a board clue", (await d.save()).clues.includes("kindi"));
     await d.choose("light on these stairs");
     await d.until(".vn__tray.is-open");
     check("a witness can be pressed with an exhibit", (await page.locator(".vn__exhibit").count()) === 6);

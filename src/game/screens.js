@@ -12,7 +12,7 @@ import * as store from "../engine/store.js";
 import * as assets from "../engine/assets.js";
 import { createStage } from "../engine/vn.js";
 import { playScene } from "../engine/player.js";
-import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS } from "../data/case.js";
+import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS, DIALOGUE_CLUES } from "../data/case.js";
 import { SCENES } from "../data/scenes.js";
 import { mountBoard } from "./board.js";
 import * as preferences from "../engine/preferences.js";
@@ -203,6 +203,7 @@ export async function scene(root, go, { id, next }) {
     exhibits: EXHIBITS,
     onExhibit: (exhibitId) => flash(host, t("hud.filed", "Filed:"), EXHIBITS[exhibitId]?.name ?? exhibitId),
     onProof: (proofId) => flash(host, t("hud.broken", "Account broken:"), CONTRADICTIONS[proofId]?.claim ?? proofId),
+    onClue: (clueId) => flash(host, t("hud.clueFiled", "Testimony filed:"), DIALOGUE_CLUES[clueId]?.headline ?? clueId),
   });
 
   closeBoard?.();
