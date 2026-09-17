@@ -14,6 +14,11 @@ Between interviews you work a corkboard — drag anything out of the tray, pin i
 where it makes sense, run string between the things that belong together, and
 drop whatever fixes a time onto the timeline along the bottom.
 
+The case board is also available from the top-right of every playable scene.
+Opening it pauses the conversation in place, and closing it returns to the same
+line. Every pin, note, timeline placement and string is saved immediately on the
+device, whether the board was opened between interviews or in the field.
+
 ## Run it
 
 Serve the repository root with any static HTTP server:

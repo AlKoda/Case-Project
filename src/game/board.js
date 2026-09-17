@@ -74,7 +74,7 @@ function minutes(text) {
   return h * 60 + m;
 }
 
-export function mountBoard(root, go) {
+export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
   /* ---------------------------------------------------------- the cards */
 
   /**
@@ -209,7 +209,7 @@ export function mountBoard(root, go) {
 
   const screen = el(
     "section",
-    { class: "screen board grain" },
+    { class: `screen board grain${overlay ? " board--overlay" : ""}` },
     el("header", { class: "board__bar" },
       el("div", { class: "board__id" },
         el("p", { class: "board__file", text: CASE.file }),
@@ -217,7 +217,10 @@ export function mountBoard(root, go) {
       ),
       status,
       el("div", { class: "board__tools" },
-        missedAtTheStairs().length
+        overlay
+          ? el("span", { class: "board__saved", text: t("board.saved", "Saved on this device") })
+          : null,
+        !overlay && missedAtTheStairs().length
           ? el("button", {
               class: "btn btn--small btn--alert",
               type: "button",
@@ -230,12 +233,18 @@ export function mountBoard(root, go) {
         toolButton(t("board.addNote", "Add note"), addNote),
         toolButton(t("board.tidy", "Tidy"), tidy),
         toolButton(t("board.clear", "Clear wall"), clearWall),
-        el("button", {
+        !overlay ? el("button", {
           class: "btn btn--major",
           type: "button",
           text: t("hub.accuse", "Name a suspect"),
           onClick: () => go("accuse"),
-        }),
+        }) : null,
+        overlay ? el("button", {
+          class: "btn btn--major board__close",
+          type: "button",
+          text: t("board.close", "Return to scene"),
+          onClick: onClose,
+        }) : null,
       ),
     ),
     el("div", { class: "board__stage" }, el("div", { class: "board__scroll" }, wall), tray),
@@ -409,7 +418,7 @@ export function mountBoard(root, go) {
     }
 
     const actions = el("div", { class: "tray__actions" });
-    if (card.interview) {
+    if (card.interview && !overlay) {
       actions.append(el("button", {
         class: "btn btn--major",
         type: "button",
@@ -800,6 +809,11 @@ export function mountBoard(root, go) {
   /* ---------------------------------------------------------------- boot */
 
   function onKey(event) {
+    if (event.key === "Escape" && overlay && !linkFrom) {
+      event.preventDefault();
+      onClose?.();
+      return;
+    }
     if (event.key === "Escape" && linkFrom) {
       linkFrom = null;
       renderPins();

@@ -14,6 +14,33 @@
     var(--ink-100);
 }
 
+.board-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(5, 6, 10, 0.92);
+  animation: board-in var(--beat) var(--ease-out);
+}
+
+.board--overlay {
+  box-shadow: inset 0 0 0 1px rgba(232, 176, 75, 0.22);
+}
+
+.board__saved {
+  align-self: center;
+  color: var(--teal-100);
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: 0.08em;
+}
+
+.board__saved::before { content: "\2713  "; }
+
+@keyframes board-in {
+  from { opacity: 0; transform: scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
 .board__bar {
   display: flex;
   align-items: center;
