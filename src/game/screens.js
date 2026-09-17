@@ -15,6 +15,7 @@ import { playScene } from "../engine/player.js";
 import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS } from "../data/case.js";
 import { SCENES } from "../data/scenes.js";
 import { mountBoard } from "./board.js";
+import * as preferences from "../engine/preferences.js";
 
 /** Screens fade through this so a hard cut never happens mid-sentence. */
 function transition(root, build) {
@@ -41,15 +42,21 @@ export function title(root, go) {
     el("section", { class: "screen title grain" },
       art,
       el("div", { class: "title__vignette", "aria-hidden": "true" }),
-      el("div", { class: "title__plate" },
-        el("p", { class: "title__file", text: t("title.file", CASE.file) }),
-        el("h1", { class: "title__name", text: t("title.name", CASE.title) }),
-        el("p", { class: "title__strap", text: t("title.strap", CASE.strapline) }),
-        el("div", { class: "title__actions" },
+      el("header", { class: "title__mast" },
+        el("span", { class: "title__rule", "aria-hidden": "true" }),
+        el("p", { text: t("title.department", "Royal Oman Police · Nightwatch") }),
+      ),
+      el("div", { class: "title__layout" },
+        el("div", { class: "title__identity" },
+          el("p", { class: "title__file", text: t("title.file", CASE.file) }),
+          el("h1", { class: "title__name", text: t("title.name", CASE.title) }),
+          el("p", { class: "title__strap", text: t("title.strap", CASE.strapline) }),
+        ),
+        el("nav", { class: "title__menu", "aria-label": t("title.menu", "Main menu") },
           el("button", {
-            class: "btn btn--major",
+            class: "menu-button btn--major",
             type: "button",
-            text: t("title.begin", "Begin the night"),
+            text: store.hasSave() ? t("title.new", "New investigation") : t("title.begin", "Begin the night"),
             onClick: () => {
               store.reset();
               go("intro");
@@ -57,20 +64,89 @@ export function title(root, go) {
           }),
           store.hasSave()
             ? el("button", {
-                class: "btn",
+                class: "menu-button btn",
                 type: "button",
-                text: t("title.resume", "Resume"),
+                text: t("title.resume", "Resume investigation"),
                 onClick: () => {
                   store.restore();
                   go("hub");
                 },
               })
             : null,
+          el("button", {
+            class: "menu-button",
+            type: "button",
+            text: t("title.settings", "Settings"),
+            onClick: () => go("settings", { back: "title" }),
+          }),
         ),
+      ),
+      el("footer", { class: "title__foot" },
         el("p", { class: "title__note", text: t("title.note", "A work of fiction. Click or press space to advance dialogue.") }),
+        el("p", { class: "title__edition", text: t("title.edition", "The Muttrah file · 1948") }),
       ),
     ),
   );
+}
+
+/* ------------------------------------------------------------- settings */
+
+function optionGroup(key, legend, options, value, onChange) {
+  return el("fieldset", { class: "settings__group" },
+    el("legend", { text: legend }),
+    el("div", { class: "settings__options" },
+      options.map(([id, label, note]) => el("label", { class: "settings__option" },
+        el("input", {
+          type: "radio",
+          name: key,
+          value: id,
+          checked: value === id,
+          onChange: () => onChange(id),
+        }),
+        el("span", null, el("b", { text: label }), el("small", { text: note })),
+      )),
+    ),
+  );
+}
+
+export function settings(root, go, { back = "title" } = {}) {
+  const prefs = preferences.get();
+  const preview = el("p", {
+    class: "settings__preview",
+    text: t("settings.preview", "The rain had erased every footprint except the one that mattered."),
+  });
+
+  root.append(el("section", { class: "screen settings grain" },
+    el("div", { class: "settings__art", "aria-hidden": "true" }),
+    el("div", { class: "settings__panel" },
+      el("p", { class: "settings__eyebrow", text: t("settings.eyebrow", "Desk preferences") }),
+      el("h1", { text: t("settings.title", "Settings") }),
+      el("p", { class: "settings__lede", text: t("settings.lede", "Adjust how the case is presented. Changes are saved on this device.") }),
+      optionGroup("textSpeed", t("settings.text", "Dialogue speed"), [
+        ["slow", t("settings.slow", "Measured"), t("settings.slowNote", "A deliberate reading pace")],
+        ["normal", t("settings.normal", "Standard"), t("settings.normalNote", "The intended pace")],
+        ["fast", t("settings.fast", "Swift"), t("settings.fastNote", "Reveal lines quickly")],
+        ["instant", t("settings.instant", "Instant"), t("settings.instantNote", "Show complete lines")],
+      ], prefs.textSpeed, (textSpeed) => preferences.update({ textSpeed })),
+      preview,
+      optionGroup("motion", t("settings.motion", "Motion"), [
+        ["system", t("settings.system", "Use system setting"), t("settings.systemNote", "Follow your device preference")],
+        ["reduced", t("settings.reduced", "Reduce motion"), t("settings.reducedNote", "Remove decorative movement")],
+      ], prefs.motion, (motion) => preferences.update({ motion })),
+      el("label", { class: "settings__toggle" },
+        el("input", {
+          type: "checkbox",
+          checked: prefs.grain,
+          onChange: (event) => preferences.update({ grain: event.currentTarget.checked }),
+        }),
+        el("span", null,
+          el("b", { text: t("settings.grain", "Film grain") }),
+          el("small", { text: t("settings.grainNote", "Keep the noir texture over scenes") }),
+        ),
+      ),
+      el("button", { class: "btn settings__back", type: "button", text: t("settings.back", "Back to main menu"), onClick: () => go(back) }),
+    ),
+  ));
 }
 
 /* ----------------------------------------------------------------- scene */
@@ -245,5 +321,5 @@ export function verdict(root, go) {
   );
 }
 
-export const SCREENS = { title, hub, accuse, verdict, scene };
+export const SCREENS = { title, settings, hub, accuse, verdict, scene };
 export { transition };

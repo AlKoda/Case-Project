@@ -31,9 +31,7 @@
 import { el, clear, wait, reducedMotion } from "./dom.js";
 import { t } from "./i18n.js";
 import * as assets from "./assets.js";
-
-/** Characters per second for the typewriter. Noir wants a measured pace. */
-const TYPE_SPEED = 52;
+import * as preferences from "./preferences.js";
 
 export function createStage(root) {
   const nodes = buildDom();
@@ -88,7 +86,8 @@ export function createStage(root) {
   async function typeOut(text) {
     typing = true;
     nodes.text.textContent = "";
-    if (reducedMotion()) {
+    const speed = preferences.typeSpeed();
+    if (reducedMotion() || !Number.isFinite(speed)) {
       nodes.text.textContent = text;
       typing = false;
       return;
@@ -99,7 +98,7 @@ export function createStage(root) {
       let frame = 0;
       const step = (now) => {
         if (destroyed) return done();
-        shown += ((now - last) / 1000) * TYPE_SPEED;
+        shown += ((now - last) / 1000) * speed;
         last = now;
         nodes.text.textContent = text.slice(0, Math.floor(shown));
         if (shown >= text.length) return done();

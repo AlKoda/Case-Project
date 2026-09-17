@@ -79,6 +79,8 @@ q {
   z-index: 60;
 }
 
+:root[data-grain="off"] .grain::after { display: none; }
+
 /* ------------------------------------------------------------- controls */
 
 .btn {

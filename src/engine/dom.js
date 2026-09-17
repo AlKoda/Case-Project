@@ -35,4 +35,5 @@ export const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /** True when the player has asked the platform for less animation. */
 export const reducedMotion = () =>
-  window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+  document.documentElement.dataset.motion === "reduced" ||
+  (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false);
