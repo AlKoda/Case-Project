@@ -16,6 +16,7 @@ import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, CULPRIT, VERDICTS } fro
 import { SCENES } from "../data/scenes.js";
 import { mountBoard } from "./board.js";
 import * as preferences from "../engine/preferences.js";
+import { mountMap } from "./map.js";
 
 /** Screens fade through this so a hard cut never happens mid-sentence. */
 function transition(root, build) {
@@ -235,6 +236,11 @@ export function hub(root, go) {
   if (!store.get().completed.includes("scene:stairs")) {
     return go("scene", { id: "scene:stairs", next: "hub" });
   }
+  mountMap(root, go);
+}
+
+/** The case board is a tool at the station, rather than the whole field hub. */
+export function board(root, go) {
   mountBoard(root, go);
 }
 
