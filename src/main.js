@@ -10,11 +10,13 @@ import { el, clear } from "./engine/dom.js";
 import * as store from "./engine/store.js";
 import { registerLocale, setLocale } from "./engine/i18n.js";
 import { SCREENS } from "./game/screens.js";
+import * as preferences from "./engine/preferences.js";
 
 const root = document.getElementById("app");
 
 const ROUTES = {
   title: (r, go) => SCREENS.title(r, go),
+  settings: (r, go, params) => SCREENS.settings(r, go, params),
   intro: (r, go) => SCREENS.scene(r, go, { id: "intro", next: "stairs" }),
   stairs: (r, go) => SCREENS.scene(r, go, { id: "scene:stairs", next: "hub" }),
   hub: (r, go) => SCREENS.hub(r, go),
@@ -73,6 +75,7 @@ async function boot() {
   document.documentElement.lang = "en";
   document.documentElement.dir = "ltr";
   await loadLocale(preferredLocale());
+  preferences.apply();
   store.restore();
   go("title");
 }

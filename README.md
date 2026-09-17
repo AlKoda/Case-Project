@@ -28,6 +28,10 @@ Then open <http://localhost:8000/>. Click or press space to advance dialogue;
 Progress saves to the browser automatically, and **Resume** on the title screen
 picks the night back up.
 
+The main menu's **Settings** screen stores presentation preferences separately
+from case progress. Dialogue can be measured, standard, swift, or instant;
+decorative motion and film grain can also be reduced without changing a save.
+
 ## How it is put together
 
 ```

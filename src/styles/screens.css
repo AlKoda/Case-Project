@@ -7,7 +7,8 @@
 
 .title {
   display: grid;
-  place-items: center;
+  grid-template-rows: auto 1fr auto;
+  padding: clamp(1.25rem, 4vw, 3.5rem);
   background: var(--ink-000);
 }
 
@@ -15,8 +16,8 @@
   position: absolute;
   inset: 0;
   background-size: cover;
-  background-position: center;
-  filter: brightness(0.55) saturate(0.4) contrast(1.25);
+  background-position: 58% center;
+  filter: brightness(0.42) saturate(0.46) contrast(1.2);
   transform: scale(1.06);
   animation: drift 30s ease-in-out infinite alternate;
 }
@@ -29,16 +30,42 @@
 .title__vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(95% 75% at 50% 45%, transparent 26%, rgba(0, 0, 0, 0.88) 100%);
+  background: linear-gradient(90deg, rgba(5, 6, 10, 0.94) 0%, rgba(5, 6, 10, 0.48) 52%, rgba(5, 6, 10, 0.65) 100%), radial-gradient(95% 75% at 50% 45%, transparent 26%, rgba(0, 0, 0, 0.92) 100%);
 }
 
-.title__plate {
+.title__mast,
+.title__layout,
+.title__foot {
   position: relative;
   z-index: 2;
-  max-width: min(720px, 90vw);
-  padding: clamp(1.6rem, 4vw, 3rem);
-  text-align: center;
 }
+
+.title__mast { display: flex; align-items: center; gap: 1rem; }
+.title__mast p, .title__edition { margin: 0; font: 0.67rem var(--font-type); letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-300); }
+.title__rule { inline-size: 3rem; block-size: 1px; background: var(--blood-100); }
+.title__layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: clamp(3rem, 10vw, 10rem); align-items: center; inline-size: min(1180px, 100%); margin: auto; }
+.title__identity { max-width: 700px; }
+.title__menu { display: grid; border-block: 1px solid rgba(244, 217, 160, 0.24); padding-block: 0.7rem; }
+
+.menu-button {
+  position: relative;
+  padding: 1rem 1.2rem;
+  background: transparent;
+  border: 0;
+  border-block-end: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-200);
+  font: var(--step-0) var(--font-display);
+  letter-spacing: 0.13em;
+  text-align: start;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.menu-button::after { content: "›"; position: absolute; inset-inline-end: 1rem; color: var(--lamp-200); opacity: 0; transform: translateX(-8px); transition: var(--beat-fast); }
+.menu-button:hover, .menu-button:focus-visible { color: var(--lamp-100); background: rgba(232,176,75,0.08); }
+.menu-button:hover::after, .menu-button:focus-visible::after { opacity: 1; transform: none; }
+.menu-button.btn--major { color: var(--ink-000); border: 0; box-shadow: 0 8px 40px rgba(0,0,0,.4); }
+.menu-button.btn--major::after { color: var(--ink-000); }
+.title__foot { display: flex; justify-content: space-between; align-items: end; gap: 2rem; }
 
 .title__file {
   margin: 0 0 0.6rem;
@@ -52,7 +79,7 @@
 .title__name {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--step-4);
+  font-size: clamp(4rem, 10vw, 8rem);
   font-weight: 400;
   line-height: 1;
   letter-spacing: 0.06em;
@@ -62,25 +89,48 @@
 }
 
 .title__strap {
-  margin: 1.1rem auto 2rem;
+  margin: 1.1rem 0 2rem;
   max-width: 46ch;
   color: var(--text-200);
   font-size: var(--step-1);
   font-style: italic;
 }
 
-.title__actions {
-  display: flex;
-  gap: 0.9rem;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
 .title__note {
-  margin: 2rem 0 0;
+  margin: 0;
   font-family: var(--font-type);
   font-size: var(--step--1);
   color: var(--text-400);
+}
+
+/* ------------------------------------------------------------ settings */
+
+.settings { display: grid; place-items: center; padding: clamp(1rem, 4vw, 3rem); background: var(--ink-000); }
+.settings__art { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(5,6,10,.96), rgba(5,6,10,.72)), url("../../assets/backgrounds/precinct-desk.png") center/cover; filter: saturate(.5); }
+.settings__panel { position: relative; z-index: 2; inline-size: min(720px, 100%); max-block-size: 100%; overflow: auto; padding: clamp(1.5rem, 4vw, 3rem); background: rgba(11,13,19,.94); border: 1px solid var(--ink-500); box-shadow: var(--shadow-panel); }
+.settings__eyebrow { margin: 0; color: var(--blood-100); font: var(--step--1) var(--font-type); letter-spacing: .3em; text-transform: uppercase; }
+.settings h1 { margin: .2rem 0 0; color: var(--lamp-100); font: 400 var(--step-3) var(--font-display); letter-spacing: .08em; text-transform: uppercase; }
+.settings__lede { margin: .2rem 0 1.5rem; color: var(--text-300); }
+.settings__group { margin: 0 0 1.2rem; padding: 0; border: 0; }
+.settings__group legend { margin-block-end: .55rem; color: var(--text-200); font: var(--step--1) var(--font-type); letter-spacing: .16em; text-transform: uppercase; }
+.settings__options { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: .5rem; }
+.settings__option, .settings__toggle { display: flex; gap: .7rem; align-items: start; padding: .8rem; background: var(--ink-200); border: 1px solid var(--ink-400); cursor: pointer; }
+.settings__option:has(input:checked) { border-color: var(--lamp-300); background: rgba(232,176,75,.09); }
+.settings__option input, .settings__toggle input { accent-color: var(--lamp-200); margin-block-start: .25rem; }
+.settings__option span, .settings__toggle span { display: grid; }
+.settings__option b, .settings__toggle b { font-weight: 400; color: var(--text-100); }
+.settings__option small, .settings__toggle small { color: var(--text-400); line-height: 1.35; }
+.settings__preview { margin: -.5rem 0 1.25rem; padding: .7rem 1rem; border-inline-start: 2px solid var(--teal-200); color: var(--text-300); font-style: italic; }
+.settings__toggle { margin-block-end: 1.4rem; }
+.settings__back { inline-size: 100%; justify-content: center; }
+
+@media (max-width: 680px) {
+  .title__layout { grid-template-columns: 1fr; gap: 2rem; align-content: center; }
+  .title__name { font-size: clamp(3.4rem, 18vw, 5.4rem); }
+  .title__foot { display: block; }
+  .title__edition { display: none; }
+  .title__mast p { letter-spacing: .12em; }
+  .title__art { background-position: 65% center; }
 }
 
 /* ---------------------------------------------------------------- board */

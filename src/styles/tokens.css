@@ -93,3 +93,14 @@
     --beat-slow: 0ms;
   }
 }
+
+:root[data-motion="reduced"] {
+  --beat-fast: 0ms;
+  --beat: 0ms;
+  --beat-slow: 0ms;
+}
+
+:root[data-motion="reduced"] .title__art,
+:root[data-motion="reduced"] .vn__advance {
+  animation: none;
+}
