@@ -14,6 +14,16 @@ import * as preferences from "./engine/preferences.js";
 
 const root = document.getElementById("app");
 
+// Escape follows the visible screen's ordinary Back action. Modal components
+// prevent the event themselves, so the topmost window always gets first say.
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape" || event.defaultPrevented) return;
+  queueMicrotask(() => {
+    if (event.defaultPrevented || root.querySelector('[aria-modal="true"]')) return;
+    root.querySelector("[data-escape-back]")?.click();
+  });
+});
+
 const ROUTES = {
   title: (r, go) => SCREENS.title(r, go),
   settings: (r, go, params) => SCREENS.settings(r, go, params),

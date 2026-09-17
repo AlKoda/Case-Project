@@ -64,6 +64,15 @@
   --shadow-panel: 0 18px 60px rgba(0, 0, 0, 0.7);
   --shadow-lamp: 0 0 60px var(--lamp-glow);
 
+  /* Global window order. Keeping these named prevents a new pop-out from
+   * accidentally appearing behind the screen it is meant to cover. */
+  --layer-screen-chrome: 40;
+  --layer-toast: 60;
+  --layer-board-window: 100;
+  --layer-modal-window: 200;
+  --layer-dragged-card: 300;
+  --layer-transition: 999;
+
   --radius-sm: 2px;
   --radius-md: 4px;
   --radius-lg: 8px;

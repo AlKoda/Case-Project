@@ -17,7 +17,7 @@
 .board-overlay {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  z-index: var(--layer-board-window);
   background: rgba(5, 6, 10, 0.92);
   animation: board-in var(--beat) var(--ease-out);
 }
@@ -289,7 +289,7 @@
   position: fixed;
   inline-size: clamp(88px, 9vw, 132px);
   font-size: var(--step--1);
-  z-index: 200;
+  z-index: var(--layer-dragged-card);
   pointer-events: none;
   rotate: -3deg;
   opacity: 0.92;

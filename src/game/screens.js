@@ -163,7 +163,7 @@ export function settings(root, go, { back = "title" } = {}) {
           el("small", { text: t("settings.grainNote", "Keep the noir texture over scenes") }),
         ),
       ),
-      el("button", { class: "btn settings__back", type: "button", text: t("settings.back", "Back to main menu"), onClick: () => go(back) }),
+      el("button", { class: "btn settings__back", type: "button", dataset: { escapeBack: "true" }, text: t("settings.back", "Back to main menu"), onClick: () => go(back) }),
     ),
   ));
 }
@@ -317,6 +317,7 @@ export function accuse(root, go) {
       el("button", {
         class: "btn",
         type: "button",
+        dataset: { escapeBack: "true" },
         text: t("accuse.back", "Not yet"),
         onClick: () => go("hub"),
       }),
@@ -359,6 +360,7 @@ export function verdict(root, go) {
         el("button", {
           class: "btn",
           type: "button",
+          dataset: { escapeBack: "true" },
           text: t("verdict.reopen", "Reopen the file"),
           onClick: () => { store.update({ accusation: null }); go("hub"); },
         }),

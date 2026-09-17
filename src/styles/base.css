@@ -55,7 +55,7 @@ q {
   isolation: isolate;
 }
 
-.app::after { content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 42%, rgba(26,28,31,.88), #05060a 72%); transition: opacity 260ms var(--ease-out); }
+.app::after { content: ""; position: fixed; inset: 0; z-index: var(--layer-transition); pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 42%, rgba(26,28,31,.88), #05060a 72%); transition: opacity 260ms var(--ease-out); }
 .app.is-leaving::after { opacity: 1; }
 .app.is-entering > .screen { animation: screen-reveal 420ms var(--ease-out) both; }
 @keyframes screen-reveal { from { opacity: .25; transform: scale(1.012); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }

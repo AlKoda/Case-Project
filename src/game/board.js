@@ -148,6 +148,18 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
   let linkFrom = null;
   let drag = null;
 
+  // Keep a small, session-local stacking order. A physical card that has just
+  // been picked up should land above the rest of the pile, rather than slipping
+  // underneath a card that happened to be rendered later.
+  const cardLayers = new Map();
+  let topCardLayer = 3;
+
+  function raiseCard(id, node = null) {
+    topCardLayer += 1;
+    cardLayers.set(id, topCardLayer);
+    if (node) node.style.zIndex = String(topCardLayer);
+  }
+
   /**
    * Undo history for the wall.
    *
@@ -237,6 +249,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
           class: "btn btn--small",
           type: "button",
           text: t("map.back", "Back to map"),
+          dataset: { escapeBack: "true" },
           onClick: () => go("hub"),
         }) : null,
         !overlay ? el("button", {
@@ -491,6 +504,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
       "aria-label": described,
       style: { insetInlineStart: `${pin.x * 100}%`, insetBlockStart: `${pin.y * 100}%` },
     });
+    node.style.zIndex = String(cardLayers.get(id) ?? 3);
     if (card.accent) node.style.setProperty("--accent", card.accent);
 
     node.append(el("span", { class: "pin__tack", "aria-hidden": "true" }));
@@ -511,6 +525,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
     }
 
     node.addEventListener("pointerdown", (event) => beginDrag(event, id, false));
+    node.addEventListener("focus", () => raiseCard(id, node));
     node.addEventListener("keydown", (event) => onPinKey(event, id));
     return node;
   }
@@ -674,6 +689,8 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
     if (event.target.closest(".chip__pin")) return;
     event.preventDefault();
 
+    if (!fromTray) raiseCard(id, event.currentTarget);
+
     const rect = event.currentTarget.getBoundingClientRect();
     drag = {
       id,
@@ -815,12 +832,19 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
   /* ---------------------------------------------------------------- boot */
 
   function onKey(event) {
+    if (event.key === "Escape" && inspecting) {
+      event.preventDefault();
+      inspecting = null;
+      renderTray();
+      return;
+    }
     if (event.key === "Escape" && overlay && !linkFrom) {
       event.preventDefault();
       onClose?.();
       return;
     }
     if (event.key === "Escape" && linkFrom) {
+      event.preventDefault();
       linkFrom = null;
       renderPins();
       return;
