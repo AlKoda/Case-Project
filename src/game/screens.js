@@ -343,7 +343,6 @@ export function accuse(root, go) {
   for (const id of SUSPECTS) {
     const person = CAST[id];
     const broken = brokenFor(id);
-    const weight = broken.reduce((sum, proof) => sum + proof.weight, 0);
 
     const shot = el("img", { alt: "", class: "accuse__shot" });
     assets.bust(id, "cold", person.name).then((url) => { shot.src = url; });
@@ -361,7 +360,7 @@ export function accuse(root, go) {
       el("p", {
         class: "accuse__proof",
         text: broken.length
-          ? `${broken.length} ${t("accuse.broken", "contradiction(s)")} \u00b7 ${t("accuse.weight", "weight")} ${weight}`
+          ? `${broken.length} ${broken.length === 1 ? t("accuse.oneContradiction", "contradiction recorded") : t("accuse.contradictions", "contradictions recorded")}`
           : t("accuse.nothing", "No contradictions recorded"),
       }),
     );
@@ -408,7 +407,6 @@ export function verdict(root, go) {
   const person = CAST[named] ?? CAST[CULPRIT];
   const proofs = state.proven.map((id) => CONTRADICTIONS[id]).filter(Boolean);
   const supporting = proofs.filter((p) => p.subject === named);
-  const weight = supporting.reduce((sum, p) => sum + p.weight, 0);
 
   const shot = el("img", { alt: "", class: "verdict__shot" });
   assets.bust(named, "broken", person.name).then((url) => { shot.src = url; });
@@ -429,7 +427,6 @@ export function verdict(root, go) {
         supporting.length
           ? supporting.map((p) => el("p", { class: "verdict__proof" }, el("q", { text: p.claim }), " ", p.verdict))
           : el("p", { class: "panel__empty", text: t("verdict.nothing", "Nothing in this person's account was ever broken.") }),
-        el("p", { class: "verdict__weight", text: `${t("verdict.weight", "Weight of proof:")} ${weight}` }),
         el("div", { class: "finding-metrics" },
           ...[[state.exhibits.length, "Exhibits filed"], [state.clues.length, "Testimony leads"], [supporting.length, "Recorded contradictions"]].map(([count, label], i) => el("div", null, el("b", { text: count }), el("span", { text: t(`verdict.metric.${i}`, label) }))),
         ),
