@@ -113,6 +113,9 @@ them so a character does not jump when their expression changes, and writes the
 square bust the speech box and board cards use. The backgrounds and the six
 exhibits are still placeholder art. [`assets/README.md`](assets/README.md)
 documents every name in use and the exact commands the current art was cut with.
+Uncut masters live under `assets/source/`, while `assets/catalog.json` records
+the size, transparency support, byte size, and checksum of every runtime PNG so
+future additions can be audited without opening each file by hand.
 
 Moods a script may ask for are listed in the manifest: `neutral`, `tense`,
 `evasive`, `broken`, `cold`.

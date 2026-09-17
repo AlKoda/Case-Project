@@ -6,6 +6,11 @@ the project that knows how an image path is built. Replacing any image means
 overwriting a file at the same path — there is no manifest to edit and no code
 to change.
 
+Original sheets and uncropped images belong in [`source/`](source/README.md),
+not beside runtime files. `catalog.json` is the machine-readable inventory of
+every runtime PNG (dimensions, alpha capability, size, and checksum); regenerate
+it after any art change with `python3 tools/catalog_assets.py --write`.
+
 ```
 backgrounds/<scene>.png             1920 x 1080   the room behind the scene
 characters/<person>/<mood>.png       900 x 1400   transparent, full figure
@@ -38,13 +43,14 @@ files where the manifest expects them:
 
 ```sh
 python3 tools/slice_sheet.py sheet.png --person sharif \
-        --moods neutral evasive cold broken --bust
+        --moods neutral evasive cold broken --bust --archive-source
 ```
 
 Panels are found by their transparency rather than by dividing the width
 evenly, so unequal panels and off-centre figures survive. Every panel is scaled
-by the same factor and aligned bottom-centre, which is what stops a character
-jumping around the stage when their expression changes. `--colors` (default 128)
+by the same factor, contained in an exact 900×1400 canvas, and aligned
+bottom-centre, which is what stops a character jumping around the stage when
+their expression changes. `--colors` (default 128)
 quantises the palette — flat art loses nothing and shrinks about 85%.
 
 `--bust` also writes a square head-and-shoulders crop **per mood**, so the

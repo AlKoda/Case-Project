@@ -1,0 +1,535 @@
+{
+  "schema": 1,
+  "generatedBy": "python3 tools/catalog_assets.py --write",
+  "assets": [
+    {
+      "path": "assets/backgrounds/case-board.png",
+      "kind": "background",
+      "width": 1672,
+      "height": 941,
+      "alpha": false,
+      "bytes": 2645169,
+      "sha256": "462d8cb17fa7b5388fcd5819c003828639226cc8e7d35dc0c68199a73d4819ce"
+    },
+    {
+      "path": "assets/backgrounds/evidence-room.png",
+      "kind": "background",
+      "width": 497,
+      "height": 375,
+      "alpha": false,
+      "bytes": 281745,
+      "sha256": "83e0fb610908f958568953b7576e3e52b405967b7ffe71fb74ee8f15bbe33e49"
+    },
+    {
+      "path": "assets/backgrounds/hotel-stairs.png",
+      "kind": "background",
+      "width": 498,
+      "height": 375,
+      "alpha": false,
+      "bytes": 265854,
+      "sha256": "2ba78c1f6c5f0e93e0398938b7de911dd7a4eeb3dc6605666e122df3511e40ac"
+    },
+    {
+      "path": "assets/backgrounds/interview-room.png",
+      "kind": "background",
+      "width": 498,
+      "height": 424,
+      "alpha": false,
+      "bytes": 287491,
+      "sha256": "2bc21cf528712ba06c7764308806b1a3bbec7a7e31c85355f5c94e8a600feed5"
+    },
+    {
+      "path": "assets/backgrounds/precinct-desk.png",
+      "kind": "background",
+      "width": 498,
+      "height": 424,
+      "alpha": false,
+      "bytes": 309064,
+      "sha256": "07a11bec5949df903b3286a8fcc999c0917ccf40e6f7b0a304bfbec39c5a0101"
+    },
+    {
+      "path": "assets/backgrounds/rain-street.png",
+      "kind": "background",
+      "width": 498,
+      "height": 375,
+      "alpha": false,
+      "bytes": 282270,
+      "sha256": "11fbe499eeb056344ed5fbdb3a5ea1add0d3a013b0d1835bac80beece856654b"
+    },
+    {
+      "path": "assets/characters/busaidi/broken.png",
+      "kind": "stage",
+      "width": 922,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 95466,
+      "sha256": "2b371cbe20841a7ec9dcd9d27fc42fc1e05a91e71816675b3192ef7bc3f11b5b"
+    },
+    {
+      "path": "assets/characters/busaidi/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 34877,
+      "sha256": "cc59e138cdf2c5a634d9dc9b09c7ba8f42e4336cd0c709a4f9c42b987d8a70a7"
+    },
+    {
+      "path": "assets/characters/busaidi/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 35281,
+      "sha256": "73105da0750d546bded17371407df573ff57b9d944dfc9023c4a6402589530c6"
+    },
+    {
+      "path": "assets/characters/busaidi/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 35281,
+      "sha256": "73105da0750d546bded17371407df573ff57b9d944dfc9023c4a6402589530c6"
+    },
+    {
+      "path": "assets/characters/busaidi/neutral.png",
+      "kind": "stage",
+      "width": 922,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 97313,
+      "sha256": "41a7b4c093ebf2f25b39ef6d9c7e2b072ee4dca4e01665cc6faa9bc1cc230f1f"
+    },
+    {
+      "path": "assets/characters/hinai/broken.png",
+      "kind": "stage",
+      "width": 930,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 149030,
+      "sha256": "a0efc06ad6d493b5503a440059fe8da1d3da71f2b7f226ebfa9d55c172d60985"
+    },
+    {
+      "path": "assets/characters/hinai/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 53112,
+      "sha256": "e28d3752cca59bdc1a56bd46eab1976695598b947e4e04bce32ce7215c8148cc"
+    },
+    {
+      "path": "assets/characters/hinai/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 49727,
+      "sha256": "4ac5fabc8727530e3740c2c0d38fab20928b989d9fc3542964337cd3f9843427"
+    },
+    {
+      "path": "assets/characters/hinai/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 49727,
+      "sha256": "4ac5fabc8727530e3740c2c0d38fab20928b989d9fc3542964337cd3f9843427"
+    },
+    {
+      "path": "assets/characters/hinai/neutral.png",
+      "kind": "stage",
+      "width": 930,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 143622,
+      "sha256": "762b899e0f9b21f4646a68a6ac563db2f0d4dd4bf0ae90961bc595d3fa4e7b94"
+    },
+    {
+      "path": "assets/characters/kindi/broken.png",
+      "kind": "stage",
+      "width": 957,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 110573,
+      "sha256": "5f5c60db696a05a0d40e0d61de36ae1ed6e67fecfc72d5b8de00c560cab623a0"
+    },
+    {
+      "path": "assets/characters/kindi/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 37925,
+      "sha256": "65c4611ea2b031e6063f15c830553e164c9abe9aafd1d2f26badc04edeefbb0f"
+    },
+    {
+      "path": "assets/characters/kindi/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 37881,
+      "sha256": "783ffe7308a1db056cf126b95c6a96dbb24586d32968b33aaa2926861a55a61f"
+    },
+    {
+      "path": "assets/characters/kindi/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 37881,
+      "sha256": "783ffe7308a1db056cf126b95c6a96dbb24586d32968b33aaa2926861a55a61f"
+    },
+    {
+      "path": "assets/characters/kindi/neutral.png",
+      "kind": "stage",
+      "width": 957,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 108885,
+      "sha256": "27d1abf571fa32a937bd07532d8ea66a5f52b51a0efa007887667a14e437c134"
+    },
+    {
+      "path": "assets/characters/lawati/broken.png",
+      "kind": "stage",
+      "width": 525,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 43342,
+      "sha256": "7cf832578e705fa12b525fbd345e9bf549b85d1e0b42c4fdd49be024ce73abdc"
+    },
+    {
+      "path": "assets/characters/lawati/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 29787,
+      "sha256": "6e11925a10f3bd06f3dfa9eac4f0382173f7f342e71ac76067c168f014f65d02"
+    },
+    {
+      "path": "assets/characters/lawati/bust-cold.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 26845,
+      "sha256": "a699518d23bc84fbbe6fbc4af8ce9fccaaf3d6d39b1533da16303de8f778aa22"
+    },
+    {
+      "path": "assets/characters/lawati/bust-evasive.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 28614,
+      "sha256": "b9117b0d9125342e356adacdc2238bdc7b7652bad582079a22b26df6bf181e9d"
+    },
+    {
+      "path": "assets/characters/lawati/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 28793,
+      "sha256": "534c676d3c4d2b9dfdae94fef3d197ed64c2a3088ff076f902ad66263f9a407a"
+    },
+    {
+      "path": "assets/characters/lawati/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 28793,
+      "sha256": "534c676d3c4d2b9dfdae94fef3d197ed64c2a3088ff076f902ad66263f9a407a"
+    },
+    {
+      "path": "assets/characters/lawati/cold.png",
+      "kind": "stage",
+      "width": 525,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 42368,
+      "sha256": "fc5de6e9b8830b60a540ccb8c3ace1d8166f08dbdd2145032d8739e8540a91f0"
+    },
+    {
+      "path": "assets/characters/lawati/evasive.png",
+      "kind": "stage",
+      "width": 525,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 41740,
+      "sha256": "468c04cdf99bb7befcf7c8806b5938c041402de3253f262111f7d757d809b179"
+    },
+    {
+      "path": "assets/characters/lawati/neutral.png",
+      "kind": "stage",
+      "width": 525,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 43294,
+      "sha256": "3d718ec8b32b7c85bc7b0e855bb4615fd31e48264a18a9238abbac37bd82cda4"
+    },
+    {
+      "path": "assets/characters/maskari/broken.png",
+      "kind": "stage",
+      "width": 946,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 97642,
+      "sha256": "20bfefa79907b188bfe4bd7c5e2e5b4283558b885c850d29acd0f2200057f756"
+    },
+    {
+      "path": "assets/characters/maskari/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 33822,
+      "sha256": "a4a581e22de470f30faa65eecf4971d857311d98d1045dda9e7a9814620b208a"
+    },
+    {
+      "path": "assets/characters/maskari/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 33639,
+      "sha256": "8a66ca7e940aa513448380487f33f6e39eac78d77288c96ed055e7a5ce336134"
+    },
+    {
+      "path": "assets/characters/maskari/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 33639,
+      "sha256": "8a66ca7e940aa513448380487f33f6e39eac78d77288c96ed055e7a5ce336134"
+    },
+    {
+      "path": "assets/characters/maskari/neutral.png",
+      "kind": "stage",
+      "width": 946,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 98195,
+      "sha256": "f60dc6445c640e4280f0afee303162ce9e9cce4718d86f095f623e5297a6e374"
+    },
+    {
+      "path": "assets/characters/sharif/broken.png",
+      "kind": "stage",
+      "width": 618,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 66472,
+      "sha256": "44e12bfc30b7eddb78a4551bf5740e96fa793345a1dcd783c82599229d5c2b80"
+    },
+    {
+      "path": "assets/characters/sharif/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 37414,
+      "sha256": "4a68ad26d38d7f04a1c7864109fc03b2bea2ee9a1dacf6fa32e8f0e0d3de9d14"
+    },
+    {
+      "path": "assets/characters/sharif/bust-cold.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 37077,
+      "sha256": "33a16b5a2fe70ffb492df819e09316a2b541765bb369ee33554f2b01f73fc820"
+    },
+    {
+      "path": "assets/characters/sharif/bust-evasive.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 39849,
+      "sha256": "bc9a48606f36055ecd38b2938b82add89664127a8659986ba8b7aaf542548d59"
+    },
+    {
+      "path": "assets/characters/sharif/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 38181,
+      "sha256": "b05b20cf70ee6d1a5235ffc6e79594d1e0ebdc47f87b0d2eaedc579603eff124"
+    },
+    {
+      "path": "assets/characters/sharif/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 38181,
+      "sha256": "b05b20cf70ee6d1a5235ffc6e79594d1e0ebdc47f87b0d2eaedc579603eff124"
+    },
+    {
+      "path": "assets/characters/sharif/cold.png",
+      "kind": "stage",
+      "width": 618,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 64487,
+      "sha256": "e0433e08602657f9fb1d1fa29d88e46ce32867415d77f59be82907f096d9d34b"
+    },
+    {
+      "path": "assets/characters/sharif/evasive.png",
+      "kind": "stage",
+      "width": 618,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 69039,
+      "sha256": "874f766217e9940d0bbaa80a12fe2361962b93a53b66a4beebda58799de2fcce"
+    },
+    {
+      "path": "assets/characters/sharif/neutral.png",
+      "kind": "stage",
+      "width": 618,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 71881,
+      "sha256": "51bd20fda9d795e3fe955872b23f14c749dca2da0fa159c0fb5f3338220e1c95"
+    },
+    {
+      "path": "assets/characters/zadjali/broken.png",
+      "kind": "stage",
+      "width": 554,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 71283,
+      "sha256": "a558f5b14d71c427ef94f2b1d9e4df53aadd51275b71d33430ae705101ccf975"
+    },
+    {
+      "path": "assets/characters/zadjali/bust-broken.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 44438,
+      "sha256": "d0ceafcdafe90a1b78b31e2cf627f63362b7612e931eed09802ee63b6f5e223c"
+    },
+    {
+      "path": "assets/characters/zadjali/bust-cold.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 48167,
+      "sha256": "45c510de54c47b0e7efee5ece9bb846fcefabd3c22ab0593b6dffded945d991d"
+    },
+    {
+      "path": "assets/characters/zadjali/bust-evasive.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 46968,
+      "sha256": "600b55565a049a7b5ddaac5e0da7c053bbee9392a0d4484f6cd7c7df546b1ba4"
+    },
+    {
+      "path": "assets/characters/zadjali/bust-neutral.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 48427,
+      "sha256": "618fdbe97d3641054580ed5973544c72a0bf74464bc8c28ab98f97925cb7dc06"
+    },
+    {
+      "path": "assets/characters/zadjali/bust.png",
+      "kind": "bust",
+      "width": 512,
+      "height": 512,
+      "alpha": true,
+      "bytes": 48427,
+      "sha256": "618fdbe97d3641054580ed5973544c72a0bf74464bc8c28ab98f97925cb7dc06"
+    },
+    {
+      "path": "assets/characters/zadjali/cold.png",
+      "kind": "stage",
+      "width": 554,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 77949,
+      "sha256": "bc9e16a86af1c3f3e86d04da7923b413a3fc7f167c6648d4387277d8da2715e3"
+    },
+    {
+      "path": "assets/characters/zadjali/evasive.png",
+      "kind": "stage",
+      "width": 554,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 76898,
+      "sha256": "b199a654c331b7e71430e957f8a1c19aa67d0ae14086e767424b7fa7c9974330"
+    },
+    {
+      "path": "assets/characters/zadjali/neutral.png",
+      "kind": "stage",
+      "width": 554,
+      "height": 1400,
+      "alpha": true,
+      "bytes": 78645,
+      "sha256": "c0d12c96cc4237146b07ddc62c9b2c3b35b57ecc5be2f09d22721f599b0ab105"
+    },
+    {
+      "path": "assets/evidence/ledger.png",
+      "kind": "evidence",
+      "width": 82,
+      "height": 120,
+      "alpha": false,
+      "bytes": 15329,
+      "sha256": "33e71eeff69be12765c87e16bb93a02d1af71d6302d0fc9a4abd0b019277b92c"
+    },
+    {
+      "path": "assets/evidence/pocket-watch.png",
+      "kind": "evidence",
+      "width": 216,
+      "height": 250,
+      "alpha": false,
+      "bytes": 93455,
+      "sha256": "70af65a7ac017ac1348db983b09e2fde5dd0c61aa434529beb631b04d3d42f6c"
+    },
+    {
+      "path": "assets/evidence/stair-bulb.png",
+      "kind": "evidence",
+      "width": 64,
+      "height": 51,
+      "alpha": false,
+      "bytes": 4482,
+      "sha256": "f827b37b5308755b38653d911b6eecdcb016a89ba004cf5c96781eca1f6d4880"
+    },
+    {
+      "path": "assets/evidence/switchboard-log.png",
+      "kind": "evidence",
+      "width": 107,
+      "height": 117,
+      "alpha": false,
+      "bytes": 20113,
+      "sha256": "ec5377fea638f943ea0c4599949c9dd65a05ef18e7b498f1725009e1cfdc9cc1"
+    }
+  ],
+  "warnings": [
+    "assets/backgrounds/case-board.png: 1672x941; background target is 1920x1080",
+    "assets/backgrounds/evidence-room.png: 497x375; background target is 1920x1080",
+    "assets/backgrounds/hotel-stairs.png: 498x375; background target is 1920x1080",
+    "assets/backgrounds/interview-room.png: 498x424; background target is 1920x1080",
+    "assets/backgrounds/precinct-desk.png: 498x424; background target is 1920x1080",
+    "assets/backgrounds/rain-street.png: 498x375; background target is 1920x1080",
+    "assets/evidence/ledger.png: 82x120; evidence target is 512x512",
+    "assets/evidence/ledger.png: has no transparency channel",
+    "assets/evidence/pocket-watch.png: 216x250; evidence target is 512x512",
+    "assets/evidence/pocket-watch.png: has no transparency channel",
+    "assets/evidence/stair-bulb.png: 64x51; evidence target is 512x512",
+    "assets/evidence/stair-bulb.png: has no transparency channel",
+    "assets/evidence/switchboard-log.png: 107x117; evidence target is 512x512",
+    "assets/evidence/switchboard-log.png: has no transparency channel"
+  ]
+}
