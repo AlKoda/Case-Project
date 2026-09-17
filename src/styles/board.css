@@ -150,7 +150,9 @@
   pointer-events: stroke;
   cursor: pointer;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.7));
+  animation: string-settle 520ms cubic-bezier(.2,.8,.3,1) both;
 }
+@keyframes string-settle { from { stroke-dasharray: 3 8; stroke-dashoffset: 18; opacity: .3; } to { stroke-dasharray: 0; stroke-dashoffset: 0; opacity: 1; } }
 
 .string:hover { stroke: var(--blood-100); stroke-width: 3; }
 
@@ -174,11 +176,14 @@
   cursor: grab;
   transition: rotate var(--beat-fast) var(--ease-out), box-shadow var(--beat-fast);
   rotate: -1deg;
+  animation: pin-drop 380ms var(--ease-snap) both;
 }
+@keyframes pin-drop { 0% { opacity: 0; scale: 1.14; translate: -50% calc(-50% - 15px); } 65% { rotate: 2deg; } 100% { opacity: 1; scale: 1; } }
 
 .pin:nth-child(even) { rotate: 1.2deg; }
 .pin:hover, .pin:focus-visible { rotate: 0deg; box-shadow: 0 6px 10px rgba(0,0,0,.5), 0 18px 40px rgba(0,0,0,.5); z-index: 5; }
-.pin.is-dragging { opacity: 0.25; }
+.pin.is-dragging { opacity: 0.25; animation: pin-worry 110ms ease-in-out infinite alternate; }
+@keyframes pin-worry { from { rotate: -2deg; } to { rotate: 2deg; } }
 
 .pin.is-linking {
   outline: 2px solid var(--blood-100);

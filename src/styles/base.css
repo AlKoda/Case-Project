@@ -25,7 +25,11 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   overflow: hidden;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
+
+p, q, .vn__backlog, .phone__feed, input, textarea { user-select: text; }
 
 img {
   max-width: 100%;
@@ -47,12 +51,14 @@ q {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  transition: opacity var(--beat) var(--ease-out);
+  background: var(--ink-000);
+  isolation: isolate;
 }
 
-.app.is-leaving {
-  opacity: 0;
-}
+.app::after { content: ""; position: fixed; inset: 0; z-index: 999; pointer-events: none; opacity: 0; background: radial-gradient(circle at 50% 42%, rgba(26,28,31,.88), #05060a 72%); transition: opacity 260ms var(--ease-out); }
+.app.is-leaving::after { opacity: 1; }
+.app.is-entering > .screen { animation: screen-reveal 420ms var(--ease-out) both; }
+@keyframes screen-reveal { from { opacity: .25; transform: scale(1.012); filter: blur(3px); } to { opacity: 1; transform: none; filter: none; } }
 
 .screen {
   position: absolute;
@@ -103,6 +109,7 @@ q {
     border-color var(--beat-fast) var(--ease-out),
     transform var(--beat-fast) var(--ease-out),
     background var(--beat-fast) var(--ease-out);
+  box-shadow: 0 3px 0 #050609, 0 10px 22px rgba(0,0,0,.25);
 }
 
 .btn:hover,
@@ -111,6 +118,12 @@ q {
   background: linear-gradient(180deg, var(--ink-400), var(--ink-300));
   transform: translateY(-1px);
 }
+.btn:active { transform: translateY(2px) scale(.985); box-shadow: 0 1px 0 #050609, 0 4px 10px rgba(0,0,0,.3); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 
 .btn--major {
   --btn-edge: var(--lamp-300);

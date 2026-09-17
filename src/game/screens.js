@@ -39,8 +39,7 @@ export function title(root, go) {
     art.style.backgroundImage = `url("${url}")`;
   });
 
-  root.append(
-    el("section", { class: "screen title grain" },
+  const screen = el("section", { class: "screen title grain" },
       art,
       el("div", { class: "title__vignette", "aria-hidden": "true" }),
       el("header", { class: "title__mast" },
@@ -92,8 +91,21 @@ export function title(root, go) {
         ),
         el("p", { class: "title__edition", text: t("title.edition", "The Muttrah file · 1948") }),
       ),
-    ),
-  );
+    );
+  root.append(screen);
+
+  // A restrained parallax tilt makes the menu feel like a physical case file.
+  // CSS variables keep the effect decorative and trivial to disable.
+  screen.addEventListener("pointermove", (event) => {
+    const x = (event.clientX / window.innerWidth - 0.5) * 2;
+    const y = (event.clientY / window.innerHeight - 0.5) * 2;
+    screen.style.setProperty("--look-x", x.toFixed(3));
+    screen.style.setProperty("--look-y", y.toFixed(3));
+  });
+  screen.addEventListener("pointerleave", () => {
+    screen.style.setProperty("--look-x", 0);
+    screen.style.setProperty("--look-y", 0);
+  });
 }
 
 /* ------------------------------------------------------------- settings */

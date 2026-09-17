@@ -17,6 +17,41 @@ export function mountMap(root, go) {
   const detail = el("aside", { class: "location-card", "aria-live": "polite" });
   const placeButtons = new Map();
 
+  function openPhone() {
+    const alreadyRead = store.flag("switchboard_messages_read");
+    const messages = [
+      ["01:31", "ROOM 312", "Connect me to the night counter."],
+      ["01:36", "NIGHT COUNTER", "Doctor Sharif? You said not to disturb you."],
+      ["01:41", "ROOM 312", "Forget the call. And erase this from the slip."],
+      ["01:47", "SYSTEM", "Line disconnected — service stair signal recorded."],
+    ];
+    const feed = el("div", { class: "phone__feed", tabindex: "0", "aria-label": t("phone.messages", "Switchboard messages. Scroll to inspect all messages.") });
+    for (const [time, who, body] of messages) feed.append(el("article", { class: "phone__message" },
+      el("span", { text: time }), el("b", { text: who }), el("p", { text: body })));
+    const status = el("p", { class: "phone__status", "aria-live": "polite", text: alreadyRead ? t("phone.filed", "Lead filed · the final call was at 01:47") : t("phone.instruction", "Scroll through the complete exchange") });
+    const modal = el("div", { class: "phone-modal", role: "dialog", "aria-modal": "true", "aria-label": t("phone.title", "Switchboard handset") },
+      el("div", { class: "phone" },
+        el("header", { class: "phone__header" }, el("span", { text: "AL-MANAR / INTERNAL" }), el("i", { text: "● LIVE LINE" })),
+        el("h2", { text: t("phone.heading", "Recovered messages") }),
+        el("p", { class: "phone__hint", text: t("phone.hint", "The clerk left the exchange open. Read to the end.") }),
+        feed, status,
+        el("button", { class: "btn phone__close", type: "button", text: t("phone.close", "Pocket the handset"), onClick: () => modal.remove() })));
+    const reveal = () => {
+      if (feed.scrollTop + feed.clientHeight < feed.scrollHeight - 8) return;
+      store.setFlag("switchboard_messages_read");
+      status.textContent = t("phone.filed", "Lead filed · the final call was at 01:47");
+      status.classList.add("is-found");
+    };
+    feed.addEventListener("scroll", reveal, { passive: true });
+    modal.addEventListener("click", (event) => { if (event.target === modal) modal.remove(); });
+    document.addEventListener("keydown", function close(event) {
+      if (event.key !== "Escape" || !modal.isConnected) return;
+      modal.remove(); document.removeEventListener("keydown", close);
+    });
+    root.append(modal);
+    feed.focus();
+  }
+
   // Roads and the hotel footprint stay decorative; actual destinations are
   // native buttons laid over them, so the map works equally well by keyboard.
   map.innerHTML = `
@@ -62,6 +97,13 @@ export function mountMap(root, go) {
       el("b", { text: t(`cast.${personId}.name`, person.name) }),
       el("small", { text: t(`cast.${personId}.role`, person.role) })));
     }
+    if (selected.id === "lobby") actions.append(el("button", {
+      class: `location-person location-person--clue${store.flag("switchboard_messages_read") ? " is-done" : ""}`,
+      type: "button",
+      onClick: openPhone,
+    }, el("span", { class: "location-person__status", text: store.flag("switchboard_messages_read") ? t("map.inspected", "Inspected") : t("map.newLead", "New lead") }),
+    el("b", { text: t("phone.action", "Check the switchboard handset") }),
+    el("small", { text: t("phone.actionNote", "A message thread is still open on the clerk’s desk") })));
     if (selected.actions?.includes("board")) actions.append(el("button", { class: "btn", type: "button", text: t("map.board", "Open case board"), onClick: () => travel(() => go("board")) }));
     if (selected.actions?.includes("accuse")) actions.append(el("button", { class: "btn btn--alert", type: "button", text: t("hub.accuse", "Name a suspect"), onClick: () => travel(() => go("accuse")) }));
 
@@ -84,7 +126,7 @@ export function mountMap(root, go) {
     const button = el("button", {
       class: `map-pin${place.id === selected.id ? " is-selected" : ""}${place.id === "stairs" ? " map-pin--crime" : ""}`,
       type: "button",
-      style: `--map-x:${place.x}%;--map-y:${place.y}%`,
+      style: { "--map-x": `${place.x}%`, "--map-y": `${place.y}%` },
       "aria-pressed": place.id === selected.id ? "true" : "false",
       onClick: () => {
         selected = place;

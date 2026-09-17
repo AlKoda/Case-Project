@@ -206,11 +206,13 @@ export function createStage(root, { onOpenBoard } = {}) {
     return new Promise((resolve) => {
       clear(nodes.choices);
       nodes.choices.classList.add("is-open");
+      nodes.choices.style.setProperty("--choice-count", options.length);
       options.forEach((option, index) => {
         const button = el(
           "button",
           {
             class: "vn__choice",
+            style: { "--choice-index": index },
             type: "button",
             onClick: () => {
               nodes.choices.classList.remove("is-open");
