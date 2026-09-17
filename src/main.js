@@ -37,11 +37,13 @@ async function go(name, params) {
   if (leaving) return;
   leaving = true;
   root.classList.add("is-leaving");
-  await new Promise((resolve) => setTimeout(resolve, 160));
+  await new Promise((resolve) => setTimeout(resolve, 260));
   clear(root);
-  root.classList.remove("is-leaving");
   leaving = false;
   route(root, go, params);
+  root.classList.remove("is-leaving");
+  root.classList.add("is-entering");
+  requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("is-entering")));
 }
 
 /**
