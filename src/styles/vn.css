@@ -379,12 +379,18 @@
 }
 
 .vn__choice:hover,
-.vn__choice:focus-visible {
+.vn__choice:focus-visible,
+.vn__choice.is-selected {
   transform: translateX(6px);
   border-color: var(--lamp-200);
   border-inline-start-color: var(--lamp-100);
   box-shadow: 0 16px 42px rgba(0,0,0,.5), -4px 0 18px rgba(232,176,75,.12);
 }
+.vn__choice.is-selected {
+  color: var(--lamp-100);
+  background: linear-gradient(90deg, rgba(117, 78, 18, 0.96), rgba(56, 43, 20, 0.94));
+}
+.vn__choice:disabled:not(.is-selected) { opacity: 0.52; }
 .vn__choice:active { transform: translateX(8px) scale(.985); }
 
 .vn__choice-index {

@@ -204,6 +204,7 @@ export function createStage(root, { onOpenBoard } = {}) {
   /** Offer the detective a set of replies. Resolves with the chosen option. */
   function ask(options) {
     return new Promise((resolve) => {
+      let answered = false;
       clear(nodes.choices);
       nodes.choices.classList.add("is-open");
       nodes.choices.style.setProperty("--choice-count", options.length);
@@ -214,7 +215,12 @@ export function createStage(root, { onOpenBoard } = {}) {
             class: "vn__choice",
             style: { "--choice-index": index },
             type: "button",
-            onClick: () => {
+            onClick: async () => {
+              if (answered) return;
+              answered = true;
+              button.classList.add("is-selected");
+              for (const choice of nodes.choices.children) choice.disabled = true;
+              await wait(500);
               nodes.choices.classList.remove("is-open");
               clear(nodes.choices);
               resolve(option);

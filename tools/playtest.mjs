@@ -138,7 +138,7 @@ function driver(page, base) {
       const option = page.locator(".vn__choice", { hasText: text }).first();
       if (!(await option.count())) return false;
       await option.click();
-      await sleep(300);
+      await sleep(600);
       return true;
     },
 
@@ -186,7 +186,14 @@ const scenarios = {
     await d.sleep(700);
 
     await d.until(".vn__choices.is-open");
-    for (const want of ["pockets", "so dark", "stair rail", "lobby cupboard", "fingerprints"]) {
+    const firstChoice = page.locator(".vn__choice", { hasText: "pockets" }).first();
+    await firstChoice.click();
+    await d.sleep(250);
+    check("a chosen reply lingers highlighted", await firstChoice.evaluate((node) =>
+      node.classList.contains("is-selected") && node.disabled));
+    await d.sleep(350);
+    await d.until(".vn__choices.is-open");
+    for (const want of ["so dark", "stair rail", "lobby cupboard", "fingerprints"]) {
       if (await d.choose(want)) await d.until(".vn__choices.is-open");
     }
     await d.choose("Enough");
