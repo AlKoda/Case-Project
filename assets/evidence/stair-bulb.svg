@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img"><title>Unscrewed stairwell bulb</title>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><path d="M0 0v6" stroke="#8b7960" stroke-opacity=".15"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-opacity=".18"/></filter></defs>
+<rect x="24" y="24" width="464" height="464" rx="3" fill="#ece3d0"/>
+<rect x="32" y="32" width="448" height="448" rx="2" fill="url(#hatch)" stroke="#b3a488"/>
+<path d="M52 84H460M52 430H460" stroke="#b3a488"/>
+<text x="52" y="64" fill="#78684f" font-family="monospace" font-size="13" letter-spacing="2">47-B / E-02</text>
+<text x="460" y="64" text-anchor="end" fill="#78684f" font-family="monospace" font-size="11">AL-MANAR</text>
+<g filter="url(#shadow)" stroke="#514633" stroke-width="3" fill="none" stroke-linejoin="round">
+<path d="M208 358v-37c0-24-40-49-40-102a88 88 0 0 1 176 0c0 53-40 78-40 102v37z" fill="#e1d7bf"/>
+<path d="M208 335h96v38h-96z" fill="#b3a488"/>
+<path d="M211 339l91 10M211 350l91 10M211 361l91 10M244 375h24v13h-24z"/>
+<path d="M244 334l-12-67M268 334l12-67M228 264h55" stroke-width="2"/>
+<path d="M232 264l6-9 6 9 6-9 6 9 6-9 6 9 6-9 6 9" stroke="#78684f" stroke-width="1.5"/>
+<path d="M188 225q-1-43 35-65" stroke="#f8f2e4" stroke-width="7" stroke-linecap="round"/>
+<path d="M177 399h158M194 388v25M318 388v25" stroke="#a3372f" stroke-width="1.5"/>
+</g><path d="M365 207c33 10 48 50 23 77m1-21-1 21 21-3" fill="none" stroke="#a3372f" stroke-width="2"/>
+<text x="370" y="316" fill="#6d211b" font-family="monospace" font-size="11">½ TURN</text><text x="256" y="456" text-anchor="middle" fill="#544936" font-family="monospace" font-size="13" letter-spacing="1">FILAMENT INTACT / SOCKET LOOSENED</text></svg>

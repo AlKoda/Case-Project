@@ -11,6 +11,8 @@ import * as store from "./engine/store.js";
 import { registerLocale, setLocale } from "./engine/i18n.js";
 import { SCREENS } from "./game/screens.js";
 import * as preferences from "./engine/preferences.js";
+import { prepareStep, presentationBar, isPresenting, endPresentation } from "./game/presenter.js";
+import { mountBoard } from "./game/board.js";
 
 const root = document.getElementById("app");
 
@@ -26,6 +28,17 @@ document.addEventListener("keydown", (event) => {
 
 const ROUTES = {
   title: (r, go) => SCREENS.title(r, go),
+  briefing: (r, go) => SCREENS.briefing(r, go),
+  presentation: (r, go, params = {}) => {
+    const chapter = prepareStep(params.step ?? 0);
+    let cleanup;
+    if (chapter === "briefing") cleanup = SCREENS.briefing(r, go);
+    else if (chapter === "evidence" || chapter === "interview") cleanup = SCREENS.scene(r, go, { id: `demo:${chapter}` });
+    else if (chapter === "board") cleanup = mountBoard(r, go, { overlay: true });
+    else cleanup = SCREENS.verdict(r, go);
+    presentationBar(r, go);
+    return cleanup;
+  },
   settings: (r, go, params) => SCREENS.settings(r, go, params),
   intro: (r, go) => SCREENS.scene(r, go, { id: "intro", next: "stairs" }),
   stairs: (r, go) => SCREENS.scene(r, go, { id: "scene:stairs", next: "hub" }),
@@ -37,6 +50,8 @@ const ROUTES = {
 };
 
 let leaving = false;
+let cleanup = null;
+let queuedRoute = null;
 
 async function go(name, params) {
   const route = ROUTES[name];
@@ -44,13 +59,31 @@ async function go(name, params) {
     console.error(`Unknown route "${name}"`);
     return;
   }
-  if (leaving) return;
+  if (leaving) {
+    queuedRoute = { name, params };
+    return;
+  }
+  // The presenter chapters form one temporary workspace. An ordinary route
+  // requested by a scene overlay exits that workspace before opening a screen.
+  if (isPresenting() && name !== "presentation") {
+    endPresentation(go);
+    return;
+  }
   leaving = true;
+  cleanup?.();
+  cleanup = null;
+  document.querySelectorAll("dialog[open]").forEach((dialog) => dialog.close());
   root.classList.add("is-leaving");
   await new Promise((resolve) => setTimeout(resolve, 260));
   clear(root);
   leaving = false;
-  route(root, go, params);
+  if (queuedRoute) {
+    const queued = queuedRoute;
+    queuedRoute = null;
+    return go(queued.name, queued.params);
+  }
+  const result = route(root, go, params);
+  cleanup = typeof result === "function" ? result : null;
   root.classList.remove("is-leaving");
   root.classList.add("is-entering");
   requestAnimationFrame(() => requestAnimationFrame(() => root.classList.remove("is-entering")));

@@ -152,6 +152,19 @@ def check_asset_catalog() -> None:
     print(f"  {result.stdout.strip()}")
 
 
+def check_presentation() -> None:
+    if not shutil.which("node"):
+        print("  demo:     skipped (node is not installed)")
+        return
+    result = subprocess.run(
+        ["node", str(ROOT / "tools" / "check_presentation.mjs")],
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode:
+        fail(result.stderr.strip() or "presentation check failed")
+    print(f"  demo:     {result.stdout.strip()}")
+
+
 def main() -> None:
     print("Checking the Al-Manar build")
     references = check_document()
@@ -160,6 +173,7 @@ def main() -> None:
     check_modules()
     check_persisted_state()
     check_case_data()
+    check_presentation()
     print("OK")
 
 

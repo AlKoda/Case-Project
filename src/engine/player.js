@@ -46,7 +46,7 @@ export async function playScene(stage, scene, context) {
   let index = 0;
   let guard = 0;
 
-  while (index < script.length) {
+  while (index < script.length && !stage.destroyed) {
     if (guard++ > 10000) {
       console.error(`Scene "${scene.id}" ran away; check its goto targets.`);
       break;
@@ -54,7 +54,7 @@ export async function playScene(stage, scene, context) {
     const node = script[index];
     const jump = await run(node, { stage, scene, script, cast, exhibits, context });
 
-    if (jump?.end) break;
+    if (stage.destroyed || jump?.end) break;
     if (jump?.goto) {
       const target = marks.get(jump.goto);
       if (target == null) {
@@ -139,6 +139,7 @@ async function run(node, ctx) {
       { text: t("vn.fileClue", "File this as a clue"), action: "file" },
       { text: t("vn.leaveTestimony", "Leave it as testimony"), action: "leave" },
     ]);
+    if (stage.destroyed) return { end: true };
     if (chosen.action === "file") {
       store.collect("clues", node.clue);
       context.onClue?.(node.clue);
@@ -162,6 +163,7 @@ async function run(node, ctx) {
   if (node.choice) {
     const options = node.choice.filter((option) => !option.when || option.when(store.get()));
     const chosen = await stage.ask(options);
+    if (stage.destroyed) return { end: true };
     chosen.take?.(store);
     if (chosen.goto) return { goto: chosen.goto };
     return null;
@@ -220,6 +222,7 @@ async function pressClaim(press, key, ctx) {
   const claim = t(`${key}.claim`, press.claim);
   const picked = await stage.press(claim, held, catalogue);
 
+  if (stage.destroyed) return { end: true };
   if (picked == null) return press.stand ? { goto: press.stand } : null;
 
   const accepts = Array.isArray(press.accepts) ? press.accepts : [press.accepts];

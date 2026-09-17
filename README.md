@@ -1,7 +1,7 @@
 # Al-Manar
 
-A hard-boiled interview mystery that runs in the browser with no build step, no
-dependencies and no network requests. Seven people were awake in a hotel on the
+An interactive investigation demonstration with a complete fictional mystery.
+It runs in the browser with no build step, runtime dependencies, or external services. Seven people were awake in a hotel on the
 Muttrah harbour the night the night manager went down the service stairs. All
 seven were somewhere else. You have until morning.
 
@@ -28,6 +28,33 @@ the board) or leave it as testimony. Suspects can also be asked for comparison
 fingerprints: ridge groups are labelled alphabetically, so a Type A scene print
 can be compared directly with each suspect's Type A, B, or C result.
 
+## Present the demonstration
+
+Choose **Presentation walkthrough** from the opening screen. Five visible chapters
+make the demonstration repeatable without requiring a complete playthrough:
+
+1. **Briefing** introduces the incident and the Observe → Question → Connect → Conclude workflow.
+2. **Evidence** lets you examine the watch or the deliberately loosened bulb.
+3. **Interview** lets you challenge Sharif’s lighting claim with an exhibit. Select the bulb to demonstrate a recorded contradiction; a wrong exhibit offers another attempt.
+4. **Connections** opens an editable prepared board. Inspect a card, move it, add a note, or run a string.
+5. **Findings** presents the supported prepared conclusion, the three contradictions, and a printable case summary.
+
+Use **Next chapter** or select a chapter directly. **Full screen** is available on
+the title and presentation controls. **Exit walkthrough** returns to the menu.
+The walkthrough uses temporary prepared checkpoints: edits, scene choices, and
+findings never replace the visitor’s saved investigation. Reloading also leaves
+the saved case intact. Lines appear immediately in presentation mode, without
+changing the visitor’s dialogue-speed preference.
+
+For a full investigation, choose **Open the full investigation** (or **New
+investigation** when a save exists). It starts with the same briefing and then
+plays the complete case. The field map suggests a next action, and **Help**
+explains the controls. Starting a new case asks before replacing an existing save.
+
+AI assisted development of this demonstration. Dialogue, evidence, and conclusions
+are scripted fictional material; no live AI analyzes evidence or makes decisions.
+The walkthrough labels its prepared checkpoints explicitly.
+
 ## Run it
 
 Serve the repository root with any static HTTP server:
@@ -49,7 +76,7 @@ decorative motion and film grain can also be reduced without changing a save.
 ## How it is put together
 
 ```
-index.html              the shell: four stylesheets and one module
+index.html              the shell: stylesheets and one module
 src/
   main.js               router and boot
   engine/
@@ -63,7 +90,8 @@ src/
   game/
     board.js            the evidence wall: pinning, string, timeline
     map.js              field navigation: buildings, rooms and witnesses
-    screens.js          title, accusation, verdict
+    screens.js          title, briefing, accusation, verdict
+    presenter.js        temporary presentation checkpoints and chapter controls
   data/
     manifest.js         where art lives and how a file is chosen
     case.js             cast, exhibits, contradictions, witnesses, verdicts
@@ -130,8 +158,11 @@ a character needs only `neutral.png` to appear in every scene.
 Character art usually arrives as one strip per person, one expression per panel.
 `tools/slice_sheet.py` cuts it up, scales every panel by the same factor, aligns
 them so a character does not jump when their expression changes, and writes the
-square bust the speech box and board cards use. The backgrounds and the six
-exhibits are still placeholder art. [`assets/README.md`](assets/README.md)
+square bust the speech box and board cards use. The existing backgrounds and character art are retained. Six evidence exhibits
+now use curated SVG drawings with case-specific details, including the watch’s
+01:47 time, the intact bulb filament, and the 01:52 outside call from room 312.
+These SVGs take priority over the earlier PNGs; the original PNGs remain available
+as fallbacks. [`assets/README.md`](assets/README.md)
 documents every name in use and the exact commands the current art was cut with.
 Uncut masters live under `assets/source/`, while `assets/catalog.json` records
 the size, transparency support, byte size, and checksum of every runtime PNG so
@@ -183,7 +214,7 @@ front of a player.
 
 ```sh
 npm install playwright     # once; the game itself needs nothing
-node tools/playtest.mjs    # 45 checks over seven scenarios
+node tools/playtest.mjs    # browser scenarios
 node tools/playtest.mjs board undo
 ```
 
@@ -196,6 +227,26 @@ was thrown or logged as an error along the way.
 Playwright is a development dependency and nothing else needs it — the game is
 still a static site with no build step and no runtime dependencies. Without it
 the suite exits cleanly and says so, so it is safe to wire into a hook.
+
+### Presentation and interaction checks
+
+`check_project.py` also runs dependency-free presentation checks: valid checkpoint
+IDs, both evidence branches, successful / failed / deferred challenges, cancelled
+scenes, and save isolation.
+
+Optional DOM interaction checks exercise routing, CSS map coordinates, board undo,
+exact timeline times, rapid chapter changes, saved-case restoration, confirmation
+dialogs, paused dialogue, and supported / incomplete / incorrect conclusions:
+
+```sh
+npm install --no-save happy-dom
+node tools/check_ui.mjs
+```
+
+These are semantic checks, not rendered visual tests. Before presenting, run the
+project in the target browser and check desktop, phone, full screen, and the printed
+summary. An accusation naming Sharif is only supported after all three of his
+contradictions have been established; a partial case requests further investigation.
 
 ## Backups
 

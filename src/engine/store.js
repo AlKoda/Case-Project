@@ -107,6 +107,22 @@ function normalise(saved) {
 }
 
 let state = blank();
+let previewSnapshot = null;
+
+/** A walkthrough is a temporary workspace. Its prepared checkpoints never
+ * overwrite an investigation saved by the visitor. */
+export function beginPreview(patch = {}) {
+  if (!previewSnapshot) previewSnapshot = structuredClone(state);
+  state = normalise({ ...blank(), ...patch });
+  for (const listener of listeners) listener(state);
+}
+
+export function endPreview() {
+  if (!previewSnapshot) return;
+  state = previewSnapshot;
+  previewSnapshot = null;
+  for (const listener of listeners) listener(state);
+}
 
 export function get() {
   return state;
@@ -150,6 +166,7 @@ export function flag(name) {
 }
 
 function persist() {
+  if (previewSnapshot) return;
   try {
     localStorage.setItem(KEY, JSON.stringify(state));
   } catch {

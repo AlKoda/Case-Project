@@ -106,3 +106,14 @@ broken build.
 
 `python3 ../tools/check_project.py` reports anything the manifest wants and
 cannot find.
+
+## Demonstration edition evidence drawings
+
+The six curated SVGs in `assets/evidence/` depict the actual fictional exhibits:
+`pocket-watch`, `stair-bulb`, `shawl-bead`, `umbrella`, `switchboard-log`, and
+`ledger`. They share an archival card frame and preserve precise case details
+through vector text. Evidence resolution prefers SVG before PNG, including the
+existing fingerprint diagrams. Earlier PNGs are retained.
+
+`assets/favicon.svg` supplies the case archive mark. No new raster assets or
+external fonts are required.
