@@ -20,6 +20,7 @@ a character jumping around the stage when their expression changes.
 from __future__ import annotations
 
 import argparse
+import shutil
 import sys
 from pathlib import Path
 
@@ -114,6 +115,7 @@ def main() -> None:
     parser.add_argument("--moods", nargs="+", required=True, help="one name per panel, left to right")
     parser.add_argument("--out", default="assets/characters", help="directory the character folder goes in")
     parser.add_argument("--height", type=int, default=1400, help="height of the output canvas")
+    parser.add_argument("--width", type=int, default=900, help="width of the output canvas")
     parser.add_argument(
         "--colors",
         type=int,
@@ -136,6 +138,11 @@ def main() -> None:
         ),
     )
     parser.add_argument("--dry-run", action="store_true", help="report the panels found and stop")
+    parser.add_argument(
+        "--archive-source",
+        action="store_true",
+        help="copy the original sheet to assets/source/characters/<person>/",
+    )
     args = parser.parse_args()
 
     sheet = Image.open(args.sheet).convert("RGBA")
@@ -168,11 +175,21 @@ def main() -> None:
         cuts.append(panel.crop(box) if box else panel)
 
     canvas_h = args.height
-    scale = canvas_h / max(cut.height for cut in cuts)
-    canvas_w = int(max(cut.width for cut in cuts) * scale)
+    canvas_w = args.width
+    # One contain scale for the whole set preserves proportions and body size
+    # while guaranteeing the manifest's exact stage slot.
+    scale = min(canvas_h / max(cut.height for cut in cuts), canvas_w / max(cut.width for cut in cuts))
 
     target = ROOT / args.out / args.person
     target.mkdir(parents=True, exist_ok=True)
+    if args.archive_source:
+        archive = ROOT / "assets" / "source" / "characters" / args.person
+        archive.mkdir(parents=True, exist_ok=True)
+        archived = archive / Path(args.sheet).name
+        if archived.exists() and archived.read_bytes() != Path(args.sheet).read_bytes():
+            fail(f"refusing to overwrite different archived source: {archived.relative_to(ROOT)}")
+        shutil.copy2(args.sheet, archived)
+        print(f"  archived {archived.relative_to(ROOT)}")
 
     canvases = []
     for mood, cut in zip(args.moods, cuts):

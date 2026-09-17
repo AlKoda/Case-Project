@@ -130,10 +130,21 @@ def check_case_data() -> None:
             print(f"            {line.strip()}")
 
 
+def check_asset_catalog() -> None:
+    checker = ROOT / "tools" / "catalog_assets.py"
+    result = subprocess.run(
+        [sys.executable, str(checker), "--check"], capture_output=True, text=True, check=False
+    )
+    if result.returncode:
+        fail(result.stderr.strip() or "asset catalog check failed")
+    print(f"  {result.stdout.strip()}")
+
+
 def main() -> None:
     print("Checking the Al-Manar build")
     references = check_document()
     check_stylesheets(references)
+    check_asset_catalog()
     check_modules()
     check_case_data()
     print("OK")
