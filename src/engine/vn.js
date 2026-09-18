@@ -213,6 +213,44 @@ export function createStage(root, { onOpenBoard, instantText = false } = {}) {
       clear(nodes.choices);
       nodes.choices.classList.add("is-open");
       nodes.choices.style.setProperty("--choice-count", options.length);
+      let current = 0;
+      const eyebrow = el("p", {
+        class: "vn__choices-label",
+        text: t("vn.chooseApproach", "Choose your next line of inquiry"),
+      });
+      const counter = el("span", { class: "vn__choices-count", "aria-live": "polite" });
+      const rail = el("div", { class: "vn__choices-rail" });
+      const previous = el("button", {
+        class: "vn__choice-nav",
+        type: "button",
+        text: "←",
+        title: t("vn.previousTopic", "Previous topic"),
+        "aria-label": t("vn.previousTopic", "Previous topic"),
+        onClick: () => show(current - 1),
+      });
+      const next = el("button", {
+        class: "vn__choice-nav",
+        type: "button",
+        text: "→",
+        title: t("vn.nextTopic", "Next topic"),
+        "aria-label": t("vn.nextTopic", "Next topic"),
+        onClick: () => show(current + 1),
+      });
+      const dots = el("div", { class: "vn__choice-dots", "aria-hidden": "true" });
+
+      function show(index, focus = true) {
+        current = (index + options.length) % options.length;
+        [...rail.children].forEach((choice, choiceIndex) => {
+          choice.classList.toggle("is-current", choiceIndex === current);
+          choice.tabIndex = choiceIndex === current ? 0 : -1;
+        });
+        [...dots.children].forEach((dot, dotIndex) => dot.classList.toggle("is-current", dotIndex === current));
+        counter.textContent = `${current + 1} / ${options.length}`;
+        if (focus) rail.children[current]?.focus();
+      }
+
+      nodes.choices.append(el("div", { class: "vn__choices-head" }, eyebrow, counter));
+      nodes.choices.append(el("div", { class: "vn__choice-deck" }, previous, rail, next), dots);
       options.forEach((option, index) => {
         const button = el(
           "button",
@@ -225,7 +263,7 @@ export function createStage(root, { onOpenBoard, instantText = false } = {}) {
               answered = true;
               cancelInput = null;
               button.classList.add("is-selected");
-              for (const choice of nodes.choices.children) choice.disabled = true;
+              for (const choice of rail.children) choice.disabled = true;
               await wait(500);
               if (destroyed) return resolve({});
               nodes.choices.classList.remove("is-open");
@@ -236,9 +274,15 @@ export function createStage(root, { onOpenBoard, instantText = false } = {}) {
           el("span", { class: "vn__choice-index", text: String(index + 1) }),
           el("span", { class: "vn__choice-text", text: t(option.key ?? "", option.text) }),
         );
-        nodes.choices.append(button);
+        button.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowLeft" || event.key === "ArrowUp") { event.preventDefault(); show(current - 1); }
+          if (event.key === "ArrowRight" || event.key === "ArrowDown") { event.preventDefault(); show(current + 1); }
+        });
+        rail.append(button);
+        dots.append(el("i"));
       });
-      nodes.choices.firstChild?.focus();
+      show(0, false);
+      rail.firstChild?.focus();
     });
   }
 

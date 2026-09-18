@@ -214,10 +214,11 @@
   padding-block: 1.35rem 1.9rem;
   padding-inline: max(calc((100% - 1120px) / 2), clamp(1.1rem, 3vw, 2.4rem));
   background:
-    linear-gradient(180deg, rgba(5, 6, 10, 0.9), rgba(5, 6, 10, 0.97)),
-    linear-gradient(180deg, var(--ink-300), var(--ink-100));
-  border-block-start: 1px solid var(--ink-500);
-  box-shadow: var(--shadow-panel);
+    linear-gradient(90deg, rgba(232, 176, 75, 0.055) 0 1px, transparent 1px 100%),
+    linear-gradient(180deg, rgba(18, 22, 28, 0.96), rgba(5, 6, 10, 0.985));
+  background-size: 34px 100%, auto;
+  border-block-start: 1px solid rgba(232, 176, 75, 0.52);
+  box-shadow: 0 -18px 55px rgba(0, 0, 0, 0.58), inset 0 1px rgba(255,255,255,.035);
   z-index: 30;
 }
 
@@ -343,13 +344,13 @@
   display: none;
   flex-direction: column;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
   padding-inline: 1rem;
   z-index: 40;
 }
 
 .vn__choices.is-open { display: flex; }
-.vn__choices.is-open .vn__choice { animation: choice-rise 360ms var(--ease-snap) both; animation-delay: calc(var(--choice-index) * 85ms); }
+.vn__choices.is-open .vn__choice.is-current { animation: choice-rise 360ms var(--ease-snap) both; }
 @keyframes choice-rise { from { opacity: 0; transform: translateY(18px) scale(.97); } to { opacity: 1; transform: none; } }
 
 /* While a choice is open the stage steps back, so options never have to
@@ -361,8 +362,31 @@
 
 .vn:has(.vn__choices.is-open) .vn__box { opacity: 0.55; }
 
-.vn__choice {
+.vn__choices-head {
   display: flex;
+  justify-content: space-between;
+  inline-size: min(760px, calc(100% - 7rem));
+  color: var(--text-300);
+  font-family: var(--font-type);
+  font-size: var(--step--1);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.vn__choices-label { margin: 0; }
+.vn__choices-count { color: var(--lamp-200); }
+.vn__choice-deck { display: grid; grid-template-columns: 3rem minmax(0, 760px) 3rem; align-items: center; gap: .7rem; inline-size: min(880px, 100%); }
+.vn__choices-rail { min-width: 0; }
+.vn__choice-nav {
+  inline-size: 3rem; block-size: 3rem; border: 1px solid var(--ink-500); border-radius: 50%;
+  background: rgba(11,13,19,.88); color: var(--lamp-200); font-size: 1.25rem; cursor: pointer;
+}
+.vn__choice-nav:hover, .vn__choice-nav:focus-visible { border-color: var(--lamp-200); background: rgba(232,176,75,.12); }
+.vn__choice-dots { display: flex; gap: .38rem; }
+.vn__choice-dots i { inline-size: 1.4rem; block-size: 2px; background: var(--ink-500); transition: background var(--beat-fast), inline-size var(--beat-fast); }
+.vn__choice-dots i.is-current { inline-size: 2.4rem; background: var(--lamp-200); }
+
+.vn__choice {
+  display: none;
   align-items: center;
   gap: 0.9rem;
   inline-size: min(820px, 100%);
@@ -377,6 +401,7 @@
   box-shadow: 0 12px 35px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.035);
   transition: transform var(--beat-fast) var(--ease-out), border-color var(--beat-fast), box-shadow var(--beat-fast);
 }
+.vn__choice.is-current { display: flex; }
 
 .vn__choice:hover,
 .vn__choice:focus-visible,
@@ -528,4 +553,7 @@
   .vn__bust { margin-block-start: -46px; }
   .vn__text { font-size: var(--step-0); min-height: 5.4em; }
   .vn__choices { inset-block-end: 34vh; }
+  .vn__choice-deck { grid-template-columns: 2.5rem minmax(0, 1fr) 2.5rem; gap: .35rem; }
+  .vn__choice-nav { inline-size: 2.5rem; block-size: 2.5rem; }
+  .vn__choices-head { inline-size: calc(100% - 5.7rem); }
 }

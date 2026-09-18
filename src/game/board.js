@@ -48,12 +48,12 @@ const TICK = 15;
  * These are published to CSS as custom properties so the timeline band and
  * the pinning maths cannot drift apart.
  */
-const CORK = { x0: 0.15, x1: 0.86, y0: 0.15, y1: 0.84 };
+const CORK = { x0: 0.035, x1: 0.965, y0: 0.075, y1: 0.95 };
 
 /* The timeline occupies the bottom of the cork. Cards dropped below this line
  * snap into it and take a time. */
-const BAND_TOP = 0.66;
-const BAND_Y = 0.675;   // a timed card hangs from the top of the band
+const BAND_TOP = 0.77;
+const BAND_Y = 0.79;   // a timed card hangs from the top of the band
 
 /* Cards are centred on their pin, so their centre has to stay far enough
  * inside the cork that the card itself does not overhang the frame. */
@@ -205,8 +205,19 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
   strings.setAttribute("class", "wall__strings");
 
   const wall = el("div", { class: "wall", tabindex: "-1" });
+  const zones = el("div", { class: "wall__zones", "aria-hidden": "true" },
+    ...[
+      ["suspects", t("board.suspects", "Suspects")],
+      ["witnesses", t("board.witnesses", "Witnesses")],
+      ["scene", t("board.scene", "Crime scene")],
+      ["evidence", t("board.exhibits", "Evidence")],
+      ["workspace", t("board.workspace", "Working theory")],
+    ].map(([id, label]) => el("section", { class: `wall__zone wall__zone--${id}` },
+      el("span", { text: label }),
+    )),
+  );
   const band = el("div", { class: "band" });
-  wall.append(strings, band);
+  wall.append(zones, strings, band);
 
   const tray = el("aside", { class: "tray" });
   const status = el("p", { class: "board__status", "aria-live": "polite" });
@@ -267,7 +278,13 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
         }) : null,
       ),
     ),
-    el("div", { class: "board__stage" }, el("div", { class: "board__scroll" }, wall), tray),
+    el("div", { class: "board__stage" },
+      el("div", { class: "board__canvas" },
+        el("p", { class: "board__canvas-hint", text: t("board.canvasHint", "Expanded investigation canvas · scroll to explore") }),
+        el("div", { class: "board__scroll" }, wall),
+      ),
+      tray,
+    ),
   );
 
   root.append(screen);
@@ -297,10 +314,6 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
   function toolButton(label, onClick) {
     return el("button", { class: "btn btn--small", type: "button", text: label, onClick });
   }
-
-  assets.background("case-board", "Evidence wall").then((url) => {
-    wall.style.backgroundImage = `url("${url}")`;
-  });
 
   // One source of truth for the cork geometry: the band is positioned from
   // these, so the drop maths and the drawn band can never disagree.
