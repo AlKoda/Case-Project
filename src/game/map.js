@@ -5,6 +5,7 @@ import * as assets from "../engine/assets.js";
 import { CASE, CAST, EXHIBITS } from "../data/case.js";
 import { INTERVIEWS, SCENES } from "../data/scenes.js";
 import { LOCATIONS } from "../data/locations.js";
+import { showHelp, toggleFullscreen } from "../engine/dialog.js";
 
 const interviewFor = (person) => INTERVIEWS.find((entry) => entry.person === person);
 
@@ -16,6 +17,17 @@ export function mountMap(root, go) {
   const map = el("div", { class: "city-map", role: "group", "aria-label": t("map.area", "Investigation map") });
   const detail = el("aside", { class: "location-card", "aria-live": "polite" });
   const placeButtons = new Map();
+  let closePhone = null;
+  const sceneExhibits = SCENES['scene:stairs'].script.filter((node) => node.give).map((node) => node.give);
+  const remaining = sceneExhibits.filter((id) => !state.exhibits.includes(id));
+  const nextPerson = INTERVIEWS.find((interview) => !state.completed.includes(interview.id));
+  const nextPlace = remaining.length ? LOCATIONS.find((place) => place.id === 'stairs')
+    : nextPerson ? LOCATIONS.find((place) => place.people?.includes(nextPerson.person))
+    : LOCATIONS.find((place) => place.id === 'station');
+  const recommendation = remaining.length
+    ? t('map.nextSearch', 'Complete the scene search')
+    : nextPerson ? `${t('map.nextInterview', 'Hear the next account:')} ${CAST[nextPerson.person].name}`
+    : t('map.nextReview', 'Compare the accounts and review your findings');
 
   function openPhone() {
     const alreadyRead = store.flag("switchboard_messages_read");
@@ -35,10 +47,18 @@ export function mountMap(root, go) {
       if (closed) return;
       closed = true;
       modal.remove();
+      root.querySelector('.map-screen')?.removeAttribute('inert');
+      closePhone = null;
       document.removeEventListener("keydown", onKeyDown);
       if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus();
     };
     const onKeyDown = (event) => {
+      if (event.key === "Tab") {
+        const controls = [...modal.querySelectorAll('button, [tabindex="0"]')];
+        const first = controls[0], last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
       if (event.key === "Escape") {
         event.preventDefault();
         close();
@@ -46,7 +66,7 @@ export function mountMap(root, go) {
     };
     const modal = el("div", { class: "phone-modal", role: "dialog", "aria-modal": "true", "aria-label": t("phone.title", "Switchboard handset") },
       el("div", { class: "phone" },
-        el("header", { class: "phone__header" }, el("span", { text: "AL-MANAR / INTERNAL" }), el("i", { text: "● LIVE LINE" })),
+        el("header", { class: "phone__header" }, el("span", { text: "AL-MANAR / INTERNAL" }), el("i", { text: t("phone.archive", "ARCHIVED EXCHANGE") })),
         el("h2", { text: t("phone.heading", "Recovered messages") }),
         el("p", { class: "phone__hint", text: t("phone.hint", "The clerk left the exchange open. Read to the end.") }),
         feed, status,
@@ -60,14 +80,23 @@ export function mountMap(root, go) {
     feed.addEventListener("scroll", reveal, { passive: true });
     modal.addEventListener("click", (event) => { if (event.target === modal) close(); });
     document.addEventListener("keydown", onKeyDown);
+    root.querySelector('.map-screen')?.setAttribute('inert', '');
     root.append(modal);
+    closePhone = close;
     feed.focus();
+    requestAnimationFrame(reveal);
   }
 
   // Roads and the hotel footprint stay decorative; actual destinations are
   // native buttons laid over them, so the map works equally well by keyboard.
   map.innerHTML = `
-    <svg class="city-map__drawing" viewBox="0 0 1000 620" aria-hidden="true">
+    <svg class="city-map__drawing" viewBox="0 0 1000 620" preserveAspectRatio="none" aria-hidden="true">
+      <defs><pattern id="map-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0H0V40" fill="none" stroke="#4c626d" stroke-opacity=".12" stroke-width="1"/></pattern></defs>
+      <rect width="1000" height="620" fill="url(#map-grid)"/>
+      <g class="city-map__blocks">
+        <path d="M80 155h110v70H80zM230 100h145v90H230zM290 225h120v96H290zM95 270h105v68H95zM825 112h95v125h-95zM827 304h120v90H827zM300 440h112v52H300z"/>
+        <path d="M76 120L412 120M225 65v273M280 335h133M823 75v345" class="city-map__alley"/>
+      </g>
       <path class="city-map__water" d="M0 470 C190 420 310 520 475 455 C650 385 820 480 1000 400 L1000 620 L0 620Z"/>
       <path class="city-map__road" d="M95 465 C255 368 360 425 518 372 C675 319 778 330 916 244"/>
       <path class="city-map__road city-map__road--thin" d="M617 414 L708 87 M487 378 L520 146"/>
@@ -76,6 +105,7 @@ export function mountMap(root, go) {
       <path class="city-map__station" d="M90 390 H255 V500 H90Z"/>
       <text x="635" y="121" class="city-map__label">AL-MANAR HOTEL</text>
       <text x="172" y="425" class="city-map__label">NIGHTWATCH</text>
+      <g class="city-map__compass" transform="translate(907 510)"><path d="M0-30L8 0H-8zM0 30L-8 0H8z"/><text y="-40">N</text></g>
       <text x="90" y="570" class="city-map__harbour">MUTTRAH HARBOUR</text>
     </svg>`;
 
@@ -99,12 +129,15 @@ export function mountMap(root, go) {
       const interview = interviewFor(personId);
       if (!interview) continue;
       const person = CAST[personId];
+      const portrait = el('img', { class: 'location-person__portrait', alt: '', decoding: 'async' });
+      assets.bust(personId, 'neutral', person.name).then((url) => { portrait.src = url; });
       const done = store.has("completed", interview.id);
       actions.append(el("button", {
         class: `location-person${done ? " is-done" : ""}`,
         type: "button",
         onClick: () => travel(() => go("scene", { id: interview.id, next: "hub" })),
       },
+      portrait,
       el("span", { class: "location-person__status", text: done ? t("map.questioned", "Questioned") : t("map.waiting", "Available") }),
       el("b", { text: t(`cast.${personId}.name`, person.name) }),
       el("small", { text: t(`cast.${personId}.role`, person.role) })));
@@ -142,6 +175,7 @@ export function mountMap(root, go) {
       "aria-pressed": place.id === selected.id ? "true" : "false",
       onClick: () => {
         selected = place;
+        store.update({ currentLocation: place.id });
         for (const [id, node] of placeButtons) {
           const active = id === place.id;
           node.classList.toggle("is-selected", active);
@@ -158,17 +192,28 @@ export function mountMap(root, go) {
   const questioned = INTERVIEWS.filter((entry) => state.completed.includes(entry.id)).length;
   root.append(el("section", { class: "screen map-screen grain" },
     el("header", { class: "map-header" },
-      el("div", null, el("p", { class: "map-header__file", text: CASE.file }), el("h1", { text: t("map.title", "Night map") })),
+      el("div", null, el("p", { class: "map-header__file", text: CASE.file }), el("h1", { text: t("map.title", "Field investigation") })),
       el("p", { class: "map-header__brief", text: t("map.brief", "Move through the hotel. Search rooms. Find the people who were awake.") }),
       el("div", { class: "map-header__progress", "aria-label": t("map.progress", "Investigation progress") },
-        el("span", { text: `${found}/${Object.keys(EXHIBITS).length} ${t("map.clues", "clues")}` }),
+        el("span", { text: `${found}/${Object.keys(EXHIBITS).length} ${t("map.exhibits", "exhibits filed")}` }),
         el("span", { text: `${questioned}/${INTERVIEWS.length} ${t("map.people", "people questioned")}` }))),
-    el("div", { class: "map-layout" }, map, detail),
+    el("div", { class: "map-layout" },
+      el('div', { class: 'map-workspace' },
+        el('div', { class: 'map-next' },
+          el('div', null, el('span', { class: 'eyebrow', text: t('map.next', 'Suggested next step') }), el('p', { text: recommendation })),
+          el('button', { class: 'btn btn--small', type: 'button', text: t('map.showLocation', 'Show location →'), onClick: () => placeButtons.get(nextPlace.id)?.click() })),
+        map,
+        el('div', { class: 'map-legend' },
+          el('span', { text: t('map.legend', 'Field plan · Select a location to view its available actions') }),
+          el('span', { text: t('map.legendCrime', 'Red marker / crime scene') }))), detail),
     el("nav", { class: "field-nav", "aria-label": t("map.tools", "Investigation tools") },
       el("button", { class: "field-nav__item is-active", type: "button", text: t("map.map", "Map") }),
       el("button", { class: "field-nav__item", type: "button", text: t("map.board", "Case board"), onClick: () => go("board") }),
-      el("button", { class: "field-nav__item", type: "button", text: t("map.accuse", "Accuse"), onClick: () => go("accuse") }),
-      el("button", { class: "field-nav__item", type: "button", text: t("title.settings", "Settings"), onClick: () => go("settings", { back: "hub" }) })),
+      el("button", { class: "field-nav__item", type: "button", text: t("map.accuse", "Review findings"), onClick: () => go("accuse") }),
+      el("button", { class: "field-nav__item", type: "button", text: t("title.settings", "Settings"), onClick: () => go("settings", { back: "hub" }) }),
+      el("button", { class: "field-nav__item", type: "button", text: t("map.help", "Help"), onClick: showHelp }),
+      el("button", { class: "field-nav__item", type: "button", text: t("map.menu", "Main menu"), onClick: () => go("title") })),
   ));
   renderDetail();
+  return () => closePhone?.();
 }

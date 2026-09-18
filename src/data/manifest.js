@@ -98,5 +98,7 @@ export function bustSources(person, mood = "neutral") {
 
 /** Candidate files for an evidence exhibit, best first. */
 export function evidenceSources(exhibit) {
-  return [`${ROOT}/evidence/${exhibit}.png`, `${ROOT}/evidence/${exhibit}.svg`];
+  // Curated exhibit drawings are exact to the case (watch, bulb, exchange
+  // record). Retain the earlier PNGs as fallbacks for future asset work.
+  return [`${ROOT}/evidence/${exhibit}.svg`, `${ROOT}/evidence/${exhibit}.png`];
 }

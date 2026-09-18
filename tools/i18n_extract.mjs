@@ -23,6 +23,7 @@ import { dirname, join } from "node:path";
 import { SCENES, INTERVIEWS } from "../src/data/scenes.js";
 import { CAST, EXHIBITS, CONTRADICTIONS, CASE, VERDICTS, WITNESSES } from "../src/data/case.js";
 import { keyed } from "../src/engine/script.js";
+import { PRESENTATION_SCENES, PRESENTATION_STEPS } from "../src/data/presentation.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const code = process.argv[2];
@@ -72,7 +73,7 @@ for (const witness of WITNESSES) {
   add(`witness.${witness.person}.statement`, witness.statement);
 }
 
-for (const [id, scene] of Object.entries(SCENES)) {
+for (const [id, scene] of Object.entries({ ...SCENES, ...PRESENTATION_SCENES })) {
   for (const { node, key } of keyed(scene.script, id)) {
     add(key, node.text);
     if (node.press) add(`${key}.claim`, node.press.claim);
@@ -80,6 +81,11 @@ for (const [id, scene] of Object.entries(SCENES)) {
       node.choice.forEach((option, index) => add(`${key}.choice.${index}`, option.text));
     }
   }
+}
+
+for (const chapter of PRESENTATION_STEPS) {
+  add(`presenter.${chapter.id}`, chapter.label);
+  add(`presenter.${chapter.id}.note`, chapter.note);
 }
 
 // Interface strings live in the code as t("key", "English"), not in the data.
@@ -95,10 +101,15 @@ function sourceFiles(directory) {
 
 for (const file of sourceFiles(join(ROOT, "src"))) {
   const source = readFileSync(file, "utf8");
-  for (const [, key, english] of source.matchAll(/\btf?\(\s*"([^"]+)"\s*,\s*"((?:[^"\\]|\\.)*)"/g)) {
-    // Dialogue keys are generated at runtime and already collected above.
-    if (/^(intro|scene:|interview:)/.test(key)) continue;
-    add(key, english.replace(/\\"/g, '"'));
+  const patterns = [
+    /\btf?\(\s*"([^"\\]+)"\s*,\s*"((?:[^"\\]|\\.)*)"/g,
+    /\btf?\(\s*'([^'\\]+)'\s*,\s*'((?:[^'\\]|\\.)*)'/g,
+  ];
+  for (const pattern of patterns) {
+    for (const [, key, english] of source.matchAll(pattern)) {
+      if (/^(intro|scene:|interview:|demo:)/.test(key)) continue;
+      add(key, english.replace(/\\(["'])/g, '$1'));
+    }
   }
 }
 

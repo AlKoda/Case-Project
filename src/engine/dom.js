@@ -10,7 +10,12 @@ export function el(tag, props, ...children) {
     if (value == null || value === false) continue;
     if (key === "class") node.className = value;
     else if (key === "dataset") Object.assign(node.dataset, value);
-    else if (key === "style") Object.assign(node.style, value);
+    else if (key === "style") {
+      for (const [property, setting] of Object.entries(value)) {
+        if (property.startsWith("--")) node.style.setProperty(property, setting);
+        else node.style[property] = setting;
+      }
+    }
     else if (key.startsWith("on")) node.addEventListener(key.slice(2).toLowerCase(), value);
     else if (key === "text") node.textContent = value;
     else node.setAttribute(key, value === true ? "" : value);

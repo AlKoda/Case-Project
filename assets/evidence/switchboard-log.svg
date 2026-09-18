@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img"><title>Switchboard record showing a call from room 312 at 01:52</title>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><path d="M0 0v6" stroke="#8b7960" stroke-opacity=".15"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-opacity=".18"/></filter></defs>
+<rect x="24" y="24" width="464" height="464" rx="3" fill="#ece3d0"/>
+<rect x="32" y="32" width="448" height="448" rx="2" fill="url(#hatch)" stroke="#b3a488"/>
+<path d="M52 84H460M52 430H460" stroke="#b3a488"/>
+<text x="52" y="64" fill="#78684f" font-family="monospace" font-size="13" letter-spacing="2">47-B / E-05</text>
+<text x="460" y="64" text-anchor="end" fill="#78684f" font-family="monospace" font-size="11">AL-MANAR</text>
+<g filter="url(#shadow)"><path d="M102 110h292v289H102z" fill="#f4ead4" stroke="#8b7960" stroke-width="2"/>
+<path d="M122 185h251M122 224h251M122 263h251M122 302h251M122 341h251M122 380h251M179 167v214M275 167v214" stroke="#b3a488"/>
+<text x="248" y="140" fill="#514633" font-family="monospace" font-size="14" text-anchor="middle">NIGHT EXCHANGE</text>
+<text x="125" y="175" fill="#8b7960" font-family="monospace" font-size="9">TIME</text><text x="189" y="175" fill="#8b7960" font-family="monospace" font-size="9">ORIGIN</text><text x="285" y="175" fill="#8b7960" font-family="monospace" font-size="9">LINE</text>
+<g fill="#514633" font-family="monospace" font-size="13"><text x="125" y="211">01:31</text><text x="189" y="211">COUNTER</text><text x="285" y="211">INTERNAL</text><text x="125" y="250">01:36</text><text x="189" y="250">LOBBY</text><text x="285" y="250">INTERNAL</text>
+<text x="125" y="289" fill="#6d211b">01:52</text><text x="189" y="289" fill="#6d211b">ROOM 312</text><text x="285" y="289" fill="#6d211b">OUTSIDE</text>
+<text x="125" y="328">02:14</text><text x="189" y="328">COUNTER</text><text x="285" y="328">INTERNAL</text></g>
+<rect x="115" y="266" width="265" height="32" rx="4" stroke="#a3372f" fill="none" stroke-width="2"/>
+</g><text x="256" y="456" text-anchor="middle" fill="#544936" font-family="monospace" font-size="13" letter-spacing="1">CONTEMPORANEOUS SWITCHBOARD RECORD</text></svg>

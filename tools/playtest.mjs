@@ -32,7 +32,7 @@ const seeded = (over = {}) => ({
   startedAt: Date.now(),
   scene: null,
   line: 0,
-  exhibits: ["pocket-watch", "stair-bulb", "shawl-bead", "umbrella", "ledger", "switchboard-log"],
+  exhibits: ["pocket-watch", "stair-bulb", "shawl-bead", "umbrella", "fingerprint-stairs", "ledger", "switchboard-log"],
   clues: [],
   dismissedClues: [],
   proven: [],
@@ -170,7 +170,7 @@ const scenarios = {
     check("the field map shows all destinations", (await page.locator(".map-pin").count()) === 6);
     await page.locator(".map-pin", { hasText: "Room 312" }).click();
     check("selecting a room reveals its witness", await page.locator(".location-person", { hasText: "Sharif" }).count() === 1);
-    check("field tools stay available", (await page.locator(".field-nav__item").count()) === 4);
+    check("field tools stay available", (await page.locator(".field-nav__item").count()) === 6);
   },
 
   /** Title to verdict, the whole night, taking every exhibit on the way. */
@@ -182,7 +182,9 @@ const scenarios = {
     await d.sleep(500);
 
     check("title screen names the case", (await page.locator(".title__name").textContent()) === "Al-Manar");
-    await page.locator(".btn--major").click();
+    await page.getByRole("button", { name: "Open the full investigation" }).click();
+    await d.sleep(400);
+    await page.getByRole("button", { name: "Begin investigation →" }).click();
     await d.sleep(700);
 
     await d.until(".vn__choices.is-open");
@@ -228,9 +230,10 @@ const scenarios = {
     check("three suspects can be named", (await page.locator(".accuse__card").count()) === 3);
 
     await page.locator(".accuse__card", { hasText: "Sharif" }).click();
+    await page.getByRole("button", { name: "Review conclusion", exact: true }).click();
     await d.sleep(800);
-    check("naming the killer charges him",
-      (await page.locator(".verdict__stamp").textContent()).includes("Charged"));
+    check("one contradiction requires further investigation",
+      (await page.locator(".verdict__stamp").textContent()).includes("Further investigation"));
   },
 
   /** Pin, place on the timeline, tie a string. */
@@ -355,7 +358,7 @@ const scenarios = {
     check("three broken statements read as a case", full.includes("That is a case"));
 
     const proofs = await page.$$eval(".accuse__proof", (ns) => ns.map((n) => n.textContent));
-    check("proof is counted per suspect", proofs.some((p) => p.startsWith("3 broken")), proofs.join(" / "));
+    check("proof is counted per suspect", proofs.some((p) => p.startsWith("3 contradiction")), proofs.join(" / "));
   },
 
   /** Witnesses are questioned like anyone else, and cannot be accused. */
@@ -378,7 +381,7 @@ const scenarios = {
     check("filing testimony records a board clue", (await d.save()).clues.includes("kindi"));
     await d.choose("light on these stairs");
     await d.until(".vn__tray.is-open");
-    check("a witness can be pressed with an exhibit", (await page.locator(".vn__exhibit").count()) === 6);
+    check("a witness can be pressed with an exhibit", (await page.locator(".vn__exhibit").count()) === 7);
 
     await page.locator(".vn__exhibit", { hasText: "Bulb" }).first().click();
     await d.sleep(500);

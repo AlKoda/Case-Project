@@ -35,7 +35,7 @@ import { t } from "./i18n.js";
 import * as assets from "./assets.js";
 import * as preferences from "./preferences.js";
 
-export function createStage(root, { onOpenBoard } = {}) {
+export function createStage(root, { onOpenBoard, instantText = false } = {}) {
   const nodes = buildDom(onOpenBoard);
   clear(root).append(nodes.stage);
 
@@ -44,6 +44,7 @@ export function createStage(root, { onOpenBoard } = {}) {
   let typing = false;
   let finishTyping = null;
   let destroyed = false;
+  let cancelInput = null;
 
   /** Advance, or finish the line that is still typing. */
   function poke() {
@@ -58,7 +59,7 @@ export function createStage(root, { onOpenBoard } = {}) {
   });
 
   function onKey(event) {
-    if (destroyed) return;
+    if (destroyed || nodes.stage.closest("[inert]") || document.querySelector("dialog[open]")) return;
     if (event.key === " " || event.key === "Enter") {
       if (document.activeElement?.tagName === "BUTTON") return;
       event.preventDefault();
@@ -74,6 +75,7 @@ export function createStage(root, { onOpenBoard } = {}) {
   });
 
   function waitForAdvance() {
+    if (destroyed) return Promise.resolve();
     nodes.advance.classList.add("is-ready");
     return new Promise((resolve) => {
       resolveAdvance = () => {
@@ -86,10 +88,11 @@ export function createStage(root, { onOpenBoard } = {}) {
 
   /** Reveal text one character at a time; a click finishes it early. */
   async function typeOut(text) {
+    if (destroyed) return;
     typing = true;
     nodes.text.textContent = "";
     const speed = preferences.typeSpeed();
-    if (reducedMotion() || !Number.isFinite(speed)) {
+    if (instantText || reducedMotion() || !Number.isFinite(speed)) {
       nodes.text.textContent = text;
       typing = false;
       return;
@@ -203,7 +206,9 @@ export function createStage(root, { onOpenBoard } = {}) {
 
   /** Offer the detective a set of replies. Resolves with the chosen option. */
   function ask(options) {
+    if (destroyed) return Promise.resolve({});
     return new Promise((resolve) => {
+      cancelInput = () => resolve({});
       let answered = false;
       clear(nodes.choices);
       nodes.choices.classList.add("is-open");
@@ -218,9 +223,11 @@ export function createStage(root, { onOpenBoard } = {}) {
             onClick: async () => {
               if (answered) return;
               answered = true;
+              cancelInput = null;
               button.classList.add("is-selected");
               for (const choice of nodes.choices.children) choice.disabled = true;
               await wait(500);
+              if (destroyed) return resolve({});
               nodes.choices.classList.remove("is-open");
               clear(nodes.choices);
               resolve(option);
@@ -240,7 +247,9 @@ export function createStage(root, { onOpenBoard } = {}) {
    * Resolves with the chosen exhibit id, or null if they back off.
    */
   function press(claim, held, catalogue) {
+    if (destroyed) return Promise.resolve(null);
     return new Promise((resolve) => {
+      cancelInput = () => resolve(null);
       clear(nodes.tray);
       nodes.tray.classList.add("is-open");
       nodes.tray.append(
@@ -260,6 +269,7 @@ export function createStage(root, { onOpenBoard } = {}) {
             onClick: () => {
               nodes.tray.classList.remove("is-open");
               clear(nodes.tray);
+              cancelInput = null;
               resolve(id);
             },
           },
@@ -277,6 +287,7 @@ export function createStage(root, { onOpenBoard } = {}) {
           onClick: () => {
             nodes.tray.classList.remove("is-open");
             clear(nodes.tray);
+            cancelInput = null;
             resolve(null);
           },
         }),
@@ -300,6 +311,9 @@ export function createStage(root, { onOpenBoard } = {}) {
 
   function destroy() {
     destroyed = true;
+    finishTyping?.();
+    cancelInput?.();
+    cancelInput = null;
     document.removeEventListener("keydown", onKey);
     resolveAdvance?.();
   }
@@ -319,6 +333,7 @@ export function createStage(root, { onOpenBoard } = {}) {
     remember,
     setClock,
     destroy,
+    get destroyed() { return destroyed; },
     get actors() {
       return actors;
     },
@@ -363,6 +378,7 @@ function buildDom(onOpenBoard) {
       text,
     ),
     advance,
+    el("span", { class: "vn__read-hint", text: t("vn.continueHint", "Click or Space to continue") }),
   );
 
   const stage = el(

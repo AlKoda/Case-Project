@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img"><title>Al-Zadjali's ledger with Tariq's debt settled at 01:20</title>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><path d="M0 0v6" stroke="#8b7960" stroke-opacity=".15"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-opacity=".18"/></filter></defs>
+<rect x="24" y="24" width="464" height="464" rx="3" fill="#ece3d0"/>
+<rect x="32" y="32" width="448" height="448" rx="2" fill="url(#hatch)" stroke="#b3a488"/>
+<path d="M52 84H460M52 430H460" stroke="#b3a488"/>
+<text x="52" y="64" fill="#78684f" font-family="monospace" font-size="13" letter-spacing="2">47-B / E-06</text>
+<text x="460" y="64" text-anchor="end" fill="#78684f" font-family="monospace" font-size="11">AL-MANAR</text>
+<g filter="url(#shadow)"><path d="M111 121h277v276H111z" fill="#643e35" stroke="#382c26" stroke-width="3"/>
+<path d="M126 114h248v276H126z" fill="#e4d7b8" stroke="#8b7960" stroke-width="2"/>
+<path d="M140 173h220M140 221h220M140 269h220M140 317h220M140 365h220M168 165v206" stroke="#b3a488"/>
+<text x="251" y="150" text-anchor="middle" fill="#514633" font-family="serif" font-size="18">Accounts / Night counter</text>
+<g fill="#514633" font-family="monospace" font-size="13"><text x="184" y="200">T. AL-RAWAHI</text><text x="184" y="248">400 RIALS</text><text x="184" y="296">01:20</text></g>
+<g transform="rotate(-8 260 335)"><rect x="180" y="317" width="145" height="35" rx="2" fill="none" stroke="#6d211b" stroke-width="2"/><text x="252" y="341" text-anchor="middle" fill="#6d211b" font-family="monospace" font-size="22" letter-spacing="2">SETTLED</text></g>
+</g><text x="256" y="456" text-anchor="middle" fill="#544936" font-family="monospace" font-size="13" letter-spacing="1">400 RIALS / SETTLED AT 01:20</text></svg>

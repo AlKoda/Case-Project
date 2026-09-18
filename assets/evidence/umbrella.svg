@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img"><title>Wet umbrella recovered from the lobby cupboard</title>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(28)"><path d="M0 0v6" stroke="#8b7960" stroke-opacity=".15"/></pattern><filter id="shadow"><feDropShadow dx="0" dy="6" stdDeviation="5" flood-opacity=".18"/></filter></defs>
+<rect x="24" y="24" width="464" height="464" rx="3" fill="#ece3d0"/>
+<rect x="32" y="32" width="448" height="448" rx="2" fill="url(#hatch)" stroke="#b3a488"/>
+<path d="M52 84H460M52 430H460" stroke="#b3a488"/>
+<text x="52" y="64" fill="#78684f" font-family="monospace" font-size="13" letter-spacing="2">47-B / E-04</text>
+<text x="460" y="64" text-anchor="end" fill="#78684f" font-family="monospace" font-size="11">AL-MANAR</text>
+<g transform="rotate(-18 256 260)" filter="url(#shadow)" fill="none" stroke="#3e4445" stroke-linejoin="round">
+<path d="M256 117v232q0 42 33 42t30-29" stroke="#72634d" stroke-width="10" stroke-linecap="round"/>
+<path d="M156 185l100-57 100 57-43 39-57 100-54-100z" fill="#343d41" stroke-width="3"/>
+<path d="M256 129l-54 94 54 101 57-101z" fill="#4e595a"/>
+<path d="M256 132v188M159 185l43 38M353 185l-40 38" stroke="#828d88" stroke-width="1.5"/>
+<path d="M250 127h12v-17h-12z" fill="#4e595a" stroke-width="2"/>
+</g><g fill="#7fa8ae"><path d="M166 289q-14 23 0 23t0-23M203 343q-12 20 0 20t0-20M321 289q-14 23 0 23t0-23"/></g><text x="256" y="456" text-anchor="middle" fill="#544936" font-family="monospace" font-size="13" letter-spacing="1">LOBBY CUPBOARD / STILL WET</text></svg>

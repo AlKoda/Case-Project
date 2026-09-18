@@ -33,6 +33,7 @@ import * as store from "../engine/store.js";
 import * as assets from "../engine/assets.js";
 import { CASE, CAST, EXHIBITS, CONTRADICTIONS, SUSPECTS, WITNESSES } from "../data/case.js";
 import { SCENES, INTERVIEWS } from "../data/scenes.js";
+import { isPresenting } from "./presenter.js";
 
 /* The window the timeline covers: 01:00 to 02:30, the ninety minutes that
  * matter. Everything outside it is somebody's alibi. */
@@ -230,7 +231,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
       status,
       el("div", { class: "board__tools" },
         overlay
-          ? el("span", { class: "board__saved", text: t("board.saved", "Saved on this device") })
+          ? el("span", { class: "board__saved", text: isPresenting() ? t("board.preview", "Editable presentation example") : t("board.saved", "Saved on this device") })
           : null,
         !overlay && missedAtTheStairs().length
           ? el("button", {
@@ -245,7 +246,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
         toolButton(t("board.addNote", "Add note"), addNote),
         toolButton(t("board.tidy", "Tidy"), tidy),
         toolButton(t("board.clear", "Clear wall"), clearWall),
-        !overlay ? el("button", {
+        !overlay && onClose ? el("button", {
           class: "btn btn--small",
           type: "button",
           text: t("map.back", "Back to map"),
@@ -324,12 +325,13 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
 
   /** x across the wall (0..1) -> minutes, clamped to the window. */
   function timeAt(x) {
-    const clamped = Math.min(1, Math.max(0, x));
-    return Math.round((TIME_START + clamped * (TIME_END - TIME_START)) / 5) * 5;
+    const fraction = (x - CORK.x0) / (CORK.x1 - CORK.x0);
+    const clamped = Math.min(1, Math.max(0, fraction));
+    return Math.round(TIME_START + clamped * (TIME_END - TIME_START));
   }
 
   function xForTime(at) {
-    return (at - TIME_START) / (TIME_END - TIME_START);
+    return CORK.x0 + ((at - TIME_START) / (TIME_END - TIME_START)) * (CORK.x1 - CORK.x0);
   }
 
   /* ------------------------------------------------------------ the tray */
@@ -520,8 +522,8 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
     } else if (card.line) {
       node.append(el("p", { class: "pin__line", text: card.line }));
     }
-    if (pin.at != null) {
-      node.append(el("span", { class: "pin__clock", text: clock(pin.at) }));
+    if (pin.at != null || card.time) {
+      node.append(el("span", { class: "pin__clock", text: pin.at != null ? clock(pin.at) : card.time }));
     }
 
     node.addEventListener("pointerdown", (event) => beginDrag(event, id, false));
@@ -584,11 +586,11 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
   }
 
   /** Find open space near the middle so the keyboard path never stacks cards. */
-  function pinSomewhereFree(id) {
+  function pinSomewhereFree(id, record = true) {
     const card = cards.get(id);
     if (card?.time) {
       const at = minutes(card.time);
-      place(id, xForTime(at), BAND_Y);
+      place(id, xForTime(at), BAND_Y, record);
       renderTray();
       return;
     }
@@ -600,13 +602,13 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
         const x = midX + Math.cos((step / 8) * Math.PI * 2) * (0.07 + ring * 0.07);
         const y = midY + Math.sin((step / 8) * Math.PI * 2) * (0.06 + ring * 0.06);
         if (!taken.some((p) => Math.abs(p.x - x) < 0.075 && Math.abs(p.y - y) < 0.1)) {
-          place(id, x, y);
+          place(id, x, y, record);
           renderTray();
           return;
         }
       }
     }
-    place(id, midX, midY);
+    place(id, midX, midY, record);
     renderTray();
   }
 
@@ -787,7 +789,7 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
       nextNote: board.nextNote + 1,
     });
     cards = catalogue();
-    pinSomewhereFree(`note:${id}`);
+    pinSomewhereFree(`note:${id}`, false);
     inspect(`note:${id}`);
     tray.querySelector(".tray__note")?.focus();
   }
@@ -880,6 +882,10 @@ export function mountBoard(root, go, { overlay = false, onClose = null } = {}) {
 
   return () => {
     document.removeEventListener("keydown", onKey);
+    window.removeEventListener("pointermove", onDragMove);
+    window.removeEventListener("pointerup", onDragEnd);
+    drag?.ghost?.remove();
+    drag = null;
     observer.disconnect();
   };
 }

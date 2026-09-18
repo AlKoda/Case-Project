@@ -17,6 +17,9 @@ import { SCENES } from "../data/scenes.js";
 import { mountBoard } from "./board.js";
 import * as preferences from "../engine/preferences.js";
 import { mountMap } from "./map.js";
+import { openDialog, showHelp, toggleFullscreen } from "../engine/dialog.js";
+import { isPresenting, startPresentation, currentStep } from "./presenter.js";
+import { PRESENTATION_SCENES } from "../data/presentation.js";
 
 /** Screens fade through this so a hard cut never happens mid-sentence. */
 function transition(root, build) {
@@ -35,7 +38,7 @@ function transition(root, build) {
 
 export function title(root, go) {
   const art = el("div", { class: "title__art" });
-  assets.background("rain-street", "Outside the Bellweather").then((url) => {
+  assets.background("rain-street", "Outside the Al-Manar").then((url) => {
     art.style.backgroundImage = `url("${url}")`;
   });
 
@@ -44,22 +47,36 @@ export function title(root, go) {
       el("div", { class: "title__vignette", "aria-hidden": "true" }),
       el("header", { class: "title__mast" },
         el("span", { class: "title__rule", "aria-hidden": "true" }),
-        el("p", { text: t("title.department", "Royal Oman Police · Nightwatch") }),
+        el("p", { text: t("title.department", "Nightwatch · Muttrah case archive") }),
+        el("button", { class: "title__fullscreen", type: "button", text: t("title.fullscreen", "Full screen ↗"), onClick: toggleFullscreen }),
       ),
       el("div", { class: "title__layout" },
         el("div", { class: "title__identity" },
           el("p", { class: "title__file", text: t("title.file", CASE.file) }),
           el("h1", { class: "title__name", text: t("title.name", CASE.title) }),
           el("p", { class: "title__strap", text: t("title.strap", CASE.strapline) }),
+          el("p", { class: "title__format", text: t("title.format", "An interactive investigation demonstration") }),
+          el("div", { class: "title__facts" },
+            ...[["01", "Incident"], ["07", "People awake"], ["03", "Suspect accounts"]].map(([value, label], i) => el("div", null,
+              el("b", { text: value }), el("span", { text: t(`title.fact.${i}`, label) }))),
+          ),
         ),
         el("nav", { class: "title__menu", "aria-label": t("title.menu", "Main menu") },
+          el("div", { class: "title__dossier" },
+            el("p", { class: "eyebrow", text: t("title.dossier", "Investigation dossier / 47-B") }),
+            el("h2", { text: t("title.dossierTitle", "A fall. Or a cover story.") }),
+            el("p", { text: t("title.dossierBody", "A night manager is found beneath a dark staircase. Examine the scene, compare the accounts, and build a case from what you can prove.") }),
+          ),
+          el("button", { class: "menu-button btn--major", type: "button", text: t("title.walkthrough", "Presentation walkthrough"), onClick: () => startPresentation(go) }),
+          el("p", { class: "title__walkthrough-note", text: t("title.walkthroughNote", "Five prepared chapters · about 5 minutes · separate from your saved case") }),
           el("button", {
-            class: "menu-button btn--major",
+            class: "menu-button",
             type: "button",
-            text: store.hasSave() ? t("title.new", "New investigation") : t("title.begin", "Begin the night"),
+            text: store.hasSave() ? t("title.new", "New investigation") : t("title.begin", "Open the full investigation"),
             onClick: () => {
-              store.reset();
-              go("intro");
+              const begin = () => { store.reset(); go("briefing"); };
+              if (store.hasSave()) openDialog({ title: t("title.replace", "Start a fresh investigation?"), body: t("title.replaceBody", "This replaces the case saved on this device. The presentation walkthrough can be used without replacing it."), actions: [{ label: t("title.confirmNew", "Start new case"), primary: true, run: begin }] });
+              else begin();
             },
           }),
           store.hasSave()
@@ -69,10 +86,11 @@ export function title(root, go) {
                 text: t("title.resume", "Resume investigation"),
                 onClick: () => {
                   store.restore();
-                  go("hub");
+                  go(store.get().scene || store.get().completed.length ? "hub" : "briefing");
                 },
               })
             : null,
+          el("button", { class: "menu-button", type: "button", text: t("help.title", "Working the case"), onClick: showHelp }),
           el("button", {
             class: "menu-button",
             type: "button",
@@ -83,13 +101,13 @@ export function title(root, go) {
       ),
       el("footer", { class: "title__foot" },
         el("div", { class: "title__credits" },
-          el("p", { class: "title__note", text: t("title.note", "A work of fiction. Click or press space to advance dialogue.") }),
+          el("p", { class: "title__note", text: t("title.note", "Fictional scenario · AI-assisted development · No live AI decisions.") }),
           el("p", { class: "title__maker" },
             el("span", { lang: "en", text: 'Made by Officer Cadet Almunther Abdullah Rashid Almakhmari' }),
             el("span", { lang: "ar", dir: "rtl", text: 'صنع بواسطة الضابط المرشح المنذر بن عبدالله بن راشد المخمري' }),
           ),
         ),
-        el("p", { class: "title__edition", text: t("title.edition", "The Muttrah file · 1948") }),
+        el("p", { class: "title__edition", text: t("title.edition", "The Muttrah file · Demonstration edition") }),
       ),
     );
   root.append(screen);
@@ -106,6 +124,42 @@ export function title(root, go) {
     screen.style.setProperty("--look-x", 0);
     screen.style.setProperty("--look-y", 0);
   });
+}
+
+export function briefing(root, go) {
+  const presenting = isPresenting();
+  root.append(el("section", { class: "screen briefing grain" },
+    el("header", { class: "briefing__mast" },
+      el("span", { class: "eyebrow", text: t("briefing.archive", "Nightwatch / Investigation brief") }),
+      el("span", { class: "eyebrow", text: CASE.file })),
+    el("div", { class: "briefing__layout" },
+      el("div", { class: "briefing__story" },
+        el("p", { class: "eyebrow", text: t("briefing.location", "Al-Manar Hotel · Muttrah harbour") }),
+        el("h1", null, t("briefing.title", "Every account leaves"), el("br"), el("em", { text: t("briefing.titleEnd", "a trace.") })),
+        el("p", { class: "briefing__lede", text: t("briefing.lede", "A night manager. A dark staircase. A report that calls it an accident.") }),
+        el("p", { text: t("briefing.body", "Tariq Al-Rawahi was found at the foot of the service stairs at 02:14. Seven people were awake in the hotel. Your task is to reconstruct the night, test their accounts, and distinguish suspicion from a supported finding.") }),
+        el("div", { class: "briefing__incident" },
+          el("div", null, el("span", { text: t("briefing.victim", "Victim") }), el("b", { text: "Tariq Al-Rawahi" })),
+          el("div", null, el("span", { text: t("briefing.discovery", "Reported discovery") }), el("b", { text: "02:14" })),
+          el("div", null, el("span", { text: t("briefing.scene", "Scene") }), el("b", { text: t("location.stairs.name", "Service stairs") }))),
+      ),
+      el("aside", { class: "briefing__method" },
+        el("p", { class: "eyebrow", text: t("briefing.method", "The investigation workflow") }),
+        ...[
+          ["Observe", "Examine the scene and collect physical evidence."],
+          ["Question", "Hear each account and file useful testimony."],
+          ["Connect", "Compare exhibits, trace times, and challenge contradictions."],
+          ["Conclude", "Review what was established and explain the finding."],
+        ].map(([label, body], i) => el("div", { class: "method-step" },
+          el("span", { text: `0${i + 1}` }), el("div", null, el("h2", { text: t(`briefing.method.${i}.title`, label) }), el("p", { text: t(`briefing.method.${i}.body`, body) })))),
+        el("div", { class: "briefing__actions" },
+          el("button", { class: "btn btn--major", type: "button", text: presenting ? t("briefing.demoBegin", "Examine the first exhibit →") : t("briefing.begin", "Begin investigation →"), onClick: () => presenting ? go("presentation", { step: 1 }) : go("intro") }),
+          !presenting ? el("button", { class: "briefing__back", type: "button", dataset: { escapeBack: "true" }, text: t("briefing.back", "Back to main menu"), onClick: () => go("title") }) : null)),
+    ),
+    el("footer", { class: "briefing__footer" },
+      el("p", { text: t("briefing.controls", "Read at your own pace · Click or Space to advance · Revisit any location") }),
+      el("p", { text: presenting ? t("briefing.prepared", "Presentation uses prepared checkpoints. Your saved investigation is preserved.") : t("briefing.fiction", "A fictional scenario for demonstration, not an account of official investigative procedure.") })),
+  ));
 }
 
 /* ------------------------------------------------------------- settings */
@@ -163,7 +217,7 @@ export function settings(root, go, { back = "title" } = {}) {
           el("small", { text: t("settings.grainNote", "Keep the noir texture over scenes") }),
         ),
       ),
-      el("button", { class: "btn settings__back", type: "button", dataset: { escapeBack: "true" }, text: t("settings.back", "Back to main menu"), onClick: () => go(back) }),
+      el("button", { class: "btn settings__back", type: "button", dataset: { escapeBack: "true" }, text: back === "title" ? t("settings.back", "Back to main menu") : t("map.back", "Back to map"), onClick: () => go(back) }),
     ),
   ));
 }
@@ -171,8 +225,9 @@ export function settings(root, go, { back = "title" } = {}) {
 /* ----------------------------------------------------------------- scene */
 
 /** Play a VN scene, then hand control to `next`. */
-export async function scene(root, go, { id, next }) {
-  const definition = SCENES[id];
+export function scene(root, go, { id, next }) {
+  const definition = SCENES[id] ?? PRESENTATION_SCENES[id];
+  let cancelled = false;
   if (!definition) {
     console.error(`No scene "${id}"`);
     return go("hub");
@@ -189,6 +244,15 @@ export async function scene(root, go, { id, next }) {
     host.setAttribute("inert", "");
     const overlay = el("div", { class: "board-overlay", role: "dialog", "aria-modal": "true", "aria-label": t("board.dialog", "Case board") });
     root.append(overlay);
+    const containFocus = (event) => {
+      if (event.key !== "Tab") return;
+      const controls = [...overlay.querySelectorAll('button:not([disabled]), textarea, [tabindex="0"]')];
+      const first = controls[0], last = controls.at(-1);
+      if (!first) return;
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    overlay.addEventListener("keydown", containFocus);
     const cleanup = mountBoard(overlay, go, {
       overlay: true,
       onClose: () => {
@@ -199,6 +263,7 @@ export async function scene(root, go, { id, next }) {
         stage.dom.boardButton.focus();
       },
     });
+    overlay.querySelector('.board__close')?.focus();
     closeBoard = () => {
       cleanup();
       overlay.remove();
@@ -207,21 +272,27 @@ export async function scene(root, go, { id, next }) {
     };
   };
 
-  const stage = createStage(host, { onOpenBoard: openBoard });
+  const stage = createStage(host, { onOpenBoard: openBoard, instantText: isPresenting() });
   store.update({ scene: id });
 
-  await playScene(stage, definition, {
-    cast: CAST,
-    exhibits: EXHIBITS,
-    onExhibit: (exhibitId) => flash(host, t("hud.filed", "Filed:"), EXHIBITS[exhibitId]?.name ?? exhibitId),
-    onProof: (proofId) => flash(host, t("hud.broken", "Account broken:"), CONTRADICTIONS[proofId]?.claim ?? proofId),
-    onClue: (clueId) => flash(host, t("hud.clueFiled", "Testimony filed:"), DIALOGUE_CLUES[clueId]?.headline ?? clueId),
-  });
+  const run = async () => {
+    await playScene(stage, definition, {
+      cast: CAST,
+      exhibits: EXHIBITS,
+      onExhibit: (exhibitId) => flash(host, t("hud.filed", "Filed:"), EXHIBITS[exhibitId]?.name ?? exhibitId),
+      onProof: (proofId) => flash(host, t("hud.broken", "Account broken:"), CONTRADICTIONS[proofId]?.claim ?? proofId),
+      onClue: (clueId) => flash(host, t("hud.clueFiled", "Testimony filed:"), DIALOGUE_CLUES[clueId]?.headline ?? clueId),
+    });
 
-  closeBoard?.();
-  stage.destroy();
-  store.collect("completed", id);
-  go(next ?? "hub");
+    if (cancelled) return;
+    closeBoard?.();
+    stage.destroy();
+    store.collect("completed", id);
+    if (isPresenting()) go("presentation", { step: currentStep() + 1 });
+    else go(next ?? "hub");
+  };
+  run().catch((error) => { if (!cancelled) console.error(error); });
+  return () => { cancelled = true; closeBoard?.(); stage.destroy(); };
 }
 
 /** A short banner for something the player just gained. */
@@ -249,12 +320,12 @@ export function hub(root, go) {
   if (!store.get().completed.includes("scene:stairs")) {
     return go("scene", { id: "scene:stairs", next: "hub" });
   }
-  mountMap(root, go);
+  return mountMap(root, go);
 }
 
 /** The case board is a tool at the station, rather than the whole field hub. */
 export function board(root, go) {
-  mountBoard(root, go);
+  return mountBoard(root, go);
 }
 
 /* --------------------------------------------------------------- accuse */
@@ -272,7 +343,6 @@ export function accuse(root, go) {
   for (const id of SUSPECTS) {
     const person = CAST[id];
     const broken = brokenFor(id);
-    const weight = broken.reduce((sum, proof) => sum + proof.weight, 0);
 
     const shot = el("img", { alt: "", class: "accuse__shot" });
     assets.bust(id, "cold", person.name).then((url) => { shot.src = url; });
@@ -281,8 +351,7 @@ export function accuse(root, go) {
       class: `accuse__card${broken.length ? " has-proof" : ""}`,
       type: "button",
       onClick: () => {
-        store.update({ accusation: id });
-        go("verdict");
+        openDialog({ title: t("accuse.confirm", "Submit this finding?"), body: `${person.name}. ${t("accuse.confirmBody", "The conclusion will be assessed against the contradictions recorded in your file.")}`, actions: [{ label: t("accuse.submit", "Review conclusion"), primary: true, run: () => { store.update({ accusation: id }); go("verdict"); } }] });
       },
     },
       shot,
@@ -291,8 +360,8 @@ export function accuse(root, go) {
       el("p", {
         class: "accuse__proof",
         text: broken.length
-          ? `${broken.length} ${t("accuse.broken", "broken")} \u00b7 ${t("accuse.weight", "weight")} ${weight}`
-          : t("accuse.nothing", "nothing broken"),
+          ? `${broken.length} ${broken.length === 1 ? t("accuse.oneContradiction", "contradiction recorded") : t("accuse.contradictions", "contradictions recorded")}`
+          : t("accuse.nothing", "No contradictions recorded"),
       }),
     );
     card.style.setProperty("--accent", person.accent);
@@ -310,8 +379,8 @@ export function accuse(root, go) {
 
   root.append(
     el("section", { class: "screen accuse grain" },
-      el("h1", { class: "accuse__title", text: t("accuse.title", "Name one.") }),
-      el("p", { class: "accuse__lede", text: t("accuse.lede", "Once it is said out loud it is said. The file goes forward with your name on it.") }),
+      el("h1", { class: "accuse__title", text: t("accuse.title", "Review your findings") }),
+      el("p", { class: "accuse__lede", text: t("accuse.lede", "Select the account you believe the evidence supports. You can reopen the investigation after reviewing the conclusion.") }),
       el("p", { class: "accuse__gauge", text: gauge }),
       list,
       el("button", {
@@ -330,23 +399,27 @@ export function accuse(root, go) {
 export function verdict(root, go) {
   const state = store.get();
   const named = state.accusation;
+  if (!SUSPECTS.includes(named)) return go("accuse");
   const result = VERDICTS[named] ?? VERDICTS[CULPRIT];
+  const required = Object.entries(CONTRADICTIONS).filter(([, proof]) => proof.subject === CULPRIT).map(([id]) => id);
+  const supported = result.correct && required.every((id) => state.proven.includes(id));
+  const incomplete = result.correct && !supported;
   const person = CAST[named] ?? CAST[CULPRIT];
   const proofs = state.proven.map((id) => CONTRADICTIONS[id]).filter(Boolean);
   const supporting = proofs.filter((p) => p.subject === named);
-  const weight = supporting.reduce((sum, p) => sum + p.weight, 0);
 
   const shot = el("img", { alt: "", class: "verdict__shot" });
   assets.bust(named, "broken", person.name).then((url) => { shot.src = url; });
 
   root.append(
-    el("section", { class: `screen verdict grain ${result.correct ? "is-right" : "is-wrong"}` },
-      el("p", { class: "verdict__stamp", text: result.correct ? t("verdict.charged", "Charged") : t("verdict.released", "Released without charge") }),
+    el("section", { class: `screen verdict grain ${supported ? "is-right" : incomplete ? "is-incomplete" : "is-wrong"}` },
+      el("p", { class: "verdict__file", text: `${CASE.file} / ${CASE.title}${isPresenting() ? " / Prepared presentation summary" : ""}` }),
+      el("p", { class: "verdict__stamp", text: supported ? t("verdict.charged", "Case supported · Charged") : incomplete ? t("verdict.incomplete", "Further investigation required") : t("verdict.released", "Released without charge") }),
       el("div", { class: "verdict__head" },
         shot,
         el("div", null,
-          el("h1", { class: "verdict__name", text: result.headline }),
-          el("p", { class: "verdict__body", text: result.body }),
+          el("h1", { class: "verdict__name", text: incomplete ? person.name : result.headline }),
+          el("p", { class: "verdict__body", text: incomplete ? t("verdict.incompleteBody", "Your finding names Ayman Sharif, but his account has not been fully tested. Establish the lighting, the call record, and the discrepancy in the reported time before treating this fictional case as supported.") : result.body }),
         ),
       ),
       el("div", { class: "verdict__ledger" },
@@ -354,26 +427,34 @@ export function verdict(root, go) {
         supporting.length
           ? supporting.map((p) => el("p", { class: "verdict__proof" }, el("q", { text: p.claim }), " ", p.verdict))
           : el("p", { class: "panel__empty", text: t("verdict.nothing", "Nothing in this person's account was ever broken.") }),
-        el("p", { class: "verdict__weight", text: `${t("verdict.weight", "Weight of proof:")} ${weight}` }),
+        el("div", { class: "finding-metrics" },
+          ...[[state.exhibits.length, "Exhibits filed"], [state.clues.length, "Testimony leads"], [supporting.length, "Recorded contradictions"]].map(([count, label], i) => el("div", null, el("b", { text: count }), el("span", { text: t(`verdict.metric.${i}`, label) }))),
+        ),
+      ),
+      el("div", { class: "verdict__reflection" },
+        el("h2", { text: t("verdict.reflection", "From information to a reasoned finding") }),
+        el("p", { text: t("verdict.reflectionBody", "A suspicious statement is a lead. A contradiction links a claim to an exhibit. The board makes those relationships visible; the investigator still decides what the evidence supports.") }),
+        isPresenting() ? el("p", { class: "verdict__disclosure", text: t("verdict.disclosure", "This walkthrough uses prepared fictional checkpoints. AI assisted the development of this demonstration; dialogue and conclusions are scripted. It does not perform real evidence analysis or make live AI decisions.") }) : null,
       ),
       el("div", { class: "verdict__actions" },
-        el("button", {
+        el("button", { class: "btn", type: "button", text: t("verdict.print", "Print case summary"), onClick: () => window.print() }),
+        !isPresenting() ? el("button", {
           class: "btn",
           type: "button",
           dataset: { escapeBack: "true" },
           text: t("verdict.reopen", "Reopen the file"),
           onClick: () => { store.update({ accusation: null }); go("hub"); },
-        }),
-        el("button", {
+        }) : null,
+        !isPresenting() ? el("button", {
           class: "btn btn--major",
           type: "button",
-          text: t("verdict.again", "Start a new night"),
-          onClick: () => { store.reset(); go("title"); },
-        }),
+          text: t("verdict.again", "Return to main menu"),
+          onClick: () => go("title"),
+        }) : null,
       ),
     ),
   );
 }
 
-export const SCREENS = { title, settings, hub, accuse, verdict, scene };
+export const SCREENS = { title, briefing, settings, hub, board, accuse, verdict, scene };
 export { transition };
