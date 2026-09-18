@@ -99,10 +99,18 @@
 
 /* Wraps the wall so it can pan on small screens without the tray moving. */
 .board__scroll {
-  display: grid;
+  display: block;
   min-height: 0;
   min-width: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--lamp-300) var(--ink-200);
+  padding: .55rem;
+  block-size: 100%;
 }
+
+.board__canvas { position: relative; min-height: 0; overflow: hidden; border: 1px solid var(--ink-400); border-radius: var(--radius-md); background: var(--ink-000); }
+.board__canvas-hint { position: absolute; inset-block-start: .75rem; inset-inline-start: 50%; translate: -50% 0; z-index: 12; margin: 0; padding: .42rem .8rem; border: 1px solid rgba(232,176,75,.3); border-radius: 99px; background: rgba(5,6,10,.82); color: var(--text-300); font-family: var(--font-type); font-size: .66rem; letter-spacing: .11em; text-transform: uppercase; pointer-events: none; }
 
 .board__stage {
   display: grid;
@@ -119,19 +127,28 @@
    * viewport. Pinned positions are fractions of this box; if the cards did not
    * scale with it too, a small wall would push them off the cork. */
   container-type: size;
-  aspect-ratio: 1672 / 941;
-  /* Fill whichever dimension runs out first, and centre in the other. */
-  block-size: 100%;
-  inline-size: auto;
-  max-inline-size: 100%;
-  margin-inline: auto;
-  background-size: cover;
-  background-position: center;
+  block-size: 980px;
+  inline-size: 1680px;
+  max-inline-size: none;
+  margin: 0;
+  background:
+    radial-gradient(circle at 17% 23%, rgba(255,255,255,.055) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 72% 64%, rgba(50,24,9,.16) 0 1px, transparent 2px),
+    linear-gradient(115deg, rgba(255,255,255,.025), transparent 34%),
+    #775233;
+  background-size: 17px 19px, 23px 29px, auto, auto;
+  border: 14px solid #291d16;
+  outline: 2px solid #5c432e;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-panel);
   overflow: hidden;
   touch-action: none;   /* dragging a pin must not scroll the page */
 }
+
+.wall__zones { position: absolute; inset: 3.5% 3.5% 23%; display: grid; grid-template-columns: 1fr 1fr 1.25fr; grid-template-rows: 1fr 1fr; gap: 1rem; pointer-events: none; z-index: 0; }
+.wall__zone { position: relative; border: 1px dashed rgba(245,221,181,.27); border-radius: 3px; background: rgba(42,24,13,.065); }
+.wall__zone span { position: absolute; inset-block-start: .75rem; inset-inline-start: 1rem; padding: .28rem .62rem; border-block-end: 1px solid rgba(245,221,181,.42); color: rgba(255,239,209,.68); font-family: var(--font-type); font-size: .72rem; letter-spacing: .22em; text-transform: uppercase; }
+.wall__zone--workspace { grid-column: 3; grid-row: 1 / span 2; }
 
 .wall.is-receiving { outline: 1px solid var(--lamp-300); }
 
@@ -163,7 +180,7 @@
   position: absolute;
   z-index: 3;
   /* Sized against the wall, not the viewport. */
-  inline-size: clamp(64px, 12cqw, 132px);
+  inline-size: clamp(116px, 8cqw, 144px);
   margin: 0;
   padding: clamp(0.25rem, 0.8cqw, 0.5rem) clamp(0.2rem, 0.7cqw, 0.45rem);
   translate: -50% -50%;
@@ -171,7 +188,7 @@
   border-radius: 2px;
   box-shadow: var(--shadow-card);
   color: var(--paper-ink);
-  font-size: clamp(0.56rem, 1.5cqw, 0.82rem);
+  font-size: clamp(0.7rem, .8cqw, 0.86rem);
   text-align: center;
   cursor: grab;
   transition: rotate var(--beat-fast) var(--ease-out), box-shadow var(--beat-fast);
